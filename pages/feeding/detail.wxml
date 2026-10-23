@@ -1,0 +1,47 @@
+<view class="container" wx:if="{{task}}">
+  <view class="card">
+    <view class="task-header">
+      <text class="task-title">{{task.taskTypeText}}</text>
+      <text class="tag tag-{{task.statusClass}}">{{task.statusText}}</text>
+    </view>
+    <view class="task-info-row">
+      <text class="label">关联猫咪</text>
+      <text class="value">{{task.catName}}</text>
+    </view>
+    <view class="task-info-row">
+      <text class="label">投喂地点</text>
+      <text class="value">{{task.locationDesc}}</text>
+    </view>
+    <view class="task-info-row" wx:if="{{task.amount}}">
+      <text class="label">打赏金额</text>
+      <text class="value amount">¥{{task.amount}}</text>
+    </view>
+    <view class="task-info-row">
+      <text class="label">有效范围</text>
+      <text class="value">{{task.radius}}米内打卡</text>
+    </view>
+  </view>
+
+  <!-- 打卡区域 -->
+  <view class="card" wx:if="{{task.status === 1}}">
+    <text class="section-title">投喂打卡</text>
+    <view class="checkin-area">
+      <button class="btn-primary" bindtap="onCheckIn">
+        到达现场，点击打卡
+      </button>
+      <view class="checkin-tips">
+        <text>需要在投喂点{{task.radius}}米范围内打卡</text>
+        <text>打卡时需上传现场照片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已完成 -->
+  <view class="card" wx:if="{{task.status === 3}}">
+    <text class="section-title">完成信息</text>
+    <view class="task-info-row">
+      <text class="label">完成时间</text>
+      <text class="value">{{task.completedAt}}</text>
+    </view>
+  </view>
+</view>

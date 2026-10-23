@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="card">
+    <text class="section-title">领养申请</text>
+
+    <view class="form-item">
+      <text class="form-label">住房类型</text>
+      <picker bindchange="onHousingChange" value="{{housingIndex}}" range="{{housingTypes}}">
+        <view class="form-value">{{housingTypes[housingIndex]}} ></view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">住房面积(㎡)</text>
+      <input class="form-input" type="digit" placeholder="请输入住房面积" bindinput="onAreaInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">是否有其他宠物</text>
+      <picker bindchange="onPetChange" value="{{petIndex}}" range="{{petOptions}}">
+        <view class="form-value">{{petOptions[petIndex]}} ></view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">养猫经验</text>
+      <textarea class="form-textarea" placeholder="请描述你的养猫经验" bindinput="onExperienceInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">领养原因</text>
+      <textarea class="form-textarea" placeholder="请说明领养原因" bindinput="onReasonInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">家人是否同意</text>
+      <picker bindchange="onFamilyChange" value="{{familyIndex}}" range="{{familyOptions}}">
+        <view class="form-value">{{familyOptions[familyIndex]}} ></view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">工作时间</text>
+      <input class="form-input" placeholder="如: 朝九晚六" bindinput="onWorkInput" />
+    </view>
+
+    <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onSubmit">
+      提交申请
+    </button>
+  </view>
+</view>

@@ -1,0 +1,60 @@
+<view class="container" wx:if="{{cat}}">
+  <!-- 图片轮播 -->
+  <swiper class="cat-swiper" indicator-dots autoplay circular>
+    <swiper-item wx:for="{{cat.images}}" wx:key="index">
+      <image class="swiper-img" src="{{item}}" mode="aspectFill" />
+    </swiper-item>
+    <swiper-item wx:if="{{!cat.images || cat.images.length === 0}}">
+      <image class="swiper-img" src="{{cat.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+    </swiper-item>
+  </swiper>
+
+  <!-- 基本信息 -->
+  <view class="card">
+    <view class="info-header">
+      <text class="info-name">{{cat.name}}</text>
+      <text class="tag tag-{{cat.lifeStatusClass}}">{{cat.lifeStatusText}}</text>
+    </view>
+    <view class="info-row">
+      <text>{{cat.genderText}} · {{cat.ageEstimate}} · {{cat.color}}</text>
+    </view>
+    <view class="info-row" wx:if="{{cat.breed}}">
+      <text>品种: {{cat.breed}}</text>
+    </view>
+    <view class="info-row">
+      <text>📍 {{cat.locationDesc}}</text>
+    </view>
+    <view class="health-tags" wx:if="{{cat.healthTags.length > 0}}">
+      <text class="tag tag-success" wx:for="{{cat.healthTags}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 描述 -->
+  <view class="card" wx:if="{{cat.description}}">
+    <text class="section-title">关于{{cat.name}}</text>
+    <text class="section-content">{{cat.description}}</text>
+  </view>
+
+  <!-- 性格 -->
+  <view class="card" wx:if="{{cat.personality}}">
+    <text class="section-title">性格特点</text>
+    <text class="section-content">{{cat.personality}}</text>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <button class="btn-outline" wx:if="{{cat.lifeStatus === 0 || cat.lifeStatus === 1}}" bindtap="onDonate">
+      ❤ 打赏投喂
+    </button>
+    <button class="btn-primary" wx:if="{{cat.lifeStatus === 2}}" bindtap="onAdopt">
+      申请领养
+    </button>
+    <button class="btn-outline" bindtap="onShare">
+      分享给朋友
+    </button>
+  </view>
+</view>
+
+<view class="loading" wx:if="{{!cat}}">
+  <text>加载中...</text>
+</view>

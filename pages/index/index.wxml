@@ -1,0 +1,61 @@
+<view class="container">
+  <!-- 地图 -->
+  <map
+    id="catMap"
+    class="map"
+    latitude="{{latitude}}"
+    longitude="{{longitude}}"
+    scale="16"
+    markers="{{markers}}"
+    bindmarkertap="onMarkerTap"
+    show-location="{{true}}"
+  >
+    <!-- 自定义覆盖物 -->
+    <cover-view class="map-controls">
+      <cover-view class="control-btn" bindtap="onNearbyTap">
+        <cover-image class="control-icon" src="/images/icon-nearby.png" />
+        <cover-text>附近猫咪</cover-text>
+      </cover-view>
+    </cover-view>
+  </map>
+
+  <!-- 底部猫咪列表 -->
+  <view class="bottom-sheet" wx:if="{{nearbyCats.length > 0}}">
+    <view class="sheet-header">
+      <text class="sheet-title">附近猫咪 ({{nearbyCats.length}})</text>
+      <text class="sheet-more" bindtap="goToCatList">查看全部</text>
+    </view>
+    <scroll-view scroll-x class="cat-scroll">
+      <view
+        class="cat-card"
+        wx:for="{{nearbyCats}}"
+        wx:key="id"
+        bindtap="goToCatDetail"
+        data-id="{{item.id}}"
+      >
+        <image class="cat-avatar" src="{{item.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+        <view class="cat-info">
+          <text class="cat-name">{{item.name}}</text>
+          <view class="cat-tags">
+            <text class="tag tag-{{item.lifeStatus === 0 ? 'warning' : item.lifeStatus === 1 ? 'info' : 'success'}}">
+              {{item.lifeStatusText}}
+            </text>
+          </view>
+          <text class="cat-location">{{item.locationDesc}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && nearbyCats.length === 0}}">
+    <text class="empty-icon">🐱</text>
+    <text>附近暂无流浪猫</text>
+    <button class="btn-primary" style="margin-top: 30rpx;" bindtap="onReportTap">上报流浪猫</button>
+  </view>
+
+  <!-- 加载 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

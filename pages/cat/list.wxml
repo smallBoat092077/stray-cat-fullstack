@@ -1,0 +1,54 @@
+<view class="container">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onStatusFilter" data-status="">全部</view>
+    <view class="filter-item {{currentStatus === 0 ? 'active' : ''}}" bindtap="onStatusFilter" data-status="0">流浪中</view>
+    <view class="filter-item {{currentStatus === 1 ? 'active' : ''}}" bindtap="onStatusFilter" data-status="1">投喂中</view>
+    <view class="filter-item {{currentStatus === 2 ? 'active' : ''}}" bindtap="onStatusFilter" data-status="2">待领养</view>
+    <view class="filter-item {{currentStatus === 3 ? 'active' : ''}}" bindtap="onStatusFilter" data-status="3">已领养</view>
+  </view>
+
+  <!-- 猫咪列表 -->
+  <view class="cat-list">
+    <view
+      class="cat-item card"
+      wx:for="{{catList}}"
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+    >
+      <image class="cat-img" src="{{item.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+      <view class="cat-content">
+        <view class="cat-header">
+          <text class="cat-name">{{item.name}}</text>
+          <text class="tag tag-{{item.lifeStatusClass}}">{{item.lifeStatusText}}</text>
+        </view>
+        <view class="cat-detail">
+          <text>{{item.genderText}} · {{item.ageEstimate}} · {{item.color}}</text>
+        </view>
+        <view class="cat-detail">
+          <text>📍 {{item.locationDesc}}</text>
+        </view>
+        <view class="cat-desc">{{item.description}}</view>
+        <view class="cat-footer">
+          <text class="cat-views">👁 {{item.viewCount}}</text>
+          <text class="cat-likes">❤ {{item.likeCount}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && catList.length === 0}}">
+    <text class="empty-icon"></text>
+    <text>暂无猫咪数据</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  <view class="loading" wx:if="{{!hasMore && catList.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

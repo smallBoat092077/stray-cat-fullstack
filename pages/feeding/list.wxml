@@ -1,0 +1,39 @@
+<view class="container">
+  <!-- 筛选 -->
+  <view class="filter-bar">
+    <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onFilter" data-status="">全部</view>
+    <view class="filter-item {{currentStatus === 0 ? 'active' : ''}}" bindtap="onFilter" data-status="0">待接单</view>
+    <view class="filter-item {{currentStatus === 1 ? 'active' : ''}}" bindtap="onFilter" data-status="1">已接单</view>
+    <view class="filter-item {{currentStatus === 3 ? 'active' : ''}}" bindtap="onFilter" data-status="3">已完成</view>
+  </view>
+
+  <!-- 任务列表 -->
+  <view class="task-list">
+    <view class="task-item card" wx:for="{{taskList}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+      <view class="task-header">
+        <text class="task-type">{{item.taskTypeText}}</text>
+        <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+      <view class="task-cat">
+        <text>🐱 {{item.catName}}</text>
+      </view>
+      <view class="task-info">
+        <text>📍 {{item.locationDesc}}</text>
+      </view>
+      <view class="task-info" wx:if="{{item.amount}}">
+        <text>💰 打赏金额: ¥{{item.amount}}</text>
+      </view>
+      <view class="task-footer">
+        <text class="task-time">{{item.createdAt}}</text>
+        <button class="btn-small btn-primary" wx:if="{{item.status === 0}}" catchtap="onAccept" data-id="{{item.id}}">
+          接单
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && taskList.length === 0}}">
+    <text class="empty-icon"></text>
+    <text>暂无投喂任务</text>
+  </view>
+</view>
