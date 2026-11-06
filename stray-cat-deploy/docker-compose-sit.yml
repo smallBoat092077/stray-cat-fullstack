@@ -74,7 +74,7 @@ services:
     networks: [scnet-sit]
 
   recognizer:
-    build: ./stray-cat-recognizer
+    build: ../stray-cat-recognizer
     container_name: straycat-sit-recognizer
     restart: always
     ports: ["8002:8000"]  # SIT 用 8002
