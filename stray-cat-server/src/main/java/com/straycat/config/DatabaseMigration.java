@@ -166,6 +166,17 @@ public class DatabaseMigration implements ApplicationRunner {
             );
             log.info("迁移: user_message 表已就绪");
 
+            stmt.execute(
+                "CREATE TABLE IF NOT EXISTS cat_poster (" +
+                "  id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+                "  image_url VARCHAR(255) NOT NULL," +
+                "  sort_order INT NOT NULL DEFAULT 0," +
+                "  created_at DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+            );
+            log.info("迁移: cat_poster 表已就绪");
+
         } catch (Exception e) {
             log.warn("user_message 建表异常: {}", e.getMessage());
         }

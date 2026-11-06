@@ -33,11 +33,18 @@ public class CatController {
     public Result<Page<CatProfile>> list(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Integer lifeStatus) {
+            @RequestParam(required = false) Integer lifeStatus,
+            @RequestParam(required = false) String keyword) {
         Page<CatProfile> page = new Page<>(pageNum, pageSize);
         var wrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<CatProfile>();
         if (lifeStatus != null) {
             wrapper.eq(CatProfile::getLifeStatus, lifeStatus);
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            String kw = "%" + keyword.trim() + "%";
+            wrapper.and(w -> w.like(CatProfile::getName, kw)
+                    .or().like(CatProfile::getBreed, kw)
+                    .or().like(CatProfile::getColor, kw));
         }
         wrapper.orderByDesc(CatProfile::getCreatedAt);
         return Result.success(catProfileService.page(page, wrapper));

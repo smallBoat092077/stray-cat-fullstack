@@ -23,6 +23,7 @@
           <el-menu-item index="/users">用户与角色</el-menu-item>
           <el-menu-item index="/ledger">猫粮流水</el-menu-item>
           <el-menu-item index="/tips">打赏记录</el-menu-item>
+          <el-menu-item index="/posters">海报管理</el-menu-item>
         </el-menu>
       </el-aside>
 

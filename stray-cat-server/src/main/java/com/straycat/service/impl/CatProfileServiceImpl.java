@@ -57,7 +57,7 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
         }
 
         List<Long> catIds = results.getContent().stream()
-                .map(r -> Long.parseLong((String) r.getContent().getName()))
+                .map(r -> Long.parseLong(String.valueOf(r.getContent().getName())))
                 .collect(Collectors.toList());
 
         return listByIds(catIds);

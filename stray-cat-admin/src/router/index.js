@@ -15,7 +15,8 @@ const routes = [
       { path: 'cats', name: 'cats', component: () => import('../views/CatList.vue'), meta: { title: '猫咪管理' } },
       { path: 'users', name: 'users', component: () => import('../views/UserList.vue'), meta: { title: '用户与角色' } },
       { path: 'ledger', name: 'ledger', component: () => import('../views/LedgerList.vue'), meta: { title: '猫粮流水' } },
-      { path: 'tips', name: 'tips', component: () => import('../views/TipList.vue'), meta: { title: '打赏记录' } }
+      { path: 'tips', name: 'tips', component: () => import('../views/TipList.vue'), meta: { title: '打赏记录' } },
+      { path: 'posters', name: 'posters', component: () => import('../views/PosterList.vue'), meta: { title: '海报管理' } }
     ]
   },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' }

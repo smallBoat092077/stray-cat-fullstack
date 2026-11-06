@@ -180,6 +180,15 @@ CREATE TABLE IF NOT EXISTS cat_comment (
     INDEX idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='猫咪评论表';
 
+-- 首页海报轮播
+CREATE TABLE IF NOT EXISTS cat_poster (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '海报ID',
+    image_url VARCHAR(255) NOT NULL COMMENT '海报图片URL',
+    sort_order INT NOT NULL DEFAULT 0 COMMENT '排序权重，越小越靠前',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='首页海报轮播表';
+
 -- 插入测试数据
 INSERT INTO sys_user (openid, nickname, role, status) VALUES
 ('test_openid_001', '测试用户1', 0, 1),

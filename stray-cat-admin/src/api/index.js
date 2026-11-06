@@ -29,3 +29,13 @@ export const catApi = {
 export const userApi = {
   grantRole: (userId, role) => http.put(`/user/${userId}/role`, { role })
 };
+
+export const posterApi = {
+  getList: () => http.get('/poster/list'),
+  upload: (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return http.post('/poster/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+  delete: (id) => http.delete(`/poster/${id}`)
+};
