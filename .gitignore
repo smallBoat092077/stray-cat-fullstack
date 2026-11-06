@@ -38,8 +38,10 @@ Thumbs.db
 .tmp-imgtool/
 vibe_images/
 
-# Deployment (contains secrets)
-stray-cat-deploy/
+# Deployment secrets (not the whole directory)
+stray-cat-deploy/.env
+stray-cat-deploy/app.env
+stray-cat-deploy/config/
 
 # Database
 *.db

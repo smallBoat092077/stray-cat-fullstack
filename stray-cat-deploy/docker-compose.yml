@@ -1,0 +1,84 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: straycat-mysql
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --default-time-zone=+08:00 --max_connections=40
+    environment:
+      MYSQL_DATABASE: stray_cat
+      MYSQL_USER: straycat
+    env_file: /opt/stray-cat/.env
+    volumes:
+      - /opt/stray-cat/mysql:/var/lib/mysql
+      - /opt/stray-cat/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 40
+      start_period: 30s
+    networks: [scnet]
+
+  redis:
+    image: redis:7-alpine
+    container_name: straycat-redis
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    env_file: /opt/stray-cat/.env
+    volumes:
+      - /opt/stray-cat/redis:/data
+    networks: [scnet]
+
+  app:
+    image: eclipse-temurin:21-jre
+    container_name: straycat-app
+    restart: always
+    working_dir: /opt/stray-cat
+    volumes:
+      - /opt/stray-cat/app/stray-cat-server-1.0.0.jar:/opt/stray-cat/app/app.jar:ro
+      - /opt/stray-cat/config:/opt/stray-cat/config:ro
+      - /opt/stray-cat/uploads:/opt/stray-cat/uploads
+    env_file:
+      - /opt/stray-cat/.env
+      - /opt/stray-cat/app.env
+    # MySQL 侧是 +08:00，容器默认 UTC 会让 Java 的 LocalDateTime.now() 写进库晚 8 小时
+    environment:
+      TZ: Asia/Shanghai
+    command: java -Duser.timezone=Asia/Shanghai -Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC -jar /opt/stray-cat/app/app.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks: [scnet]
+
+  web:
+    image: nginx:1.25-alpine
+    container_name: straycat-web
+    restart: always
+    ports: ["80:80", "443:443"]
+    volumes:
+      - /opt/stray-cat/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /opt/stray-cat/nginx/ssl:/etc/nginx/ssl:ro
+      - /opt/stray-cat/nginx/webroot:/var/www/html
+    depends_on: [app]
+    networks: [scnet]
+
+  recognizer:
+    build: /opt/stray-cat/recognizer
+    container_name: straycat-recognizer
+    restart: always
+    ports: ["8001:8000"]
+    env_file: /opt/stray-cat/.env
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      TZ: Asia/Shanghai
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [scnet]
+
+networks:
+  scnet:
+    driver: bridge
