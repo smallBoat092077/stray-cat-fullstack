@@ -2,17 +2,24 @@ package com.straycat.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.straycat.annotation.RequireRole;
+import com.straycat.client.RecognizerClient;
 import com.straycat.common.Result;
+import com.straycat.config.RecognizerProperties;
+import com.straycat.dto.CheckinRecognizeForm;
 import com.straycat.dto.ReviewForm;
+import com.straycat.entity.CatProfile;
 import com.straycat.entity.FeedingTask;
 import com.straycat.interceptor.AuthInterceptor;
+import com.straycat.service.CatProfileService;
 import com.straycat.service.FeedingTaskService;
 import com.straycat.vo.FeedingRecordVO;
+import com.straycat.vo.RecognizeResultVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,6 +30,9 @@ import java.util.List;
 public class FeedingController {
 
     private final FeedingTaskService feedingTaskService;
+    private final CatProfileService catProfileService;
+    private final RecognizerClient recognizerClient;
+    private final RecognizerProperties recognizerProperties;
 
     @Operation(summary = "创建投喂任务")
     @PostMapping("/task")
@@ -49,6 +59,92 @@ public class FeedingController {
             HttpServletRequest request) {
         Long volunteerId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
         feedingTaskService.checkIn(taskId, volunteerId, latitude, longitude, images);
+        return Result.success();
+    }
+
+    @Operation(summary = "拍照识别猫咪（打卡前）")
+    @PostMapping("/recognize")
+    public Result<RecognizeResultVO> recognizeCat(
+            @RequestParam MultipartFile photo,
+            @RequestParam(required = false) Long catId) {
+        // 如果指定了 catId，直接注册
+        if (catId != null) {
+            Long featureId = recognizerClient.registerCat(photo, catId);
+            if (featureId != null) {
+                CatProfile cat = catProfileService.getById(catId);
+                return Result.success(RecognizeResultVO.builder()
+                        .success(true)
+                        .message("猫咪注册成功")
+                        .matches(List.of(RecognizeResultVO.MatchInfo.builder()
+                                .catId(catId)
+                                .similarity(1.0)
+                                .catName(cat != null ? cat.getName() : null)
+                                .avatar(cat != null ? cat.getAvatar() : null)
+                                .originalLng(cat != null ? cat.getLongitude() : null)
+                                .originalLat(cat != null ? cat.getLatitude() : null)
+                                .needsManualConfirm(false)
+                                .build()))
+                        .build());
+            }
+            return Result.success(RecognizeResultVO.builder()
+                    .success(false)
+                    .message("注册失败")
+                    .build());
+        }
+
+        // 否则进行匹配
+        List<RecognizerClient.MatchResult> matches = recognizerClient.matchCat(photo, 3);
+
+        List<RecognizeResultVO.MatchInfo> matchInfos = matches.stream().map(m -> {
+            CatProfile cat = catProfileService.getById(m.catId());
+            double similarity = m.similarity();
+            boolean needsManual = similarity >= recognizerProperties.getManualThreshold()
+                    && similarity < recognizerProperties.getMatchThreshold();
+
+            return RecognizeResultVO.MatchInfo.builder()
+                    .catId(m.catId())
+                    .similarity(similarity)
+                    .catName(cat != null ? cat.getName() : null)
+                    .avatar(cat != null ? cat.getAvatar() : null)
+                    .originalLng(cat != null ? cat.getLongitude() : null)
+                    .originalLat(cat != null ? cat.getLatitude() : null)
+                    .needsManualConfirm(needsManual)
+                    .build();
+        }).toList();
+
+        boolean success = !matches.isEmpty() && matches.get(0).similarity() >= recognizerProperties.getMatchThreshold();
+
+        return Result.success(RecognizeResultVO.builder()
+                .success(success)
+                .message(success ? "识别成功" : "未找到匹配的猫咪")
+                .matches(matchInfos)
+                .build());
+    }
+
+    @Operation(summary = "带识别的打卡")
+    @PostMapping("/checkin-with-recognize")
+    public Result<?> checkinWithRecognize(
+            @RequestParam Long taskId,
+            @RequestParam MultipartFile photo,
+            @RequestParam Long catId,
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) Integer portions,
+            @RequestParam(required = false) String remark,
+            HttpServletRequest request) {
+        Long volunteerId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
+
+        // 1. 先注册特征（关联 catId）
+        Long featureId = recognizerClient.registerCat(photo, catId);
+        if (featureId == null) {
+            return Result.fail("特征提取失败");
+        }
+
+        // 2. 执行打卡
+        String images = ""; // 照片已上传到识别服务，这里可以保存 URL
+        feedingTaskService.checkIn(taskId, volunteerId, latitude, longitude, images);
+
         return Result.success();
     }
 

@@ -146,3 +146,12 @@ xpay:
       coin-amount: 680
       price-fen: 980
       title: 680 份猫粮
+
+# 花纹识别服务（Python FastAPI）
+# 本地开发：http://localhost:8000
+# Docker 部署：http://recognizer:8000
+# 服务器直连：http://47.95.149.170:8001
+recognizer:
+  base-url: ${RECOGNIZER_BASE_URL:http://recognizer:8000}
+  match-threshold: 0.85
+  manual-threshold: 0.70
