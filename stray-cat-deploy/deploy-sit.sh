@@ -36,6 +36,13 @@ fi
 
 cd /opt/stray-cat-sit
 
+# 检测 compose 文件位置（可能在根目录或 stray-cat-deploy 子目录）
+COMPOSE_FILE="docker-compose-sit.yml"
+if [[ ! -f "$COMPOSE_FILE" ]] && [[ -f "stray-cat-deploy/$COMPOSE_FILE" ]]; then
+    COMPOSE_FILE="stray-cat-deploy/$COMPOSE_FILE"
+    log_info "使用 compose 文件: $COMPOSE_FILE"
+fi
+
 # 1. 拉取最新代码
 log_info "1. 拉取最新代码..."
 git pull origin main || {
@@ -57,18 +64,18 @@ fi
 
 # 3. 构建 Docker 镜像
 log_info "3. 构建 Docker 镜像..."
-docker compose -f docker-compose-sit.yml build recognizer || {
+docker compose -f $COMPOSE_FILE build recognizer || {
     log_error "Recognizer 镜像构建失败"
     exit 1
 }
 
 # 4. 停止旧容器
 log_info "4. 停止旧容器..."
-docker compose -f docker-compose-sit.yml down || true
+docker compose -f $COMPOSE_FILE down || true
 
 # 5. 启动所有服务
 log_info "5. 启动 SIT 环境服务..."
-docker compose -f docker-compose-sit.yml up -d mysql redis recognizer web
+docker compose -f $COMPOSE_FILE up -d mysql redis recognizer web
 
 # 等待 MySQL 就绪
 log_info "   等待 MySQL 就绪..."
@@ -76,12 +83,12 @@ sleep 15
 
 # 6. 启动 Spring Boot
 log_info "6. 启动 Spring Boot 应用..."
-docker compose -f docker-compose-sit.yml up -d app
+docker compose -f $COMPOSE_FILE up -d app
 
 # 7. 查看服务状态
 log_info "7. 查看服务状态..."
 echo ""
-docker compose -f docker-compose-sit.yml ps
+docker compose -f $COMPOSE_FILE ps
 echo ""
 
 # 8. 健康检查
