@@ -4,6 +4,7 @@
   "setting": {
     "compileHotReLoad": true,
     "bigPackageSizeSupport": false,
-    "swcCompiler": false
+    "swcCompiler": false,
+    "urlCheck": false
   }
 }

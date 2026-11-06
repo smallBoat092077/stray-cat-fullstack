@@ -14,7 +14,7 @@
       class="cat-item card {{focusedCat && item.id === focusedCat.id ? 'cat-item-focused' : ''}}"
       wx:for="{{displayList}}"
       wx:key="id"
-      bindtap="goToDetail"
+      catchtap="goToDetail"
       data-id="{{item.id}}"
     >
       <image class="cat-img" src="{{item.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />

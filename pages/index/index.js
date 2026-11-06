@@ -146,6 +146,7 @@ Page({
   // 抽屉卡片：人气态弹 3D 卡，附近态仍进详情页
   onSheetCatTap(e) {
     const id = Number(e.currentTarget.dataset.id);
+    console.log('[map] onSheetCatTap id=', id, 'mode=', this.data.mode);
     if (this.data.mode !== 'popular') {
       wx.navigateTo({ url: `/pages/cat/detail?id=${id}` });
       return;
@@ -195,6 +196,7 @@ Page({
   },
 
   onCardDetail() {
+    console.log('[map] onCardDetail tap, selectedCat=', this.data.selectedCat);
     wx.navigateTo({ url: `/pages/cat/detail?id=${this.data.selectedCat.id}` });
   },
 

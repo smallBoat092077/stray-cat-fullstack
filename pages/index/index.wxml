@@ -26,12 +26,12 @@
       <text class="sheet-title" wx:else>人气猫咪 TOP{{popularCats.length}}</text>
       <text class="sheet-more" wx:if="{{mode === 'nearby'}}" bindtap="goToCatList">查看全部</text>
     </view>
-    <scroll-view scroll-x class="cat-scroll">
+    <scroll-view scroll-x enhance class="cat-scroll">
       <view
         class="cat-card"
         wx:for="{{mode === 'nearby' ? nearbyCats : popularCats}}"
         wx:key="id"
-        bindtap="onSheetCatTap"
+        catchtap="onSheetCatTap"
         data-id="{{item.id}}"
       >
         <view class="cat-avatar-wrap">

@@ -37,6 +37,7 @@ Page({
   },
 
   onLoad(options) {
+    console.log('[detail] onLoad, options=', options);
     if (options.id) {
       this.catId = Number(options.id);
       this.loadCatDetail(this.catId);

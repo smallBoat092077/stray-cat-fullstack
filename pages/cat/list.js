@@ -105,6 +105,7 @@ Page({
 
   goToDetail(e) {
     const id = e.currentTarget.dataset.id;
+    console.log('[list] goToDetail tap, id=', id, 'type=', typeof id);
     wx.navigateTo({ url: `/pages/cat/detail?id=${id}` });
   }
 });
