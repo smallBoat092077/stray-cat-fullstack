@@ -1,0 +1,148 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: stray-cat-server
+  
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.156.132:3306/stray_cat?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  
+  data:
+    redis:
+      host: 192.168.156.132
+      port: 6379
+      password: 123456
+      database: 0
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+          max-wait: 3000ms
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  type-aliases-package: com.straycat.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    com.straycat: debug
+    com.straycat.mapper: debug
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+file:
+  upload-path: ./uploads
+
+wechat:
+  # 密钥只从环境变量或本机/本机外的 config/application.yml 注入，不写进仓库
+  appid: ${WECHAT_APPID:}
+  secret: ${WECHAT_SECRET:}
+  msg-sec-check:
+    # enabled=false 只在本地联调时关掉；线上必须开着
+    enabled: false
+    # false：只有 suggest=risky 拦截，review 和接口异常放行并记日志
+    # true：review 与接口异常也拦截（提审前建议打开，避免检测接口挂了导致违规内容直接入库）
+    strict: false
+  # 订阅消息。模板 ID 在小程序后台「功能-订阅消息」申请后填进来，留空=只写站内消息、不调微信接口。
+  # 字段名约定见 util/NotifyTemplates（thing1 猫咪 / thing2 相关人 / time3 时间），
+  # 后台选的模板字段顺序对不上时改 NotifyTemplates，不要改调用点。
+  subscribe:
+    enabled: true
+    # trial 体验版 / formal 正式版 / developer 开发版；体验期填 trial，否则用户点进去打不开
+    state: ${WX_SUBSCRIBE_STATE:formal}
+    templates:
+      task-accepted: ${WX_TPL_TASK_ACCEPTED:}
+      record-approved: ${WX_TPL_RECORD_APPROVED:}
+      record-rejected: ${WX_TPL_RECORD_REJECTED:}
+      record-submitted: ${WX_TPL_RECORD_SUBMITTED:}
+      adoption-new: ${WX_TPL_ADOPTION_NEW:}
+      adoption-approved: ${WX_TPL_ADOPTION_APPROVED:}
+      adoption-rejected: ${WX_TPL_ADOPTION_REJECTED:}
+      follow-up-due: ${WX_TPL_FOLLOW_UP_DUE:}
+      record-pending: ${WX_TPL_RECORD_PENDING:}
+
+notify:
+  follow-up-reminder:
+    # 默认每天 10:10 扫描领养满 30/60/90 天的申请并提醒，线上可在 config/application.yml 覆盖 cron
+    # 重复执行靠站内消息判重，改时间点不会重发
+    enabled: true
+    cron: "0 10 10 * * *"
+
+# 腾讯位置服务 WebAPI（lbs.qq.com 申请）。key 只在服务端，由 /geo/route 代理调用，
+# 不下发进小程序包，也不用把 apis.map.qq.com 加进 request 合法域名。
+# 留空时 /geo/route 退化为两点直线（source=straight），导航页照常显示直线距离。
+tencent:
+  map:
+    key: ${TENCENT_MAP_KEY:}
+    # walking / driving / bicycling
+    mode: walking
+
+# 虚拟支付（道具直购）。app-key / push-token 只存在于服务端，用环境变量注入，不要写死进仓库。
+# product-id 与 price-fen 必须和小程序后台「虚拟支付 - 道具管理」里已发布的道具完全一致。
+xpay:
+  offer-id: ${XPAY_OFFER_ID:}
+  app-key: ${XPAY_APP_KEY:}
+  push-token: ${XPAY_PUSH_TOKEN:}
+  # 0 现网，1 沙箱（iOS 不支持沙箱）
+  env: 0
+  # 打开后每 5 分钟向微信查单，兜住消息推送丢包
+  reconcile-enabled: false
+  packs:
+    - code: tiny
+      product-id: catfood_5
+      coin-amount: 5
+      price-fen: 10
+      title: 5 份猫粮
+    - code: small
+      product-id: catfood_60
+      coin-amount: 60
+      price-fen: 100
+      title: 60 份猫粮
+    - code: medium
+      product-id: catfood_320
+      coin-amount: 320
+      price-fen: 500
+      title: 320 份猫粮
+    - code: large
+      product-id: catfood_680
+      coin-amount: 680
+      price-fen: 980
+      title: 680 份猫粮

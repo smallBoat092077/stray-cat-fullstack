@@ -1,0 +1,90 @@
+:root {
+  --brand: #14493c;
+  --paper: #f7f2e6;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background: #f3f4f1;
+  color: #23302b;
+}
+
+.page {
+  padding: 20px 24px 32px;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(20, 73, 60, 0.08);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #7b8a84;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--brand);
+  margin-top: 6px;
+}
+
+.cell-images {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cell-images img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.muted {
+  color: #98a5a0;
+}
+
+.pager {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
