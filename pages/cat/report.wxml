@@ -20,6 +20,13 @@
     </view>
 
     <view class="form-item">
+      <text class="form-label">品种</text>
+      <picker bindchange="onBreedChange" value="{{breedIndex}}" range="{{breedOptions}}">
+        <view class="form-value">{{breedOptions[breedIndex]}} ></view>
+      </picker>
+    </view>
+
+    <view class="form-item">
       <text class="form-label">毛色</text>
       <input class="form-input" placeholder="如: 橘白、黑色" bindinput="onColorInput" />
     </view>

@@ -4,6 +4,8 @@ Page({
   data: {
     genderIndex: 2,
     genderOptions: ['母', '公', '未知'],
+    breedIndex: 0,
+    breedOptions: ['未知', '短毛猫（中华田园猫）', '橘猫', '狸花猫', '黑白猫', '三花猫', '英短', '美短', '布偶', '暹罗', '波斯猫', '缅因猫', '异国短毛猫', '斯芬克斯（无毛猫）', '其他'],
     name: '', ageEstimate: '', color: '',
     locationDesc: '', personality: '', description: '',
     latitude: null, longitude: null, locationName: '',
@@ -18,6 +20,7 @@ Page({
   onPersonalityInput(e) { this.setData({ personality: e.detail.value }); },
   onDescInput(e) { this.setData({ description: e.detail.value }); },
   onGenderChange(e) { this.setData({ genderIndex: e.detail.value }); },
+  onBreedChange(e) { this.setData({ breedIndex: e.detail.value }); },
 
   chooseLocation() {
     wx.chooseLocation({
@@ -101,7 +104,7 @@ Page({
       const imageUrls = await this.uploadImages();
 
       await catApi.report({
-        name, gender: genderIndex, ageEstimate, color,
+        name, gender: genderIndex, ageEstimate, breed: this.data.breedOptions[this.data.breedIndex], color,
         lifeStatus: 0, locationDesc, personality, description,
         latitude, longitude,
         coverImage: imageUrls.length > 0 ? imageUrls[0] : null
