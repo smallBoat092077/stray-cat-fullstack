@@ -79,9 +79,9 @@ public class FeedingController {
                                 .catId(catId)
                                 .similarity(1.0)
                                 .catName(cat != null ? cat.getName() : null)
-                                .avatar(cat != null ? cat.getAvatar() : null)
-                                .originalLng(cat != null ? cat.getLongitude() : null)
-                                .originalLat(cat != null ? cat.getLatitude() : null)
+                                .avatar(cat != null ? cat.getCoverImage() : null)
+                                .originalLng(cat != null ? cat.getLongitude() != null ? cat.getLongitude().doubleValue() : null : null)
+                                .originalLat(cat != null ? cat.getLatitude() != null ? cat.getLatitude().doubleValue() : null : null)
                                 .needsManualConfirm(false)
                                 .build()))
                         .build());
@@ -105,9 +105,9 @@ public class FeedingController {
                     .catId(m.catId())
                     .similarity(similarity)
                     .catName(cat != null ? cat.getName() : null)
-                    .avatar(cat != null ? cat.getAvatar() : null)
-                    .originalLng(cat != null ? cat.getLongitude() : null)
-                    .originalLat(cat != null ? cat.getLatitude() : null)
+                    .avatar(cat != null ? cat.getCoverImage() : null)
+                    .originalLng(cat != null && cat.getLongitude() != null ? cat.getLongitude().doubleValue() : null)
+                    .originalLat(cat != null && cat.getLatitude() != null ? cat.getLatitude().doubleValue() : null)
                     .needsManualConfirm(needsManual)
                     .build();
         }).toList();
@@ -138,7 +138,7 @@ public class FeedingController {
         // 1. 先注册特征（关联 catId）
         Long featureId = recognizerClient.registerCat(photo, catId);
         if (featureId == null) {
-            return Result.fail("特征提取失败");
+            return Result.error("特征提取失败");
         }
 
         // 2. 执行打卡
