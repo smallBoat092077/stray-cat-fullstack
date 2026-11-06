@@ -1,5 +1,7 @@
-const { catApi, resolveImageUrl } = require('../../utils/api');
+const { catApi, posterApi, resolveImageUrl } = require('../../utils/api');
 const { LIFE_STATUS_MAP, GENDER_MAP } = require('../../utils/constants');
+
+const SEARCH_DEBOUNCE_MS = 350;
 
 Page({
   data: {
@@ -10,10 +12,17 @@ Page({
     pageNum: 1,
     pageSize: 10,
     hasMore: true,
-    loading: false
+    loading: false,
+    // 搜索
+    searchKeyword: '',
+    searchDisplayList: [],
+    // 海报轮播
+    posters: [],
+    currentSwiperIndex: 0
   },
 
   onLoad() {
+    this.loadPosters();
     this.loadCatList();
   },
 
@@ -27,16 +36,57 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.setData({ pageNum: 1, hasMore: true, catList: [], focusedCat: null });
+    this.setData({ pageNum: 1, hasMore: true, catList: [], focusedCat: null, searchKeyword: '' });
     this.loadCatList().then(() => wx.stopPullDownRefresh());
   },
 
   onReachBottom() {
-    if (this.data.hasMore && !this.data.loading) {
+    if (!this.data.searchKeyword && this.data.hasMore && !this.data.loading) {
       this.loadCatList();
     }
   },
 
+  // ---- 海报 ----
+  async loadPosters() {
+    try {
+      const list = await posterApi.getList();
+      const posters = (list || []).map(p => ({ ...p, imageUrl: resolveImageUrl(p.imageUrl) }));
+      this.setData({ posters });
+    } catch (err) {
+      console.error('加载海报失败:', err);
+    }
+  },
+
+  onSwiperChange(e) {
+    this.setData({ currentSwiperIndex: e.detail.current });
+  },
+
+  // ---- 搜索 ----
+  onSearchInput(e) {
+    const keyword = e.detail.value.trim();
+    clearTimeout(this._searchTimer);
+    this._searchTimer = setTimeout(() => {
+      this.performSearch(keyword);
+    }, SEARCH_DEBOUNCE_MS);
+  },
+
+  onSearchClear() {
+    this.setData({ searchKeyword: '' });
+    this.performSearch('');
+  },
+
+  performSearch(keyword) {
+    this.setData({
+      searchKeyword: keyword,
+      pageNum: 1,
+      hasMore: true,
+      catList: [],
+      focusedCat: null
+    });
+    this.loadCatList(keyword);
+  },
+
+  // ---- 猫咪列表 ----
   decorate(cat) {
     return {
       ...cat,
@@ -47,12 +97,12 @@ Page({
     };
   },
 
-  // 置顶项与分页列表分开存，避免 onShow 的置顶被下一页 setData 冲掉
   refreshDisplay() {
     const focus = this.data.focusedCat;
+    const source = this.data.searchKeyword ? this.data.catList : this.data.catList;
     const rest = focus
-      ? this.data.catList.filter(cat => cat.id !== focus.id)
-      : this.data.catList;
+      ? source.filter(cat => cat.id !== focus.id)
+      : source;
     this.setData({ displayList: focus ? [focus, ...rest] : rest });
   },
 
@@ -66,7 +116,7 @@ Page({
     }
   },
 
-  async loadCatList() {
+  async loadCatList(keyword) {
     this.setData({ loading: true });
     try {
       const params = {
@@ -75,6 +125,9 @@ Page({
       };
       if (this.data.currentStatus !== '') {
         params.lifeStatus = this.data.currentStatus;
+      }
+      if (keyword || this.data.searchKeyword) {
+        params.keyword = keyword || this.data.searchKeyword;
       }
       const result = await catApi.getList(params);
       const cats = (result.records || []).map(cat => this.decorate(cat));
@@ -100,7 +153,7 @@ Page({
       catList: [],
       focusedCat: null
     });
-    this.loadCatList();
+    this.loadCatList(this.data.searchKeyword);
   },
 
   goToDetail(e) {

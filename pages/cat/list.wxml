@@ -1,4 +1,38 @@
 <view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索名称 / 品种 / 毛色"
+        placeholder-class="search-placeholder"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+      />
+      <text class="search-clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">×</text>
+    </view>
+  </view>
+
+  <!-- 海报轮播 -->
+  <swiper
+    class="poster-swiper"
+    indicator-dots
+    autoplay
+    circular
+    interval="4000"
+    indicator-active-color="#C3A15F"
+    indicator-color="rgba(255,253,247,0.5)"
+    bindchange="onSwiperChange"
+    wx:if="{{posters.length > 0}}"
+  >
+    <swiper-item wx:for="{{posters}}" wx:key="id">
+      <image class="poster-img" src="{{item.imageUrl}}" mode="aspectFill" />
+    </swiper-item>
+  </swiper>
+
   <!-- 筛选栏 -->
   <view class="filter-bar">
     <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onStatusFilter" data-status="">全部</view>
@@ -41,11 +75,11 @@
 
   <!-- 空状态 -->
   <view class="empty" wx:if="{{!loading && displayList.length === 0}}">
-    <text class="empty-icon"></text>
-    <text>暂无猫咪数据</text>
+    <text class="empty-icon">🐱</text>
+    <text>{{searchKeyword ? '没有匹配的猫咪' : '暂无猫咪数据'}}</text>
   </view>
 
-  <!-- 加载更多 -->
+  <!-- 加载中 -->
   <view class="loading" wx:if="{{loading}}">
     <text>加载中...</text>
   </view>

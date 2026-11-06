@@ -45,6 +45,11 @@ const catApi = {
   update: (id, data) => request({ url: `/cat/${id}`, method: 'PUT', data })
 };
 
+// 海报相关
+const posterApi = {
+  getList: () => request({ url: '/poster/list' })
+};
+
 // 路线规划（服务端代理腾讯位置服务，key 不落在小程序包里）
 const geoApi = {
   getRoute: (catId, fromLatitude, fromLongitude) =>
@@ -183,6 +188,7 @@ module.exports = {
   tipApi,
   rechargeApi,
   messageApi,
+  posterApi,
   uploadFile: (filePath) => {
     return new Promise((resolve, reject) => {
       wx.uploadFile({
