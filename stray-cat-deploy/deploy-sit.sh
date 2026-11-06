@@ -57,18 +57,18 @@ fi
 
 # 3. 构建 Docker 镜像
 log_info "3. 构建 Docker 镜像..."
-docker-compose -f docker-compose-sit.yml build recognizer || {
+docker compose -f docker-compose-sit.yml build recognizer || {
     log_error "Recognizer 镜像构建失败"
     exit 1
 }
 
 # 4. 停止旧容器
 log_info "4. 停止旧容器..."
-docker-compose -f docker-compose-sit.yml down || true
+docker compose -f docker-compose-sit.yml down || true
 
 # 5. 启动所有服务
 log_info "5. 启动 SIT 环境服务..."
-docker-compose -f docker-compose-sit.yml up -d mysql redis recognizer web
+docker compose -f docker-compose-sit.yml up -d mysql redis recognizer web
 
 # 等待 MySQL 就绪
 log_info "   等待 MySQL 就绪..."
@@ -76,12 +76,12 @@ sleep 15
 
 # 6. 启动 Spring Boot
 log_info "6. 启动 Spring Boot 应用..."
-docker-compose -f docker-compose-sit.yml up -d app
+docker compose -f docker-compose-sit.yml up -d app
 
 # 7. 查看服务状态
 log_info "7. 查看服务状态..."
 echo ""
-docker-compose -f docker-compose-sit.yml ps
+docker compose -f docker-compose-sit.yml ps
 echo ""
 
 # 8. 健康检查
@@ -127,14 +127,14 @@ echo "  - MySQL:     47.97.253.32:3307 (容器内 3306)"
 echo "  - Redis:     47.97.253.32:6380 (容器内 6379)"
 echo ""
 log_info "查看日志："
-echo "  docker-compose -f docker-compose-sit.yml logs -f app         # Spring Boot"
-echo "  docker-compose -f docker-compose-sit.yml logs -f recognizer  # Python 识别"
-echo "  docker-compose -f docker-compose-sit.yml logs -f web         # Nginx"
+echo "  docker compose -f docker-compose-sit.yml logs -f app         # Spring Boot"
+echo "  docker compose -f docker-compose-sit.yml logs -f recognizer  # Python 识别"
+echo "  docker compose -f docker-compose-sit.yml logs -f web         # Nginx"
 echo ""
 log_info "重启服务："
-echo "  docker-compose -f docker-compose-sit.yml restart app"
-echo "  docker-compose -f docker-compose-sit.yml restart recognizer"
+echo "  docker compose -f docker-compose-sit.yml restart app"
+echo "  docker compose -f docker-compose-sit.yml restart recognizer"
 echo ""
 log_info "停止 SIT 环境："
-echo "  docker-compose -f docker-compose-sit.yml down"
+echo "  docker compose -f docker-compose-sit.yml down"
 echo ""
