@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="doc-title">隐私政策与服务协议</view>
+  <view class="doc-updated">最近更新：2026 年 10 月 24 日</view>
+
+  <view class="section card">
+    <view class="section-title">一、我们收集哪些信息</view>
+    <view class="para">1. 位置信息：在你主动使用「附近猫咪」「投喂打卡」「上报流浪猫」时，通过微信授权获取一次当前位置，仅用于计算距离和标注投喂点，不做轨迹追踪。</view>
+    <view class="para">2. 相册（照片）：仅在你主动上报猫咪或上传投喂照片时读取你选中的图片，不会批量读取相册。</view>
+    <view class="para">3. 账号信息：微信登录仅获取 openid 用于识别你的账号；如使用账号密码登录，我们存储用户名和不可逆的密码哈希。</view>
+    <view class="para">4. 你填写的资料：昵称、头像、领养申请表中的联系方式，用于志愿者与你取得联系。</view>
+  </view>
+
+  <view class="section card">
+    <view class="section-title">二、信息如何使用与保存</view>
+    <view class="para">上述信息仅用于本小程序的猫咪档案、投喂任务派发、领养审核与回访功能，保存在我们自己的服务器中，不用于广告推送，不会出售给任何第三方。</view>
+    <view class="para">位置坐标会公开展示在猫咪档案中，作为投喂点指引；如不希望公开，请勿上报该地点。</view>
+    <view class="para">你提交的文本内容（昵称、打赏留言、猫咪描述、领养申请与回访记录）会连同你的 openid 一并发送到微信官方的内容安全接口做违规检测，用于拦截违法、色情、营销等垃圾信息；检测本身不保存内容，命中违规时该条信息不会入库。</view>
+    <view class="para">请不要在上面这些输入框里填写他人身份证号、手机号、住址等敏感信息，也不要发布募捐或交易广告。</view>
+  </view>
+
+  <view class="section card">
+    <view class="section-title">三、关于「猫粮」</view>
+    <view class="para">「猫粮」是本小程序内的虚拟道具，可通过签到、上报流浪猫、完成投喂打卡、提交领养回访等行为免费获得，也可购买「猫粮礼包」获得，用于表达对某只猫咪的关心。</view>
+    <view class="para">猫粮仅能在本小程序内用于向猫咪送猫粮，不可兑换现金、不可转让、不可提现，也不构成任何捐赠票据或赠与承诺。实际猫粮由志愿者自行采购，投喂记录在对应任务下公开可查。</view>
+  </view>
+
+  <view class="section card">
+    <view class="section-title">四、购买、发票与退款</view>
+    <view class="para">1. 猫粮礼包属于虚拟道具，通过微信虚拟支付完成购买，价格在页面上明码标示。购买需使用微信登录，仅用账号密码注册的账号无法购买。</view>
+    <view class="para">2. 虚拟道具一经到账即视为已交付并完成使用，不支持七天无理由退货。</view>
+    <view class="para">3. 如出现重复扣款、支付成功但未到账等情况，可通过微信公众平台该小程序的客服与反馈入口提交订单号，我们核实后按微信退款流程处理；退款完成后，对应礼包的猫粮将从你的余额中回收，余额不足时以实际可回收数量为限。</view>
+    <view class="para">4. 本小程序不提供线下发票；如需交易凭证，可凭订单号与支付记录向客服查询。</view>
+    <view class="para">5. 未成年人需在监护人同意并指导下购买。监护人如发现未经同意的消费，可联系客服核实处理。</view>
+    <view class="para">6. 为履行交易对账义务，充值订单号、微信订单号、金额与时间会依法保留。</view>
+  </view>
+
+  <view class="section card">
+    <view class="section-title">五、你的权利</view>
+    <view class="para">你可以在「我的」页面查看自己的信息，或随时注销账号。注销后我们会立即清除你的 openid、用户名、密码、昵称、头像、联系方式等可识别信息，仅保留无法关联到个人的投喂与打赏数量统计，以及上条所述的交易对账记录。</view>
+  </view>
+
+  <view class="section card">
+    <view class="section-title">六、联系我们</view>
+    <view class="para">如对个人信息处理、购买与退款有疑问，或希望更正、删除你的信息，可通过微信公众平台该小程序的客服与反馈入口联系我们，我们会在 15 个工作日内答复。</view>
+  </view>
+</view>

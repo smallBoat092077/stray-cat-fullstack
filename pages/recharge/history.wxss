@@ -1,0 +1,69 @@
+.container {
+  padding: 24rpx;
+}
+
+.item {
+  margin-bottom: 20rpx;
+  padding: 26rpx 24rpx;
+}
+
+.item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.item-title {
+  font-size: 30rpx;
+  color: var(--ink);
+  font-family: "Songti SC", serif;
+  letter-spacing: 1rpx;
+}
+
+.item-amount {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--gold-deep);
+}
+
+.item-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14rpx;
+}
+
+.item-time {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.item-status {
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.item-status.status-2 {
+  color: var(--brand);
+}
+
+.item-status.status-3,
+.item-status.status-4 {
+  color: var(--brick);
+}
+
+.empty {
+  margin-top: 20rpx;
+  padding: 60rpx 32rpx;
+  text-align: center;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: var(--ink-mute);
+}
+
+.loadmore {
+  padding: 32rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}

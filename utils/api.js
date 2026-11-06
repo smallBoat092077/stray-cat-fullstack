@@ -63,6 +63,59 @@ const feedingApi = {
         + `&images=${encodeURIComponent(images || '')}`,
       method: 'POST'
     }),
+  // 拍照识别猫咪
+  recognizeCat: (photoPath, catId) => {
+    return new Promise((resolve, reject) => {
+      const url = `${app.globalData.baseUrl}/feeding/recognize`
+        + (catId ? `?catId=${catId}` : '');
+      wx.uploadFile({
+        url,
+        filePath: photoPath,
+        name: 'photo',
+        header: {
+          'Authorization': app.globalData.token ? `Bearer ${app.globalData.token}` : '',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        success: (res) => {
+          const data = JSON.parse(res.data);
+          if (data.code === 200) {
+            resolve(data.data);
+          } else {
+            reject(new Error(data.message || '识别失败'));
+          }
+        },
+        fail: reject
+      });
+    });
+  },
+  // 带识别的打卡
+  checkinWithRecognize: (taskId, photoPath, catId, latitude, longitude, address, portions, remark) => {
+    return new Promise((resolve, reject) => {
+      const url = `${app.globalData.baseUrl}/feeding/checkin-with-recognize`
+        + `?taskId=${taskId}&catId=${catId}&latitude=${latitude}&longitude=${longitude}`
+        + (address ? `&address=${encodeURIComponent(address)}` : '')
+        + (portions ? `&portions=${portions}` : '')
+        + (remark ? `&remark=${encodeURIComponent(remark)}` : '');
+      wx.uploadFile({
+        url,
+        filePath: photoPath,
+        name: 'photo',
+        header: {
+          'Authorization': app.globalData.token ? `Bearer ${app.globalData.token}` : '',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        success: (res) => {
+          const data = JSON.parse(res.data);
+          if (data.code === 200) {
+            resolve(data.data);
+          } else {
+            reject(new Error(data.message || '打卡失败'));
+          }
+        },
+        fail: reject
+      });
+    });
+  },
   getTaskList: (params) => request({ url: '/feeding/task/list', data: params }),
   getTaskDetail: (id) => request({ url: `/feeding/task/${id}` }),
   listRecordsByCat: (catId) => request({ url: `/feeding/record/cat/${catId}` }),

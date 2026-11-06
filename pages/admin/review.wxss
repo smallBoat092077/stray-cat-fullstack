@@ -1,0 +1,102 @@
+.scope-row {
+  display: flex;
+  margin-bottom: 24rpx;
+}
+
+.scope {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  padding: 8rpx 28rpx;
+  margin-right: 16rpx;
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 999rpx;
+  background: var(--paper);
+}
+
+.scope.active {
+  color: var(--paper);
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.review-item {
+  padding: 24rpx;
+}
+
+.item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.item-title {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.row {
+  display: flex;
+  padding: 12rpx 0;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.label {
+  width: 160rpx;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+}
+
+.value {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.phone {
+  color: var(--brand);
+  text-decoration: underline;
+  margin-right: 12rpx;
+}
+
+.imgs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  margin: 0 16rpx 16rpx 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20rpx;
+}
+
+.act-btn {
+  min-width: 160rpx;
+  padding: 14rpx 0;
+  margin-left: 20rpx;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.act-btn.ghost {
+  color: var(--brick);
+  border: 1rpx solid var(--brick);
+}
+
+.act-btn.solid {
+  color: var(--paper);
+  background: var(--brand);
+}
