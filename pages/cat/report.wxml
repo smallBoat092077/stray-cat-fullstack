@@ -25,6 +25,20 @@
     </view>
 
     <view class="form-item">
+      <text class="form-label">地图定位 <text class="required">必填</text></text>
+      <view class="location-picker" bindtap="chooseLocation">
+        <view class="location-content">
+          <text class="location-icon">📍</text>
+          <view class="location-text">
+            <text class="location-name">{{locationName || '点击选择猫咪出没位置'}}</text>
+            <text class="location-coord" wx:if="{{latitude}}">({{latitude}}, {{longitude}})</text>
+          </view>
+        </view>
+        <text class="location-arrow">></text>
+      </view>
+    </view>
+
+    <view class="form-item">
       <text class="form-label">位置描述</text>
       <input class="form-input" placeholder="猫咪经常出没的位置" bindinput="onLocationInput" />
     </view>
@@ -39,8 +53,24 @@
       <textarea class="form-textarea" placeholder="补充说明猫咪的情况" bindinput="onDescInput" />
     </view>
 
-    <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onSubmit">
-      提交上报
+    <view class="form-item">
+      <text class="form-label">猫咪照片（最多3张）</text>
+      <view class="image-upload-area">
+        <view class="image-list">
+          <view class="image-item" wx:for="{{images}}" wx:key="index">
+            <image src="{{item}}" mode="aspectFill" />
+            <view class="image-remove" data-index="{{index}}" bindtap="removeImage">×</view>
+          </view>
+          <view class="image-add" bindtap="chooseImage" wx:if="{{images.length < 3}}">
+            <text class="add-icon">+</text>
+            <text class="add-text">添加照片</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onSubmit" disabled="{{uploading}}">
+      {{uploading ? '提交中...' : '提交上报'}}
     </button>
   </view>
 </view>

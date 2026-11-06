@@ -1,8 +1,10 @@
-.container { padding: 0; }
+.container {
+  padding: 0 0 180rpx;
+}
 
 .cat-swiper {
   width: 100%;
-  height: 500rpx;
+  height: 520rpx;
 }
 
 .swiper-img {
@@ -10,61 +12,424 @@
   height: 100%;
 }
 
-.card { margin: 20rpx; padding: 24rpx; }
+.card { margin: 24rpx; padding: 32rpx; }
 
 .info-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16rpx;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid var(--gold-mist);
 }
 
 .info-name {
-  font-size: 40rpx;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 44rpx;
   font-weight: 600;
-  color: #333;
+  letter-spacing: 4rpx;
+  color: var(--brand);
 }
 
 .info-row {
   font-size: 26rpx;
-  color: #666;
-  margin-bottom: 12rpx;
+  color: var(--ink-soft);
+  margin-bottom: 14rpx;
+  letter-spacing: 1rpx;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.locate-link {
+  font-size: 24rpx;
+  color: var(--gold-deep);
 }
 
 .health-tags {
-  margin-top: 16rpx;
+  margin-top: 20rpx;
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
 }
 
-.section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-  display: block;
-  margin-bottom: 16rpx;
-}
-
-.section-content {
-  font-size: 26rpx;
-  color: #666;
-  line-height: 1.6;
-}
-
 .action-bar {
   display: flex;
   gap: 20rpx;
-  padding: 20rpx;
-  background: #fff;
+  padding: 20rpx 24rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-top: 1rpx solid var(--gold-mist);
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  box-shadow: 0 -2rpx 8rpx rgba(0,0,0,0.05);
+  box-shadow: 0 -4rpx 20rpx rgba(20, 73, 60, 0.08);
 }
 
 .action-bar button {
   flex: 1;
   font-size: 28rpx;
+  padding: 20rpx 0;
+}
+
+.coin-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.coin-total {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--gold-deep);
+}
+
+.supporter {
+  margin-top: 18rpx;
+}
+
+.supporter-line {
+  display: flex;
+  align-items: baseline;
+}
+
+.supporter-time {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.supporter-name {
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--ink);
+}
+
+.supporter-msg {
+  flex: 1;
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.supporter-coin {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  font-size: 26rpx;
+  color: var(--brand);
+}
+
+.supporter-empty {
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.feed-item {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.feed-head {
+  display: flex;
+  align-items: baseline;
+}
+
+.feed-name {
+  font-size: 26rpx;
+  color: var(--ink);
+}
+
+.feed-time {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.feed-meta {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+.feed-imgs {
+  display: flex;
+  margin-top: 16rpx;
+}
+
+.feed-img {
+  width: 180rpx;
+  height: 180rpx;
+  margin-right: 16rpx;
+  border-radius: 10rpx;
+  background: var(--cream);
+}
+
+.cat-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.cat-stat {
+  font-size: 26rpx;
+  color: var(--ink-mute);
+}
+
+.like-btn {
+  padding: 8rpx 28rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid var(--gold-mist);
+}
+
+.like-btn.liked {
+  color: var(--brick);
+  border-color: var(--brick);
+  background: rgba(168, 69, 59, 0.06);
+}
+
+/* ---------- 评论入口与半屏面板 ---------- */
+.comment-entry {
+  padding: 8rpx 28rpx;
+  border-radius: 999rpx;
+  background: var(--pill-mint);
+  color: var(--brand);
+}
+
+.cat-stat-hover {
+  opacity: 0.7;
+}
+
+.cmt-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(12, 51, 41, 0.42);
+  opacity: 0;
+  /* 键盘高度由 JS 写成 padding-bottom，和淡入一起做过渡；
+     顶部留安全区，键盘弹起后面板被压矮时标题才不会钻到状态栏底下 */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
+  transition: opacity 0.24s ease, padding-bottom 0.2s ease;
+}
+
+.cmt-mask.show {
+  opacity: 1;
+}
+
+/* 键盘弹起时遮罩底部被垫高，max-height 让面板跟着变矮，
+   否则整块上移会把「评论 N」标题和关闭按钮顶出屏幕 */
+.cmt-panel {
+  width: 100%;
+  height: 72vh;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.98) 0%, #F4EFE1 100%);
+  border-radius: 32rpx 32rpx 0 0;
+  box-shadow: 0 -8rpx 28rpx rgba(20, 73, 60, 0.18);
+}
+
+.cmt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 30rpx 16rpx;
+  border-bottom: 1rpx solid var(--gold-mist);
+}
+
+.cmt-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  color: var(--brand);
+}
+
+.cmt-close {
+  width: 48rpx;
+  text-align: right;
+  font-size: 40rpx;
+  color: var(--ink-mute);
+}
+
+.cmt-list {
+  flex: 1;
+  overflow: hidden;
+  padding: 8rpx 30rpx 16rpx;
+}
+
+.cmt-empty,
+.cmt-loading {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+}
+
+.cmt-item {
+  display: flex;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid rgba(195, 161, 95, 0.14);
+}
+
+.cmt-avatar {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  margin-right: 18rpx;
+  flex-shrink: 0;
+  background: var(--cream);
+}
+
+.cmt-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.cmt-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6rpx;
+}
+
+.cmt-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.cmt-time {
+  font-size: 20rpx;
+  color: var(--ink-mute);
+}
+
+.cmt-content {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.cmt-replies {
+  margin-top: 12rpx;
+  padding: 14rpx 18rpx;
+  background: rgba(215, 234, 220, 0.42);
+  border-radius: 12rpx;
+}
+
+.cmt-reply {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.cmt-reply-line {
+  flex: 1;
+  word-break: break-all;
+}
+
+.cmt-reply-name {
+  color: var(--brand-soft);
+}
+
+.cmt-reply-to {
+  color: var(--gold-deep);
+}
+
+.cmt-reply-del {
+  padding: 0 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.cmt-more {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--gold-deep);
+}
+
+.cmt-tools {
+  display: flex;
+  margin-top: 10rpx;
+}
+
+.cmt-tool {
+  margin-right: 28rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.cmt-tool.danger {
+  color: var(--brick);
+}
+
+.cmt-foot {
+  padding: 18rpx 0 8rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.cmt-input-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--gold-mist);
+  background: rgba(255, 253, 247, 0.96);
+}
+
+.cmt-input {
+  flex: 1;
+  height: 68rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  font-size: 26rpx;
+  color: var(--ink);
+}
+
+.cmt-placeholder {
+  color: var(--ink-mute);
+}
+
+.cmt-send {
+  width: 120rpx;
+  height: 68rpx;
+  margin-left: 16rpx;
+  line-height: 68rpx;
+  text-align: center;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+  background: var(--cream);
+}
+
+.cmt-send.active {
+  color: #F7F2E6;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
 }

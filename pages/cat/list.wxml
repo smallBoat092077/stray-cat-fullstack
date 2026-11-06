@@ -11,8 +11,8 @@
   <!-- 猫咪列表 -->
   <view class="cat-list">
     <view
-      class="cat-item card"
-      wx:for="{{catList}}"
+      class="cat-item card {{focusedCat && item.id === focusedCat.id ? 'cat-item-focused' : ''}}"
+      wx:for="{{displayList}}"
       wx:key="id"
       bindtap="goToDetail"
       data-id="{{item.id}}"
@@ -23,6 +23,7 @@
           <text class="cat-name">{{item.name}}</text>
           <text class="tag tag-{{item.lifeStatusClass}}">{{item.lifeStatusText}}</text>
         </view>
+        <view class="focus-hint" wx:if="{{focusedCat && item.id === focusedCat.id}}">刚在地图上选中</view>
         <view class="cat-detail">
           <text>{{item.genderText}} · {{item.ageEstimate}} · {{item.color}}</text>
         </view>
@@ -39,7 +40,7 @@
   </view>
 
   <!-- 空状态 -->
-  <view class="empty" wx:if="{{!loading && catList.length === 0}}">
+  <view class="empty" wx:if="{{!loading && displayList.length === 0}}">
     <text class="empty-icon"></text>
     <text>暂无猫咪数据</text>
   </view>
@@ -48,7 +49,7 @@
   <view class="loading" wx:if="{{loading}}">
     <text>加载中...</text>
   </view>
-  <view class="loading" wx:if="{{!hasMore && catList.length > 0}}">
+  <view class="loading" wx:if="{{!hasMore && displayList.length > 0}}">
     <text>没有更多了</text>
   </view>
 </view>

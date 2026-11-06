@@ -1,64 +1,70 @@
-.container { padding: 20rpx; }
+.container { padding: 24rpx; }
 
-.filter-bar {
-  display: flex;
-  background: #fff;
-  border-radius: 12rpx;
-  padding: 16rpx;
-  margin-bottom: 20rpx;
+.filter-item { flex-shrink: 0; }
+
+.filter-mine { border-left: 1rpx solid var(--gold-mist); }
+
+.task-volunteer {
+  font-size: 24rpx;
+  color: var(--brand-soft);
+  margin-bottom: 10rpx;
 }
 
-.filter-item {
-  padding: 12rpx 28rpx;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-  color: #666;
-  margin-right: 12rpx;
-  background: #f5f5f5;
+.task-hint {
+  font-size: 24rpx;
+  color: var(--gold-deep);
 }
 
-.filter-item.active {
-  background: #FF6B6B;
-  color: #fff;
-}
-
-.task-item { padding: 24rpx; }
+.task-item { padding: 28rpx; }
 
 .task-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16rpx;
+  margin-bottom: 18rpx;
 }
 
 .task-type {
-  font-size: 30rpx;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
   font-weight: 600;
-  color: #333;
+  letter-spacing: 2rpx;
+  color: var(--brand);
 }
 
 .task-cat, .task-info {
   font-size: 26rpx;
-  color: #666;
-  margin-bottom: 8rpx;
+  color: var(--ink-soft);
+  margin-bottom: 10rpx;
 }
 
 .task-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 16rpx;
-  padding-top: 16rpx;
-  border-top: 1rpx solid #f0f0f0;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--gold-mist);
 }
 
 .task-time {
   font-size: 22rpx;
-  color: #999;
+  color: var(--ink-mute);
 }
 
-.btn-small {
-  padding: 12rpx 32rpx;
-  font-size: 26rpx;
-  border-radius: 30rpx;
+.btn-accept {
+  flex-shrink: 0;
+  padding: 8rpx 28rpx;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  line-height: 1.5;
+  color: var(--brand);
+  background: rgba(20, 73, 60, 0.06);
+  border: 1rpx solid rgba(20, 73, 60, 0.32);
+  border-radius: 999rpx;
+}
+
+.btn-accept:active {
+  background: var(--brand);
+  color: #F7F2E6;
 }

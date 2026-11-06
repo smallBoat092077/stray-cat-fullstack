@@ -3,25 +3,35 @@
     "pages/index/index",
     "pages/cat/list",
     "pages/cat/detail",
+    "pages/cat/navigate",
     "pages/feeding/list",
     "pages/feeding/detail",
+    "pages/feeding/records",
     "pages/adoption/list",
     "pages/adoption/apply",
     "pages/cat/report",
+    "pages/login/index",
+    "pages/tip/create",
+    "pages/tip/list",
+    "pages/recharge/index",
+    "pages/recharge/history",
+    "pages/admin/review",
+    "pages/message/index",
+    "pages/privacy/index",
     "pages/profile/index"
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FF6B6B",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#E3EFDE",
     "navigationBarTitleText": "流浪猫喂养",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f5f5"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#E3EFDE"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#FF6B6B",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "color": "#9E9B90",
+    "selectedColor": "#14493C",
+    "backgroundColor": "#FFFDF7",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -50,9 +60,14 @@
     ]
   },
   "sitemapLocation": "sitemap.json",
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
   "permission": {
     "scope.userLocation": {
       "desc": "你的位置信息将用于查找附近的流浪猫和投喂点"
     }
-  }
+  },
+  "lazyCodeLoading": "requiredComponents" 
 }

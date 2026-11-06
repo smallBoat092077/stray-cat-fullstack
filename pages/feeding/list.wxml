@@ -2,9 +2,11 @@
   <!-- 筛选 -->
   <view class="filter-bar">
     <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onFilter" data-status="">全部</view>
-    <view class="filter-item {{currentStatus === 0 ? 'active' : ''}}" bindtap="onFilter" data-status="0">待接单</view>
-    <view class="filter-item {{currentStatus === 1 ? 'active' : ''}}" bindtap="onFilter" data-status="1">已接单</view>
-    <view class="filter-item {{currentStatus === 3 ? 'active' : ''}}" bindtap="onFilter" data-status="3">已完成</view>
+    <view class="filter-item {{currentStatus === '0' ? 'active' : ''}}" bindtap="onFilter" data-status="0">待接单</view>
+    <view class="filter-item {{currentStatus === '1' ? 'active' : ''}}" bindtap="onFilter" data-status="1">已接单</view>
+    <view class="filter-item {{currentStatus === '2' ? 'active' : ''}}" bindtap="onFilter" data-status="2">已投喂</view>
+    <view class="filter-item {{currentStatus === '3' ? 'active' : ''}}" bindtap="onFilter" data-status="3">已完成</view>
+    <view class="filter-item filter-mine {{onlyMine ? 'active' : ''}}" bindtap="onToggleMine">我发起的</view>
   </view>
 
   <!-- 任务列表 -->
@@ -12,6 +14,7 @@
     <view class="task-item card" wx:for="{{taskList}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
       <view class="task-header">
         <text class="task-type">{{item.taskTypeText}}</text>
+        <text class="tag tag-warning" wx:if="{{item.tipId}}">打赏委托</text>
         <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
       </view>
       <view class="task-cat">
@@ -21,13 +24,13 @@
         <text>📍 {{item.locationDesc}}</text>
       </view>
       <view class="task-info" wx:if="{{item.amount}}">
-        <text>💰 打赏金额: ¥{{item.amount}}</text>
+        <text>认捐猫粮: {{item.amount}} 份</text>
       </view>
+      <view class="task-volunteer" wx:if="{{item.volunteerText}}">{{item.volunteerText}}</view>
+      <view class="task-hint" wx:if="{{item.status === 2}}">志愿者已打卡，等待管理员审核</view>
       <view class="task-footer">
-        <text class="task-time">{{item.createdAt}}</text>
-        <button class="btn-small btn-primary" wx:if="{{item.status === 0}}" catchtap="onAccept" data-id="{{item.id}}">
-          接单
-        </button>
+        <text class="task-time">{{item.createdText}}</text>
+        <view class="btn-accept" wx:if="{{item.status === 0}}" catchtap="onAccept" data-id="{{item.id}}">接单</view>
       </view>
     </view>
   </view>

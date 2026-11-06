@@ -32,20 +32,26 @@
     "packNpmRelationList": [],
     "minifyWXSS": true,
     "showES6CompileOption": false,
+    "swcCompiler": false,
     "minifyWXML": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "condition": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.17.5",
-  "appid": "touristappid",
+  "appid": "wx3f05ea02cf194e9a",
   "projectname": "stray-cat-miniapp",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "simulatorPluginLibVersion": {
+    "wxext14566970e7e9f62": "2.27.3"
+  },
+  "projectArchitecture": "multiPlatform"
 }
