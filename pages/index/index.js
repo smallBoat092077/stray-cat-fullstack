@@ -28,7 +28,7 @@ Page({
     this.getLocation();
   },
 
-  // 获取位置
+  // 获取位置，失败时引导用户开启定位权限
   getLocation() {
     wx.getLocation({
       type: 'gcj02',
@@ -39,9 +39,24 @@ Page({
         });
         this.loadNearbyCats();
       },
-      fail: () => {
-        // 默认上海位置
-        this.loadNearbyCats();
+      fail: (err) => {
+        const msg = (err && err.errMsg) || '';
+        // 用户已明确拒绝过权限 → 弹窗引导去设置页打开
+        if (msg.includes('auth deny') || msg.includes('authorize')) {
+          wx.showModal({
+            title: '需要您的位置权限',
+            content: '请允许访问您的位置以查看附近的流浪猫',
+            confirmText: '去设置',
+            cancelText: '暂不',
+            success: (r) => {
+              if (r.confirm) wx.openSetting();
+            }
+          });
+        } else {
+          // 首次调用被系统拦截（未弹出对话框等），静默回退上海坐标
+          console.warn('[location] 获取位置失败，使用默认坐标:', msg);
+          this.loadNearbyCats();
+        }
       }
     });
   },
