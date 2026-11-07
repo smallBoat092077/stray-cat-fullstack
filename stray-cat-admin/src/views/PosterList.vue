@@ -28,7 +28,7 @@
     <div class="poster-grid">
       <el-empty v-if="!loading && posters.length === 0" description="暂无海报" />
       <div v-for="poster in sortedPosters" :key="poster.id" class="poster-card">
-        <img :src="baseUrl + poster.imageUrl" class="poster-img" alt="海报" />
+        <img :src="POSTERS_BASE_URL + poster.imageUrl" class="poster-img" alt="海报" />
         <div class="poster-actions">
           <span class="muted">#{{ poster.sortOrder }}</span>
           <el-button size="small" type="danger" @click="onDelete(poster)">删除</el-button>
