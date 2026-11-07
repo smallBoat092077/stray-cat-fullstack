@@ -43,7 +43,7 @@ import { computed, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { posterApi } from '../api';
 
-const POSTERS_BASE_URL = 'https://straycat.fun';
+const POSTERS_BASE_URL = '';
 
 const posters = ref([]);
 const loading = ref(false);
