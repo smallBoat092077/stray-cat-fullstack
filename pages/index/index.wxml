@@ -104,7 +104,7 @@
             wx:if="{{selectedCat.lifeStatus === 2}}"
             bindtap="onCardAdopt"
           >我要领养</view>
-          <view class="card3d-btn solid" hover-class="card3d-btn-hover" bindtap="onCardTip">打赏猫粮</view>
+          <view class="card3d-btn solid" hover-class="card3d-btn-hover" bindtap="onCardTip">送猫粮</view>
         </view>
       </view>
     </view>

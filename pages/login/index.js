@@ -29,6 +29,10 @@ Page({
     this.setData({ password: e.detail.value });
   },
 
+  onBack() {
+    wx.navigateBack();
+  },
+
   onSubmit() {
     const { mode, username, password, agreed } = this.data;
 

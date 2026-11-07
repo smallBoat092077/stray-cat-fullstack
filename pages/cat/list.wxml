@@ -59,7 +59,7 @@
         </view>
         <view class="focus-hint" wx:if="{{focusedCat && item.id === focusedCat.id}}">刚在地图上选中</view>
         <view class="cat-detail">
-          <text>{{item.genderText}} · {{item.ageEstimate}} · {{item.color}}</text>
+          <text>{{item.genderText}} · {{item.ageEstimate}} · {{item.color}}<text wx:if="{{item.breed}}"> · {{item.breed}}</text></text>
         </view>
         <view class="cat-detail">
           <text>📍 {{item.locationDesc}}</text>

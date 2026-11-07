@@ -30,9 +30,10 @@
       <text class="tag tag-success" wx:for="{{cat.healthTags}}" wx:key="*this">{{item}}</text>
     </view>
     <view class="cat-stats">
-      <view class="cat-stat comment-entry" hover-class="cat-stat-hover" bindtap="openComments">
+      <!-- 评论功能暂不开放 -->
+      <!-- <view class="cat-stat comment-entry" hover-class="cat-stat-hover" bindtap="openComments">
         💬 评论 {{cat.commentCount || 0}}
-      </view>
+      </view> -->
       <text class="cat-stat">👁 浏览 {{cat.viewCount || 0}}</text>
       <view class="cat-stat like-btn {{cat.liked ? 'liked' : ''}}" bindtap="onLike">
         ❤ 点赞 {{cat.likeCount || 0}}
@@ -103,7 +104,8 @@
     </button>
   </view>
 
-  <!-- 评论半屏面板 -->
+  <!-- 评论半屏面板（个人开发者未开通，已关闭） -->
+  <!--
   <view class="cmt-mask {{commentVisible ? 'show' : ''}}" wx:if="{{commentVisible}}"
         style="padding-bottom: {{keyboardHeight}}px"
         bindtap="closeComments" catchtouchmove="noop">
@@ -162,6 +164,7 @@
       </view>
     </view>
   </view>
+  -->
 </view>
 
 <view class="loading" wx:if="{{!cat}}">

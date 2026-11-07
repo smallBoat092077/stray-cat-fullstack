@@ -1,5 +1,24 @@
 .container { padding: 60rpx 32rpx; }
 
+.back-row {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 0 20rpx;
+  cursor: pointer;
+}
+
+.back-arrow {
+  font-size: 40rpx;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.back-text {
+  font-size: 26rpx;
+  color: var(--brand);
+}
+
 .brand {
   text-align: center;
   padding: 40rpx 0 60rpx;

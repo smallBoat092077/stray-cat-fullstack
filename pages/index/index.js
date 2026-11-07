@@ -97,8 +97,9 @@ Page({
       metaText: [
         GENDER_MAP[cat.gender] || '未知',
         cat.ageEstimate || '年龄未知',
-        cat.color || '花色未知'
-      ].join(' · ')
+        cat.color || '花色未知',
+        cat.breed || ''
+      ].filter(Boolean).join(' · ')
     };
   },
 
