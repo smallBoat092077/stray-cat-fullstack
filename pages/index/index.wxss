@@ -1,0 +1,404 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.map {
+  flex: 1;
+  width: 100%;
+}
+
+.map-controls {
+  position: absolute;
+  right: 24rpx;
+  top: 24rpx;
+}
+
+/* cover-view 是原生组件，CSS 支持有限，这里用字面色值而非 var() */
+.control-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFFDF7;
+  border: 1rpx solid rgba(195, 161, 95, 0.28);
+  border-radius: 999rpx;
+  padding: 18rpx 22rpx;
+  box-shadow: 0 6rpx 18rpx rgba(20, 73, 60, 0.16);
+}
+
+.control-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.control-btn cover-text {
+  font-size: 20rpx;
+  color: #14493C;
+  letter-spacing: 1rpx;
+}
+
+/* 底部弹窗 —— 纸白到米黄的抽屉 */
+.bottom-sheet {
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.97) 0%, #F4EFE1 100%);
+  border-top: 2rpx solid var(--gold);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 28rpx 24rpx 32rpx;
+  box-shadow: 0 -8rpx 28rpx rgba(20, 73, 60, 0.14);
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.sheet-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 3rpx;
+  color: var(--brand);
+}
+
+.sheet-more {
+  font-size: 26rpx;
+  color: var(--gold-deep);
+  letter-spacing: 1rpx;
+}
+
+.cat-scroll {
+  white-space: nowrap;
+}
+
+.cat-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 240rpx;
+  margin-right: 20rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 20rpx;
+  overflow: hidden;
+  vertical-align: top;
+  box-shadow: 0 6rpx 18rpx rgba(20, 73, 60, 0.08);
+}
+
+.cat-avatar-wrap {
+  position: relative;
+}
+
+.cat-avatar {
+  width: 240rpx;
+  height: 240rpx;
+}
+
+/* 人气榜卡片右上角的点赞数 */
+.cat-rank {
+  position: absolute;
+  right: 10rpx;
+  top: 10rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  color: var(--brand);
+  background: rgba(255, 253, 247, 0.9);
+  box-shadow: 0 2rpx 8rpx rgba(20, 73, 60, 0.18);
+}
+
+.sheet-hint {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  letter-spacing: 1rpx;
+}
+
+.cat-info {
+  padding: 18rpx;
+}
+
+.cat-name {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  color: var(--brand);
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.cat-tags {
+  margin-bottom: 10rpx;
+}
+
+.cat-location {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 3D 猫咪信息卡 —— 遮罩 + 透视舞台，卡片带常驻倾角和缓慢浮动 */
+.card3d-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 38%, rgba(12, 51, 41, 0.26) 0%, rgba(12, 51, 41, 0.56) 100%);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.card3d-mask.show {
+  opacity: 1;
+}
+
+.card3d-stage {
+  /* 定宽：让舞台和卡片同宽，投影中心才不会偏出去（宽度由内容撑开时会算进 3D 溢出） */
+  width: 580rpx;
+  perspective: 1400rpx;
+}
+
+.card3d {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28rpx 30rpx 30rpx;
+  border-radius: 30rpx;
+  background: linear-gradient(158deg, #FFFDF7 0%, #F6F1E4 60%, #EDE5D1 100%);
+  border: 1rpx solid rgba(195, 161, 95, 0.5);
+  box-shadow:
+    0 30rpx 60rpx rgba(12, 51, 41, 0.34),
+    0 6rpx 18rpx rgba(12, 51, 41, 0.20),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9);
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  transform: rotateX(-14deg) rotateY(14deg) translateZ(-120rpx) scale(0.9);
+  opacity: 0;
+}
+
+.card3d-mask.show .card3d {
+  animation:
+    card3d-in 0.38s cubic-bezier(0.22, 0.9, 0.28, 1.16) both,
+    card3d-float 6s ease-in-out 0.38s infinite;
+}
+
+/* 卡片“厚度”：压在后方的暗色底板，靠 translateZ 拉开层次 */
+.card3d-back {
+  position: absolute;
+  /* z-index 兜底：不支持 preserve-3d 的深度排序时，绝对定位的底板会盖住正文 */
+  z-index: -1;
+  left: 16rpx;
+  right: 16rpx;
+  top: 26rpx;
+  bottom: -10rpx;
+  border-radius: 30rpx;
+  background: linear-gradient(180deg, #E2D8BF 0%, #C9BE9F 100%);
+  box-shadow: 0 40rpx 60rpx rgba(12, 51, 41, 0.30);
+  transform: translateZ(-40rpx);
+}
+
+/* 高光扫过，一个周期只闪一次 */
+.card3d-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34%;
+  height: 100%;
+  border-radius: 30rpx;
+  background: linear-gradient(105deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.62) 50%,
+    rgba(255, 255, 255, 0) 100%);
+  transform: translateZ(30rpx) rotate(12deg);
+  opacity: 0;
+  animation: card3d-sweep 6s ease-in-out 0.38s infinite;
+  pointer-events: none;
+}
+
+.card3d-top {
+  display: flex;
+  align-items: center;
+  transform: translateZ(24rpx);
+}
+
+.card3d-cover {
+  width: 132rpx;
+  height: 132rpx;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 3rpx solid rgba(195, 161, 95, 0.55);
+  box-shadow: 0 10rpx 22rpx rgba(12, 51, 41, 0.22);
+  background: var(--cream);
+  margin-right: 22rpx;
+  flex-shrink: 0;
+}
+
+.card3d-title {
+  flex: 1;
+  overflow: hidden;
+}
+
+.card3d-name {
+  display: block;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 40rpx;
+  font-weight: 600;
+  letter-spacing: 3rpx;
+  color: var(--brand);
+  margin-bottom: 8rpx;
+}
+
+.card3d-meta {
+  display: block;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  letter-spacing: 1rpx;
+}
+
+.card3d-close {
+  width: 56rpx;
+  height: 56rpx;
+  line-height: 52rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--pill-mint);
+  color: var(--brand);
+  font-size: 36rpx;
+  flex-shrink: 0;
+}
+
+.card3d-tags {
+  margin: 22rpx 0 14rpx;
+  transform: translateZ(16rpx);
+}
+
+.card3d-loc {
+  font-size: 26rpx;
+  color: var(--ink);
+  letter-spacing: 1rpx;
+  margin-bottom: 12rpx;
+  transform: translateZ(12rpx);
+}
+
+.card3d-desc {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  max-height: 130rpx;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 16rpx 18rpx;
+  background: rgba(215, 234, 220, 0.42);
+  border-left: 4rpx solid var(--gold);
+  border-radius: 0 12rpx 12rpx 0;
+  margin-bottom: 16rpx;
+  transform: translateZ(14rpx);
+}
+
+.card3d-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 23rpx;
+  color: var(--ink-mute);
+  letter-spacing: 1rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid var(--gold-mist);
+  transform: translateZ(10rpx);
+}
+
+.card3d-actions {
+  display: flex;
+  padding-top: 22rpx;
+  transform: translateZ(20rpx);
+}
+
+.card3d-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  margin: 0 8rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+}
+
+.card3d-btn:first-child {
+  margin-left: 0;
+}
+
+.card3d-btn:last-child {
+  margin-right: 0;
+}
+
+.card3d-btn.ghost {
+  background: var(--pill-mint);
+  color: var(--brand);
+  border: 1rpx solid rgba(20, 73, 60, 0.18);
+}
+
+.card3d-btn.gold {
+  background: linear-gradient(135deg, #D9BC79 0%, var(--gold-deep) 100%);
+  color: #FFFDF7;
+  box-shadow: 0 6rpx 16rpx rgba(195, 161, 95, 0.34);
+}
+
+.card3d-btn.solid {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: #F7F2E6;
+  box-shadow: 0 6rpx 16rpx rgba(20, 73, 60, 0.26);
+}
+
+.card3d-btn-hover {
+  opacity: 0.86;
+  transform: translateY(2rpx);
+}
+
+@keyframes card3d-in {
+  from {
+    transform: rotateX(-14deg) rotateY(14deg) translateZ(-120rpx) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: rotateX(6deg) rotateY(-7deg) translateZ(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes card3d-float {
+  0%, 100% {
+    transform: rotateX(6deg) rotateY(-7deg) scale(1);
+  }
+  50% {
+    transform: rotateX(4deg) rotateY(-3deg) scale(1.012);
+  }
+}
+
+@keyframes card3d-sweep {
+  0% {
+    transform: translateZ(30rpx) rotate(12deg) translateX(-140%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  30% {
+    transform: translateZ(30rpx) rotate(12deg) translateX(300%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateZ(30rpx) rotate(12deg) translateX(300%);
+    opacity: 0;
+  }
+}

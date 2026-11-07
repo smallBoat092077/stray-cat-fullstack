@@ -1,0 +1,112 @@
+<view class="container">
+  <!-- 地图 -->
+  <map
+    id="catMap"
+    class="map"
+    latitude="{{latitude}}"
+    longitude="{{longitude}}"
+    scale="16"
+    markers="{{markers}}"
+    bindmarkertap="onMarkerTap"
+    show-location="{{true}}"
+  >
+    <!-- 自定义覆盖物 -->
+    <cover-view class="map-controls">
+      <cover-view class="control-btn" bindtap="onNearbyTap">
+        <cover-image class="control-icon" src="/images/icon-nearby.png" />
+        <cover-text>{{mode === 'popular' ? '人气猫咪' : '附近猫咪'}}</cover-text>
+      </cover-view>
+    </cover-view>
+  </map>
+
+  <!-- 底部猫咪列表：附近有人 → 附近猫咪；附近空 → 人气猫咪 TOP3 -->
+  <view class="bottom-sheet" wx:if="{{mode === 'nearby' ? nearbyCats.length > 0 : popularCats.length > 0}}">
+    <view class="sheet-header">
+      <text class="sheet-title" wx:if="{{mode === 'nearby'}}">附近猫咪 ({{nearbyCats.length}})</text>
+      <text class="sheet-title" wx:else>人气猫咪 TOP{{popularCats.length}}</text>
+      <text class="sheet-more" wx:if="{{mode === 'nearby'}}" bindtap="goToCatList">查看全部</text>
+    </view>
+    <scroll-view scroll-x enhance class="cat-scroll">
+      <view
+        class="cat-card"
+        wx:for="{{mode === 'nearby' ? nearbyCats : popularCats}}"
+        wx:key="id"
+        catchtap="onSheetCatTap"
+        data-id="{{item.id}}"
+      >
+        <view class="cat-avatar-wrap">
+          <image class="cat-avatar" src="{{item.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+          <text class="cat-rank" wx:if="{{mode === 'popular'}}">👍 {{item.likeCount || 0}}</text>
+        </view>
+        <view class="cat-info">
+          <text class="cat-name">{{item.name}}</text>
+          <view class="cat-tags">
+            <text class="tag tag-{{item.lifeStatusClass}}">{{item.lifeStatusText}}</text>
+          </view>
+          <text class="cat-location">{{item.locationDesc}}</text>
+        </view>
+      </view>
+    </scroll-view>
+    <text class="sheet-hint" wx:if="{{mode === 'popular'}}">离你还有点远，先看看大家最喜欢的猫</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && nearbyCats.length === 0 && popularCats.length === 0}}">
+    <text class="empty-icon">🐱</text>
+    <text>附近暂无流浪猫</text>
+    <button class="btn-primary" style="margin-top: 30rpx;" bindtap="onReportTap">上报流浪猫</button>
+  </view>
+
+  <!-- 加载 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 点地图猫头弹出的 3D 信息卡 -->
+  <view
+    class="card3d-mask {{cardVisible ? 'show' : ''}}"
+    wx:if="{{selectedCat}}"
+    bindtap="closeCard"
+    catchtouchmove="noop"
+  >
+    <view class="card3d-stage">
+      <view class="card3d" catchtap="noop">
+        <view class="card3d-back"></view>
+        <view class="card3d-shine"></view>
+        <view class="card3d-top">
+          <image
+            class="card3d-cover"
+            src="{{selectedCat.coverImage || '/images/default-cat.png'}}"
+            mode="aspectFill"
+          />
+          <view class="card3d-title">
+            <text class="card3d-name">{{selectedCat.name}}</text>
+            <text class="card3d-meta">{{selectedCat.metaText}}</text>
+          </view>
+          <view class="card3d-close" catchtap="closeCard">×</view>
+        </view>
+        <view class="card3d-tags">
+          <text class="tag tag-{{selectedCat.lifeStatusClass}}">{{selectedCat.lifeStatusText}}</text>
+          <text class="tag tag-{{selectedCat.healthClass}}">{{selectedCat.healthText}}</text>
+        </view>
+        <view class="card3d-loc">📍 {{selectedCat.locationDesc || '位置待补充'}}</view>
+        <view class="card3d-desc" wx:if="{{selectedCat.description}}">{{selectedCat.description}}</view>
+        <view class="card3d-stats">
+          <text>❤ {{selectedCat.likeCount || 0}}</text>
+          <text>👁 {{selectedCat.viewCount || 0}}</text>
+          <text>🐟 收到猫粮 {{selectedCat.coinTotal || 0}}</text>
+        </view>
+        <view class="card3d-actions">
+          <view class="card3d-btn ghost" hover-class="card3d-btn-hover" bindtap="onCardDetail">查看详情</view>
+          <view
+            class="card3d-btn gold"
+            hover-class="card3d-btn-hover"
+            wx:if="{{selectedCat.lifeStatus === 2}}"
+            bindtap="onCardAdopt"
+          >我要领养</view>
+          <view class="card3d-btn solid" hover-class="card3d-btn-hover" bindtap="onCardTip">送猫粮</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

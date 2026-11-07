@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="item card" wx:for="{{orders}}" wx:key="outTradeNo">
+    <view class="item-head">
+      <text class="item-title">{{item.coinAmount}} 份猫粮</text>
+      <text class="item-amount">¥{{item.priceYuan}}</text>
+    </view>
+    <view class="item-foot">
+      <text class="item-time">{{item.timeText}}</text>
+      <text class="item-status status-{{item.status}}">{{item.statusText}}</text>
+    </view>
+  </view>
+
+  <view class="empty card" wx:if="{{!orders.length && !loading}}">
+    还没有充值记录
+  </view>
+
+  <view class="loadmore" wx:if="{{loading}}">加载中...</view>
+</view>

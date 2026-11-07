@@ -7,7 +7,6 @@ App({
     baseUrl: 'https://straycat.fun/api'
     //baseUrl: 'http://47.95.149.170/api'
     //baseUrl: 'http://47.97.253.32:8082/api'
-    //baseUrl: 'http://192.168.1.6:8080/api'
   },
 
   onLaunch() {

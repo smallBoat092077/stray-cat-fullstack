@@ -1,0 +1,83 @@
+<view class="container">
+  <view class="card">
+    <text class="section-title">上报流浪猫</text>
+
+    <view class="form-item">
+      <text class="form-label">猫咪昵称</text>
+      <input class="form-input" placeholder="给猫咪取个名字" bindinput="onNameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">性别</text>
+      <picker bindchange="onGenderChange" value="{{genderIndex}}" range="{{genderOptions}}">
+        <view class="form-value">{{genderOptions[genderIndex]}} ></view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">年龄估算</text>
+      <input class="form-input" placeholder="如: 1岁、2-3岁" bindinput="onAgeInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">品种</text>
+      <picker bindchange="onBreedChange" value="{{breedIndex}}" range="{{breedOptions}}">
+        <view class="form-value">{{breedOptions[breedIndex]}} ></view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">毛色</text>
+      <input class="form-input" placeholder="如: 橘白、黑色" bindinput="onColorInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">地图定位 <text class="required">必填</text></text>
+      <view class="location-picker" bindtap="chooseLocation">
+        <view class="location-content">
+          <text class="location-icon">📍</text>
+          <view class="location-text">
+            <text class="location-name">{{locationName || '点击选择猫咪出没位置'}}</text>
+            <text class="location-coord" wx:if="{{latitude}}">({{latitude}}, {{longitude}})</text>
+          </view>
+        </view>
+        <text class="location-arrow">></text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">位置描述</text>
+      <input class="form-input" placeholder="猫咪经常出没的位置" bindinput="onLocationInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">性格描述</text>
+      <textarea class="form-textarea" placeholder="描述猫咪的性格特点" bindinput="onPersonalityInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">详细描述</text>
+      <textarea class="form-textarea" placeholder="补充说明猫咪的情况" bindinput="onDescInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">猫咪照片（最多3张）</text>
+      <view class="image-upload-area">
+        <view class="image-list">
+          <view class="image-item" wx:for="{{images}}" wx:key="index">
+            <image src="{{item}}" mode="aspectFill" />
+            <view class="image-remove" data-index="{{index}}" bindtap="removeImage">×</view>
+          </view>
+          <view class="image-add" bindtap="chooseImage" wx:if="{{images.length < 3}}">
+            <text class="add-icon">+</text>
+            <text class="add-text">添加照片</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onSubmit" disabled="{{uploading}}">
+      {{uploading ? '提交中...' : '提交上报'}}
+    </button>
+  </view>
+</view>

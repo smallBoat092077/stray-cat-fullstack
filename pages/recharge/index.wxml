@@ -1,0 +1,37 @@
+<view class="container">
+  <view class="card wallet">
+    <text class="wallet-label">当前猫粮</text>
+    <text class="wallet-value">{{balance}}</text>
+    <text class="wallet-hint">猫粮可用于给猫咪送饭，收支记录见「我的 - 猫粮明细」</text>
+  </view>
+
+  <view class="card" wx:if="{{!enabled}}">
+    <text class="section-title">暂时无法购买</text>
+    <text class="section-content">本小程序尚未开通微信虚拟支付，购买入口暂不可用。你仍可通过每日签到、上报猫咪、投喂打卡和领养回访获得猫粮。</text>
+  </view>
+
+  <view class="card" wx:for="{{packs}}" wx:key="code">
+    <view class="pack-row">
+      <view class="pack-info">
+        <text class="pack-title">{{item.title}}</text>
+        <text class="pack-sub">到账 {{item.coinAmount}} 份猫粮</text>
+      </view>
+      <view class="pack-right">
+        <text class="pack-price">¥{{item.priceYuan}}</text>
+        <button class="btn-primary pack-btn"
+                data-code="{{item.code}}"
+                bindtap="onBuy"
+                disabled="{{buying || !enabled}}">{{buying ? '处理中' : '购买'}}</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="notice">
+    <text class="notice-title">购买前请阅读</text>
+    <text class="notice-item">· 猫粮是站内虚拟道具，仅可用于向猫咪送猫粮，不可提现、不可转赠、不可交易。</text>
+    <text class="notice-item">· 虚拟道具一经到账即视为已使用，不支持七天无理由退货；支付异常或未到账可通过客服反馈处理。</text>
+    <text class="notice-item">· 未成年人需在监护人同意并指导下完成购买。</text>
+    <text class="notice-item">· 购买需使用微信登录，仅用账号密码注册的账号暂时无法购买。</text>
+    <text class="notice-link" bindtap="onViewPrivacy">查看《隐私政策与服务协议》</text>
+  </view>
+</view>

@@ -1,0 +1,88 @@
+.container { padding: 24rpx; }
+
+.summary {
+  display: flex;
+  align-items: baseline;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+}
+
+.summary-num {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 52rpx;
+  font-weight: 600;
+  color: var(--brand);
+  margin-right: 14rpx;
+}
+
+.summary-label {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+}
+
+.record-item {
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.cat-name {
+  flex: 1;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  color: var(--brand);
+}
+
+.row {
+  display: flex;
+  padding: 12rpx 0;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.label {
+  width: 160rpx;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+}
+
+.value {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.remark .value {
+  color: var(--brick);
+}
+
+.imgs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  margin: 0 16rpx 16rpx 0;
+}
+
+.go-feeding {
+  margin-top: 24rpx;
+  padding: 12rpx 36rpx;
+  font-size: 26rpx;
+  color: var(--brand);
+  border: 1rpx solid rgba(20, 73, 60, 0.32);
+  border-radius: 999rpx;
+}

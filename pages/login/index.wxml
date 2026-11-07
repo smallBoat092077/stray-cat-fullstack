@@ -1,0 +1,37 @@
+<view class="container">
+  <view class="back-row" bindtap="onBack">
+    <text class="back-arrow">‹</text>
+    <text class="back-text">返回</text>
+  </view>
+  <view class="brand">
+    <text class="brand-title">流浪猫喂养</text>
+    <text class="brand-sub">关爱流浪动物 · 从每一次投喂开始</text>
+  </view>
+
+  <view class="card">
+    <view class="tabs">
+      <text class="tab {{mode === 'login' ? 'tab-active' : ''}}" data-mode="login" bindtap="switchMode">登录</text>
+      <text class="tab {{mode === 'register' ? 'tab-active' : ''}}" data-mode="register" bindtap="switchMode">注册</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">账号</text>
+      <input class="form-input" placeholder="请输入账号" value="{{username}}" bindinput="onUsernameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" password placeholder="{{mode === 'register' ? '至少6位密码' : '请输入密码'}}" value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+
+    <view class="privacy-row">
+      <view class="checkbox {{agreed ? 'checked' : ''}}" bindtap="onToggleAgree">{{agreed ? '✓' : ''}}</view>
+      <text class="privacy-text" bindtap="onToggleAgree">我已阅读并同意</text>
+      <text class="privacy-link" catchtap="onViewPrivacy">《隐私政策》</text>
+    </view>
+
+    <button class="btn-primary submit-btn" bindtap="onSubmit" disabled="{{submitting}}">
+      {{submitting ? '处理中...' : (mode === 'login' ? '登 录' : '注册并登录')}}
+    </button>
+  </view>
+</view>

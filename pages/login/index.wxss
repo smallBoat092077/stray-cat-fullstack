@@ -1,0 +1,101 @@
+.container { padding: 60rpx 32rpx; }
+
+.back-row {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 0 20rpx;
+  cursor: pointer;
+}
+
+.back-arrow {
+  font-size: 40rpx;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.back-text {
+  font-size: 26rpx;
+  color: var(--brand);
+}
+
+.brand {
+  text-align: center;
+  padding: 40rpx 0 60rpx;
+}
+
+.brand-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 52rpx;
+  font-weight: 600;
+  letter-spacing: 10rpx;
+  color: var(--brand);
+  display: block;
+}
+
+.brand-sub {
+  font-size: 24rpx;
+  color: var(--gold-deep);
+  letter-spacing: 3rpx;
+  display: block;
+  margin-top: 18rpx;
+}
+
+.card { padding: 40rpx 32rpx; }
+
+.tabs {
+  display: flex;
+  margin-bottom: 44rpx;
+  border-bottom: 1rpx solid var(--gold-mist);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  font-size: 30rpx;
+  color: var(--ink-mute);
+  padding: 20rpx 0;
+  letter-spacing: 4rpx;
+}
+
+.tab-active {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  color: var(--brand);
+  font-weight: 600;
+  border-bottom: 4rpx solid var(--gold);
+}
+
+.submit-btn { margin-top: 48rpx; }
+
+.privacy-row {
+  display: flex;
+  align-items: center;
+  margin-top: 28rpx;
+}
+
+.checkbox {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 12rpx;
+  border: 2rpx solid var(--gold-deep);
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  line-height: 30rpx;
+  text-align: center;
+  color: var(--paper);
+}
+
+.checkbox.checked {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.privacy-text {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+.privacy-link {
+  font-size: 24rpx;
+  color: var(--brand);
+}

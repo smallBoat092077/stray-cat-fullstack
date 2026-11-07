@@ -1,0 +1,37 @@
+.container { padding: 24rpx; }
+
+.adoption-item { padding: 28rpx; }
+
+.adoption-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+
+.cat-name {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  color: var(--brand);
+}
+
+.adoption-info {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  margin-bottom: 10rpx;
+}
+
+.adoption-actions {
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.btn-small {
+  padding: 12rpx 34rpx;
+  font-size: 26rpx;
+  border-radius: 6rpx;
+  letter-spacing: 2rpx;
+}

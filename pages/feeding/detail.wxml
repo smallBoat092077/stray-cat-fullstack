@@ -1,0 +1,149 @@
+<view class="container" wx:if="{{task}}">
+  <view class="card">
+    <view class="task-header">
+      <text class="task-title">{{task.taskTypeText}}</text>
+      <text class="tag tag-warning" wx:if="{{task.tipId}}">打赏委托</text>
+      <text class="tag tag-{{task.statusClass}}">{{task.statusText}}</text>
+    </view>
+    <view class="task-info-row">
+      <text class="label">关联猫咪</text>
+      <text class="value">{{task.catName}}</text>
+    </view>
+    <view class="task-info-row">
+      <text class="label">投喂地点</text>
+      <text class="value">{{task.locationDesc}}</text>
+    </view>
+    <view class="task-info-row" wx:if="{{task.amount}}">
+      <text class="label">认捐猫粮</text>
+      <text class="value amount">{{task.amount}} 份</text>
+    </view>
+    <view class="task-info-row">
+      <text class="label">有效范围</text>
+      <text class="value">{{task.radius}}米内打卡</text>
+    </view>
+    <view class="task-info-row" wx:if="{{task.volunteerText}}">
+      <text class="label">接单人</text>
+      <text class="value">{{task.volunteerText}}</text>
+    </view>
+  </view>
+
+  <!-- 打卡区域 -->
+  <view class="card" wx:if="{{task.status === 1 && canCheckIn}}">
+    <text class="section-title">投喂打卡</text>
+    <view class="checkin-area">
+      <!-- 识别模式提示 -->
+      <view class="recognize-banner" wx:if="{{recognizeMode}}">
+        <text class="banner-icon">🔍</text>
+        <text class="banner-text">拍照识别猫咪身份，确保打卡准确</text>
+      </view>
+
+      <!-- 识别结果展示 -->
+      <view class="recognize-result" wx:if="{{recognizeResult}}">
+        <view class="result-header">
+          <text class="result-title">{{recognizeResult.success ? '识别成功' : '未识别到猫咪'}}</text>
+          <text class="result-similarity" wx:if="{{recognizeResult.matches && recognizeResult.matches.length > 0}}">
+            相似度 {{recognizeResult.matches[0].similarity * 100}}%
+          </text>
+        </view>
+
+        <!-- 匹配列表 -->
+        <view class="match-list" wx:if="{{recognizeResult.matches && recognizeResult.matches.length > 0}}">
+          <view
+            class="match-item {{selectedCatId === item.catId ? 'selected' : ''}}"
+            wx:for="{{recognizeResult.matches}}"
+            wx:key="catId"
+            data-cat-id="{{item.catId}}"
+            bindtap="onSelectMatch"
+          >
+            <image class="match-avatar" src="{{item.avatar || '/images/default-cat.png'}}" mode="aspectFill" />
+            <view class="match-info">
+              <text class="match-name">{{item.catName || '未知猫咪'}}</text>
+              <text class="match-similarity">相似度 {{item.similarity * 100}}%</text>
+              <text class="match-location" wx:if="{{item.originalLng && item.originalLat}}">
+                原位置：{{item.originalLng}}, {{item.originalLat}}
+              </text>
+            </view>
+            <view class="match-check" wx:if="{{selectedCatId === item.catId}}">✓</view>
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="recognize-actions">
+          <button class="btn-small btn-outline" bindtap="onRecognizeCat" wx:if="{{!recognizing}}">
+            重新拍照
+          </button>
+          <button class="btn-small btn-outline" bindtap="onSelectTaskCat">
+            选择任务猫咪
+          </button>
+          <button class="btn-small btn-warning" bindtap="onRegisterNewCat" wx:if="{{!recognizeResult.success}}">
+            上报新猫
+          </button>
+        </view>
+      </view>
+
+      <!-- 识别中状态 -->
+      <view class="recognizing" wx:if="{{recognizing}}">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">正在识别猫咪身份...</text>
+      </view>
+
+      <!-- 照片上传区域 -->
+      <view class="image-list" style="margin-bottom: 24rpx;">
+        <view class="image-item" wx:for="{{images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" />
+          <view class="image-remove" data-index="{{index}}" bindtap="removeImage">×</view>
+        </view>
+        <view class="image-add" bindtap="chooseImage" wx:if="{{images.length < 3}}">
+          <text class="add-icon">+</text>
+          <text class="add-text">上传照片</text>
+        </view>
+      </view>
+
+      <!-- 识别模式下的拍照按钮 -->
+      <button
+        class="btn-outline"
+        style="margin-bottom: 20rpx;"
+        bindtap="onRecognizeCat"
+        wx:if="{{recognizeMode && !recognizing}}"
+      >
+        📷 拍照识别猫咪
+      </button>
+
+      <button class="btn-outline" style="margin-bottom: 20rpx;" bindtap="onOpenMap">
+        打开地图导航
+      </button>
+
+      <button class="btn-primary" bindtap="onCheckIn">
+        {{selectedCatId ? '确认打卡' : '到达现场，点击打卡'}}
+      </button>
+
+      <view class="checkin-tips">
+        <text>需要在投喂点{{task.radius}}米范围内打卡</text>
+        <text wx:if="{{recognizeMode}}">拍照识别可确认投喂的是同一只猫</text>
+        <text>打卡时需上传现场照片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 状态说明 -->
+  <view class="card" wx:if="{{task.status === 0 || (task.status === 1 && !canCheckIn)}}">
+    <text class="section-title">{{task.status === 0 ? '等待接单' : '已接单'}}</text>
+    <view class="status-text">
+      {{task.status === 0 ? '打赏已生成投喂任务，等志愿者接单后会前往该地点投喂。' : '志愿者已接单，正在前往投喂点。'}}
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{task.status === 2}}">
+    <text class="section-title">已投喂，等待审核</text>
+    <view class="status-text">志愿者已在现场完成打卡投喂，管理员审核通过后本任务显示「已完成」。</view>
+  </view>
+
+  <!-- 已完成 -->
+  <view class="card" wx:if="{{task.status === 3}}">
+    <text class="section-title">完成信息</text>
+    <view class="task-info-row">
+      <text class="label">完成时间</text>
+      <text class="value">{{task.completedText}}</text>
+    </view>
+  </view>
+</view>
