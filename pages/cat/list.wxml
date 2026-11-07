@@ -19,6 +19,7 @@
   <!-- 海报轮播 -->
   <swiper
     class="poster-swiper"
+    style="{{posters.length > 0 ? 'height:' + swiperHeight + 'rpx' : ''}}"
     indicator-dots
     autoplay
     circular
@@ -29,7 +30,7 @@
     wx:if="{{posters.length > 0}}"
   >
     <swiper-item wx:for="{{posters}}" wx:key="id">
-      <image class="poster-img" src="{{item.imageUrl}}" mode="aspectFill" />
+      <image class="poster-img" src="{{item.imageUrl}}" mode="widthFix" />
     </swiper-item>
   </swiper>
 

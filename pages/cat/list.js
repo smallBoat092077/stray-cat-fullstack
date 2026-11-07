@@ -52,9 +52,23 @@ Page({
       const list = await posterApi.getList();
       const posters = (list || []).map(p => ({ ...p, imageUrl: resolveImageUrl(p.imageUrl) }));
       this.setData({ posters });
+      this._calcSwiperHeight(posters);
     } catch (err) {
       console.error('加载海报失败:', err);
     }
+  },
+
+  _calcSwiperHeight(posters) {
+    if (!posters.length) return;
+    wx.getImageInfo({
+      src: posters[0].imageUrl,
+      success: (res) => {
+        const sw = wx.getSystemInfoSync().windowWidth;
+        const ratio = res.width / res.height;
+        this.setData({ swiperHeight: Math.round(sw / ratio) });
+      },
+      fail: () => this.setData({ swiperHeight: 340 })
+    });
   },
 
   onSwiperChange(e) {
