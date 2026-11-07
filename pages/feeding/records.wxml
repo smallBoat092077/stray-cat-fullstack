@@ -1,0 +1,44 @@
+<view class="container">
+  <view class="summary card" wx:if="{{records.length > 0}}">
+    <text class="summary-num">{{total}}</text>
+    <text class="summary-label">次投喂打卡</text>
+  </view>
+
+  <view class="record-item card" wx:for="{{records}}" wx:key="id" bindtap="goToTask" data-id="{{item.taskId}}">
+    <view class="item-head">
+      <text class="cat-name">🐱 {{item.catName || '猫咪已下架'}}</text>
+      <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
+    </view>
+    <view class="row">
+      <text class="label">投喂地点</text>
+      <text class="value">{{item.locationDesc || '未填写地点'}}</text>
+    </view>
+    <view class="row">
+      <text class="label">投喂时间</text>
+      <text class="value">{{item.timeText}}</text>
+    </view>
+    <view class="row">
+      <text class="label">猫粮数量</text>
+      <text class="value">{{item.foodAmount ? item.foodAmount + ' 份' : (item.foodUsed || '自备猫粮')}}</text>
+    </view>
+    <view class="row" wx:if="{{item.distance !== null && item.distance !== undefined}}">
+      <text class="label">距投喂点</text>
+      <text class="value">{{item.distance}} 米</text>
+    </view>
+    <view class="row remark" wx:if="{{item.status === 2 && item.reviewComment}}">
+      <text class="label">审核意见</text>
+      <text class="value">{{item.reviewComment}}</text>
+    </view>
+    <view class="imgs" wx:if="{{item.images.length > 0}}">
+      <image class="img" wx:for="{{item.images}}" wx:for-item="img" wx:for-index="ii" wx:key="*this"
+             src="{{img}}" mode="aspectFill"
+             data-index="{{index}}" data-img="{{img}}" catchtap="previewImage" />
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && records.length === 0}}">
+    <text class="empty-icon"></text>
+    <text>你还没有投喂打卡记录</text>
+    <view class="go-feeding" bindtap="goFeeding">去投喂栏目接单</view>
+  </view>
+</view>

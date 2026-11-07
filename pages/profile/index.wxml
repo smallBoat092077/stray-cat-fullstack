@@ -1,0 +1,141 @@
+<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-card card">
+    <view class="user-header" bindtap="onEditProfile" wx:if="{{userInfo}}">
+      <image class="user-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" />
+      <view class="user-info">
+        <text class="user-name">{{userInfo.nickname || '未设置昵称'}}</text>
+        <text class="user-role">{{userInfo.roleText || '普通用户'}}</text>
+      </view>
+      <text class="user-edit">修改 ›</text>
+    </view>
+    <view class="user-header" wx:else>
+      <image class="user-avatar" src="/images/default-avatar.png" />
+      <view class="user-info">
+        <text class="user-name">未登录</text>
+        <text class="user-role">普通用户</text>
+      </view>
+    </view>
+    <view class="user-stats">
+      <view class="stat-item">
+        <text class="stat-num">{{userInfo.creditScore || 100}}</text>
+        <text class="stat-label">信用积分</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{volunteerData.feedingCount || 0}}</text>
+        <text class="stat-label">投喂次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{volunteerData.serviceHours || 0}}</text>
+        <text class="stat-label">服务时长</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 猫粮 -->
+  <view class="coin-card card">
+    <view class="coin-left">
+      <text class="coin-num">{{coinBalance}}</text>
+      <text class="coin-label">我的猫粮 · 累计送出 {{coinTipped}}</text>
+    </view>
+    <view class="coin-actions">
+      <view class="coin-signin {{signedToday ? 'done' : ''}}" bindtap="onSignIn">
+        {{signedToday ? '已签到' : '签到 +5'}}
+      </view>
+      <view class="coin-detail" bindtap="goToPage" data-url="/pages/tip/list">明细</view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="menu-list">
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/message/index">
+      <view class="menu-text-wrap">
+        <text class="menu-text">消息中心</text>
+        <text class="menu-badge" wx:if="{{unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+      </view>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/recharge/index">
+      <text class="menu-text">充值猫粮</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/recharge/history">
+      <text class="menu-text">充值记录</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/adoption/list">
+      <text class="menu-text">我的领养</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/admin/review" wx:if="{{userInfo.role >= 1}}">
+      <text class="menu-text">审核工作台</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/feeding/records">
+      <text class="menu-text">我的投喂记录</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/cat/report">
+      <text class="menu-text">流浪猫上报</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/feeding/list">
+      <text class="menu-text">投喂任务</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="onVolunteerApply">
+      <text class="menu-text">申请志愿者</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/privacy/index">
+      <text class="menu-text">隐私政策</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="onAbout">
+      <text class="menu-text">关于我们</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="onClearCache">
+      <text class="menu-text">清除缓存</text>
+      <text class="menu-arrow">></text>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <button class="btn-outline" style="margin-top: 40rpx;" bindtap="onLogout" wx:if="{{userInfo}}">
+    退出登录
+  </button>
+  <view class="danger-link" wx:if="{{userInfo}}" bindtap="onDeactivate">注销账号</view>
+
+  <!-- 登录按钮 -->
+  <view wx:if="{{!userInfo}}">
+    <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onLogin">
+      微信登录
+    </button>
+    <button class="btn-outline" style="margin-top: 24rpx;" bindtap="goToLogin">
+      账号密码登录
+    </button>
+  </view>
+
+  <!-- 修改昵称头像 -->
+  <view class="edit-mask" wx:if="{{editing}}" bindtap="onEditCancel">
+    <view class="edit-panel" catchtap="stopTap">
+      <text class="edit-title">修改资料</text>
+      <view class="edit-row">
+        <text class="edit-label">头像</text>
+        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image class="avatar-preview" src="{{editAvatar || '/images/default-avatar.png'}}" />
+        </button>
+      </view>
+      <view class="edit-row">
+        <text class="edit-label">昵称</text>
+        <input class="nickname-input" type="nickname" placeholder="点击输入昵称"
+               value="{{editNickname}}" bindinput="onNicknameInput" />
+      </view>
+      <view class="edit-actions">
+        <view class="edit-cancel" bindtap="onEditCancel">取消</view>
+        <view class="edit-save {{saving ? 'disabled' : ''}}" bindtap="onEditSave">{{saving ? '保存中' : '保存'}}</view>
+      </view>
+    </view>
+  </view>
+</view>

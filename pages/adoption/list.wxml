@@ -1,0 +1,41 @@
+<view class="container">
+  <!-- 状态筛选 -->
+  <view class="filter-bar">
+    <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onFilter" data-status="">全部</view>
+    <view class="filter-item {{currentStatus === 0 ? 'active' : ''}}" bindtap="onFilter" data-status="0">待审核</view>
+    <view class="filter-item {{currentStatus === 2 ? 'active' : ''}}" bindtap="onFilter" data-status="2">已通过</view>
+    <view class="filter-item {{currentStatus === 4 ? 'active' : ''}}" bindtap="onFilter" data-status="4">已签约</view>
+  </view>
+
+  <!-- 领养列表 -->
+  <view class="adoption-list">
+    <view class="adoption-item card" wx:for="{{adoptionList}}" wx:key="id">
+      <view class="adoption-header">
+        <text class="cat-name">{{item.catName}}</text>
+        <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+      <view class="adoption-info">
+        <text>申请时间: {{item.createdAt}}</text>
+      </view>
+      <view class="adoption-info" wx:if="{{item.reviewComment}}">
+        <text>审核意见: {{item.reviewComment}}</text>
+      </view>
+      <view class="adoption-actions">
+        <button class="btn-small btn-outline" wx:if="{{item.status === 3}}" bindtap="onReapply" data-id="{{item.id}}">
+          重新申请
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && adoptionList.length === 0}}">
+    <text class="empty-icon"></text>
+    <text>暂无领养记录</text>
+    <button class="btn-primary" style="margin-top: 30rpx;" bindtap="goToCatList">去挑选猫咪</button>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

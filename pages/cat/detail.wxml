@@ -1,0 +1,172 @@
+<view class="container" wx:if="{{cat}}">
+  <!-- 图片轮播 -->
+  <swiper class="cat-swiper" indicator-dots autoplay circular
+          indicator-color="rgba(255,253,247,0.55)" indicator-active-color="#C3A15F">
+    <swiper-item wx:for="{{cat.images}}" wx:key="index">
+      <image class="swiper-img" src="{{item}}" mode="aspectFill" />
+    </swiper-item>
+    <swiper-item wx:if="{{!cat.images || cat.images.length === 0}}">
+      <image class="swiper-img" src="{{cat.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+    </swiper-item>
+  </swiper>
+
+  <!-- 基本信息 -->
+  <view class="card">
+    <view class="info-header">
+      <text class="info-name">{{cat.name}}</text>
+      <text class="tag tag-{{cat.lifeStatusClass}}">{{cat.lifeStatusText}}</text>
+    </view>
+    <view class="info-row">
+      <text>{{cat.genderText}} · {{cat.ageEstimate}} · {{cat.color}}</text>
+    </view>
+    <view class="info-row" wx:if="{{cat.breed}}">
+      <text>品种: {{cat.breed}}</text>
+    </view>
+    <view class="info-row location-row" bindtap="onLocate">
+      <text>📍 {{cat.locationDesc}}</text>
+      <text class="locate-link" wx:if="{{cat.latitude && cat.longitude}}">导航 ›</text>
+    </view>
+    <view class="health-tags" wx:if="{{cat.healthTags.length > 0}}">
+      <text class="tag tag-success" wx:for="{{cat.healthTags}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="cat-stats">
+      <!-- 评论功能暂不开放 -->
+      <!-- <view class="cat-stat comment-entry" hover-class="cat-stat-hover" bindtap="openComments">
+        💬 评论 {{cat.commentCount || 0}}
+      </view> -->
+      <text class="cat-stat">👁 浏览 {{cat.viewCount || 0}}</text>
+      <view class="cat-stat like-btn {{cat.liked ? 'liked' : ''}}" bindtap="onLike">
+        ❤ 点赞 {{cat.likeCount || 0}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 描述 -->
+  <view class="card" wx:if="{{cat.description}}">
+    <text class="section-title">关于{{cat.name}}</text>
+    <text class="section-content">{{cat.description}}</text>
+  </view>
+
+  <!-- 性格 -->
+  <view class="card" wx:if="{{cat.personality}}">
+    <text class="section-title">性格特点</text>
+    <text class="section-content">{{cat.personality}}</text>
+  </view>
+
+  <!-- 猫粮 -->
+  <view class="card">
+    <view class="coin-head">
+      <text class="section-title">已收到猫粮</text>
+      <text class="coin-total">{{cat.coinTotal || 0}}</text>
+    </view>
+    <view class="supporter" wx:for="{{supporters}}" wx:key="id">
+      <view class="supporter-line">
+        <text class="supporter-name">{{item.nickname}}</text>
+        <text class="supporter-msg">{{item.message || '默默送上了关心'}}</text>
+        <text class="supporter-coin">+{{item.coinAmount}}</text>
+      </view>
+      <text class="supporter-time" wx:if="{{item.timeText}}">{{item.timeText}} 送出</text>
+    </view>
+    <view class="supporter-empty" wx:if="{{supporters.length === 0}}">
+      还没有人送过猫粮，来做第一个
+    </view>
+  </view>
+
+  <!-- 投喂打卡 -->
+  <view class="card" wx:if="{{feedRecords.length > 0}}">
+    <text class="section-title">投喂记录</text>
+    <view class="feed-item" wx:for="{{feedRecords}}" wx:key="id">
+      <view class="feed-head">
+        <text class="feed-name">{{item.volunteerName}}</text>
+        <text class="feed-time">{{item.timeText}}</text>
+      </view>
+      <text class="feed-meta">{{item.foodUsed ? '投喂 ' + item.foodUsed + ' · ' : ''}}距投喂点 {{item.distance}} 米</text>
+      <view class="feed-imgs" wx:if="{{item.images.length > 0}}">
+        <image class="feed-img" wx:for="{{item.images}}" wx:for-item="img" wx:key="*this"
+               src="{{img}}" mode="aspectFill" data-src="{{img}}" bindtap="previewFeedImage" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <button class="btn-outline" wx:if="{{cat.lifeStatus === 0 || cat.lifeStatus === 1}}" bindtap="onTip">
+      送猫粮
+    </button>
+    <button class="btn-primary" wx:if="{{cat.lifeStatus === 2}}" bindtap="onAdopt">
+      申请领养
+    </button>
+    <button class="btn-outline" bindtap="onLocate">
+      导航去找它
+    </button>
+    <button class="btn-outline" open-type="share">
+      分享给朋友
+    </button>
+  </view>
+
+  <!-- 评论半屏面板（个人开发者未开通，已关闭） -->
+  <!--
+  <view class="cmt-mask {{commentVisible ? 'show' : ''}}" wx:if="{{commentVisible}}"
+        style="padding-bottom: {{keyboardHeight}}px"
+        bindtap="closeComments" catchtouchmove="noop">
+    <view class="cmt-panel" catchtap="noop">
+      <view class="cmt-head">
+        <text class="cmt-title">评论 {{commentTotal}}</text>
+        <text class="cmt-close" bindtap="closeComments">×</text>
+      </view>
+
+      <scroll-view scroll-y class="cmt-list" bindscrolltolower="loadMoreComments">
+        <view class="cmt-loading" wx:if="{{commentLoading && comments.length === 0}}">加载中...</view>
+        <view class="cmt-empty" wx:elif="{{comments.length === 0}}">还没有评论，来说两句</view>
+
+        <view class="cmt-item" wx:for="{{comments}}" wx:key="id">
+          <image class="cmt-avatar" src="{{item.avatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <view class="cmt-body">
+            <view class="cmt-line">
+              <text class="cmt-name">{{item.nickname}}</text>
+              <text class="cmt-time">{{item.timeText}}</text>
+            </view>
+            <view class="cmt-content" bindtap="onReplyTap" data-id="{{item.id}}" data-name="{{item.nickname}}">
+              {{item.content}}
+            </view>
+
+            <view class="cmt-replies" wx:if="{{item.replies.length > 0}}">
+              <view class="cmt-reply" wx:for="{{item.replies}}" wx:for-item="r" wx:key="id">
+                <text class="cmt-reply-line" bindtap="onReplyTap" data-id="{{r.id}}" data-name="{{r.nickname}}">
+                  <text class="cmt-reply-name">{{r.nickname}}</text>
+                  <text class="cmt-reply-to" wx:if="{{r.replyToNickname}}"> 回复 {{r.replyToNickname}}</text>
+                  <text>：{{r.content}}</text>
+                </text>
+                <text class="cmt-reply-del" wx:if="{{r.mine}}" bindtap="onDeleteComment" data-id="{{r.id}}">删除</text>
+              </view>
+            </view>
+            <text class="cmt-more" wx:if="{{!item.expanded && item.replyCount > item.replies.length}}"
+                  bindtap="onExpandReplies" data-id="{{item.id}}">展开 {{item.replyCount}} 条回复 ›</text>
+
+            <view class="cmt-tools">
+              <text class="cmt-tool" bindtap="onReplyTap" data-id="{{item.id}}" data-name="{{item.nickname}}">回复</text>
+              <text class="cmt-tool danger" wx:if="{{item.mine}}" bindtap="onDeleteComment" data-id="{{item.id}}">删除</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="cmt-foot" wx:if="{{commentHasMore && comments.length > 0}}">上滑查看更多</view>
+      </scroll-view>
+
+      <view class="cmt-input-bar">
+        <input class="cmt-input" value="{{commentDraft}}" maxlength="200"
+               placeholder="{{replyTarget ? '回复 @' + replyTarget.nickname : '说点什么…'}}"
+               placeholder-class="cmt-placeholder" confirm-type="send"
+               adjust-position="{{false}}" focus="{{commentFocus}}"
+               bindinput="onDraftInput" bindfocus="onInputFocus" bindblur="onInputBlur"
+               bindconfirm="onSubmitComment" />
+        <view class="cmt-send {{commentDraft ? 'active' : ''}}" bindtap="onSubmitComment">发送</view>
+      </view>
+    </view>
+  </view>
+  -->
+</view>
+
+<view class="loading" wx:if="{{!cat}}">
+  <text>加载中...</text>
+</view>

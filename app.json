@@ -1,0 +1,73 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/cat/list",
+    "pages/cat/detail",
+    "pages/cat/navigate",
+    "pages/feeding/list",
+    "pages/feeding/detail",
+    "pages/feeding/records",
+    "pages/adoption/list",
+    "pages/adoption/apply",
+    "pages/cat/report",
+    "pages/login/index",
+    "pages/tip/create",
+    "pages/tip/list",
+    "pages/recharge/index",
+    "pages/recharge/history",
+    "pages/admin/review",
+    "pages/message/index",
+    "pages/privacy/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#E3EFDE",
+    "navigationBarTitleText": "流浪猫喂养",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#E3EFDE"
+  },
+  "tabBar": {
+    "color": "#9E9B90",
+    "selectedColor": "#14493C",
+    "backgroundColor": "#FFFDF7",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "地图",
+        "iconPath": "images/tab-map.png",
+        "selectedIconPath": "images/tab-map-active.png"
+      },
+      {
+        "pagePath": "pages/cat/list",
+        "text": "猫咪",
+        "iconPath": "images/tab-cat.png",
+        "selectedIconPath": "images/tab-cat-active.png"
+      },
+      {
+        "pagePath": "pages/feeding/list",
+        "text": "投喂",
+        "iconPath": "images/tab-feeding.png",
+        "selectedIconPath": "images/tab-feeding-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于查找附近的流浪猫和投喂点"
+    }
+  },
+  "lazyCodeLoading": "requiredComponents" 
+}

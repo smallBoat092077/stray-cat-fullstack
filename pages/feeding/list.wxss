@@ -1,0 +1,108 @@
+.container { padding: 24rpx; }
+
+/* 搜索框 */
+.search-bar {
+  padding: 0 0 16rpx;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 999rpx;
+  padding: 16rpx 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(20, 73, 60, 0.08);
+}
+
+.search-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  opacity: 0.5;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--ink);
+}
+
+.search-placeholder {
+  color: var(--ink-mute);
+}
+
+.search-clear {
+  font-size: 36rpx;
+  color: var(--ink-mute);
+  padding: 0 8rpx;
+  line-height: 1;
+}
+
+.filter-item { flex-shrink: 0; }
+
+.filter-mine { border-left: 1rpx solid var(--gold-mist); }
+
+.task-volunteer {
+  font-size: 24rpx;
+  color: var(--brand-soft);
+  margin-bottom: 10rpx;
+}
+
+.task-hint {
+  font-size: 24rpx;
+  color: var(--gold-deep);
+}
+
+.task-item { padding: 28rpx; }
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+
+.task-type {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  color: var(--brand);
+}
+
+.task-cat, .task-info {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  margin-bottom: 10rpx;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.task-time {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.btn-accept {
+  flex-shrink: 0;
+  padding: 8rpx 28rpx;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  line-height: 1.5;
+  color: var(--brand);
+  background: rgba(20, 73, 60, 0.06);
+  border: 1rpx solid rgba(20, 73, 60, 0.32);
+  border-radius: 999rpx;
+}
+
+.btn-accept:active {
+  background: var(--brand);
+  color: #F7F2E6;
+}

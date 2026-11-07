@@ -1,0 +1,67 @@
+<view class="container">
+  <view class="cat-brief card" wx:if="{{cat}}">
+    <image class="cat-cover" src="{{cat.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+    <view class="cat-meta">
+      <text class="cat-name">{{cat.name}}</text>
+      <text class="cat-sub">已收到 {{cat.coinTotal}} 份猫粮</text>
+    </view>
+  </view>
+
+  <view class="wallet card">
+    <view class="wallet-row">
+      <text class="wallet-label">我的猫粮</text>
+      <text class="wallet-value">{{balance}}</text>
+    </view>
+    <view class="wallet-row">
+      <text class="wallet-label">累计送出</text>
+      <text class="wallet-value subtle">{{tipped}}</text>
+    </view>
+    <view class="signin {{signedToday ? 'done' : ''}}" bindtap="onSignIn">
+      {{signedToday ? '今日已签到' : '每日签到 +5'}}
+    </view>
+  </view>
+
+  <view class="section-title">选择猫粮份数</view>
+  <view class="amount-grid">
+    <view
+      wx:for="{{presets}}"
+      wx:key="*this"
+      class="amount-item {{!isCustom && selected === item ? 'active' : ''}}"
+      data-amount="{{item}}"
+      bindtap="onPickAmount">
+      <text class="amount-num">{{item}}</text>
+      <text class="amount-unit">份</text>
+    </view>
+    <view class="amount-item {{isCustom ? 'active' : ''}}" bindtap="onPickCustom">
+      <text class="amount-num custom">自定义</text>
+    </view>
+  </view>
+  <input
+    wx:if="{{isCustom}}"
+    class="custom-input card"
+    type="number"
+    maxlength="3"
+    placeholder="1 ~ 200 份"
+    value="{{customAmount}}"
+    bindinput="onCustomInput" />
+
+  <view class="section-title">给猫咪留句话</view>
+  <input
+    class="message-input card"
+    maxlength="50"
+    placeholder="例如：好好吃饭，等你长大"
+    value="{{message}}"
+    bindinput="onMessageInput" />
+
+  <view class="divider-gold"></view>
+  <view class="notice">
+    猫粮是站内虚拟积分，仅用于记录大家对流浪猫的关心，没有现金价值，不可兑换、转让或提现。实际猫粮由志愿者线下采购并公示投喂记录。
+  </view>
+
+  <view class="footer">
+    <button class="btn-primary" loading="{{submitting}}" bindtap="onSubmit">
+      确认送出 {{isCustom ? (customAmount || 0) : selected}} 份猫粮
+    </button>
+    <view class="footer-link" bindtap="onGoMine">查看我的猫粮明细</view>
+  </view>
+</view>

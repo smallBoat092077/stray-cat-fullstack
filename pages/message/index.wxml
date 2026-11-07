@@ -1,0 +1,23 @@
+<view class="container">
+  <view class="item card {{item.unread ? 'unread' : ''}}"
+        wx:for="{{messages}}"
+        wx:key="id"
+        data-index="{{index}}"
+        bindtap="tapMessage">
+    <view class="item-head">
+      <view class="item-title-wrap">
+        <text class="dot" wx:if="{{item.unread}}"></text>
+        <text class="item-title">{{item.title}}</text>
+      </view>
+      <text class="item-time">{{item.timeText}}</text>
+    </view>
+    <text class="item-content">{{item.content}}</text>
+    <text class="item-arrow" wx:if="{{item.page}}">查看 ›</text>
+  </view>
+
+  <view class="empty card" wx:if="{{!messages.length && !loading}}">
+    暂时没有消息
+  </view>
+
+  <view class="loadmore" wx:if="{{loading}}">加载中...</view>
+</view>
