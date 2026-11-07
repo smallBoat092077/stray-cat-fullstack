@@ -1,5 +1,43 @@
 .container { padding: 24rpx; }
 
+/* 搜索框 */
+.search-bar {
+  padding: 0 0 16rpx;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 999rpx;
+  padding: 16rpx 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(20, 73, 60, 0.08);
+}
+
+.search-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  opacity: 0.5;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--ink);
+}
+
+.search-placeholder {
+  color: var(--ink-mute);
+}
+
+.search-clear {
+  font-size: 36rpx;
+  color: var(--ink-mute);
+  padding: 0 8rpx;
+  line-height: 1;
+}
+
 .filter-item { flex-shrink: 0; }
 
 .filter-mine { border-left: 1rpx solid var(--gold-mist); }

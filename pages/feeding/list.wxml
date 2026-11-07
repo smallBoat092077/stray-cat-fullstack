@@ -1,4 +1,21 @@
 <view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索猫咪名称 / 地点"
+        placeholder-class="search-placeholder"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+      />
+      <text class="search-clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">×</text>
+    </view>
+  </view>
+
   <!-- 筛选 -->
   <view class="filter-bar">
     <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onFilter" data-status="">全部</view>

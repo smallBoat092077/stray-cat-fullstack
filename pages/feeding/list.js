@@ -7,6 +7,7 @@ Page({
     taskList: [],
     currentStatus: '',
     onlyMine: false,
+    searchKeyword: '',
     pageNum: 1,
     pageSize: 10,
     hasMore: true,
@@ -18,7 +19,7 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.setData({ pageNum: 1, hasMore: true, taskList: [] });
+    this.setData({ pageNum: 1, hasMore: true, taskList: [], searchKeyword: '' });
     this.loadTasks().then(() => wx.stopPullDownRefresh());
   },
 
@@ -37,6 +38,9 @@ Page({
       }
       if (this.data.onlyMine) {
         params.mine = true;
+      }
+      if (this.data.searchKeyword) {
+        params.keyword = this.data.searchKeyword;
       }
       const result = await feedingApi.getTaskList(params);
       const tasks = (result.records || []).map(task => ({
@@ -72,6 +76,26 @@ Page({
       return;
     }
     this.setData({ onlyMine: !this.data.onlyMine, pageNum: 1, hasMore: true, taskList: [] });
+    this.loadTasks();
+  },
+
+  onSearchInput(e) {
+    const keyword = e.detail.value.trim();
+    clearTimeout(this._searchTimer);
+    this._searchTimer = setTimeout(() => this.performSearch(keyword), 350);
+  },
+
+  onSearchConfirm(e) {
+    this.performSearch(e.detail.value.trim());
+  },
+
+  onSearchClear() {
+    this.setData({ searchKeyword: '' });
+    this.performSearch('');
+  },
+
+  performSearch(keyword) {
+    this.setData({ searchKeyword: keyword, pageNum: 1, hasMore: true, taskList: [] });
     this.loadTasks();
   },
 
