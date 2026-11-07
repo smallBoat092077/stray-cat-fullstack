@@ -179,8 +179,7 @@ onMounted(load);
 
 .poster-img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
+  height: auto;
   display: block;
 }
 
