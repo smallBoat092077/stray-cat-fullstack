@@ -434,6 +434,16 @@ public class FeedingTaskServiceImpl extends ServiceImpl<FeedingTaskMapper, Feedi
         fillVolunteerInfo(tasks);
     }
 
+    @Override
+    public Page<FeedingTask> listTasks(Integer pageNum, Integer pageSize, Integer status, Long sponsorId, String keyword) {
+        return this.baseMapper.selectTaskPage(
+                new Page<>(pageNum, pageSize),
+                keyword == null || keyword.isBlank() ? null : keyword.trim(),
+                status,
+                sponsorId
+        );
+    }
+
     /**
      * 接单人身份，让打赏人知道这一单是谁在跑、他做过多少单
      */

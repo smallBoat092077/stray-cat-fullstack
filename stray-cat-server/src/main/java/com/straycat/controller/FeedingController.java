@@ -59,18 +59,11 @@ public class FeedingController {
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) Boolean mine,
+            @RequestParam(required = false) String keyword,
             HttpServletRequest request) {
-        Page<FeedingTask> page = new Page<>(pageNum, pageSize);
-        var wrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<FeedingTask>();
-        if (status != null) {
-            wrapper.eq(FeedingTask::getStatus, status);
-        }
-        if (Boolean.TRUE.equals(mine)) {
-            Long userId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
-            wrapper.eq(FeedingTask::getSponsorId, userId);
-        }
-        wrapper.orderByDesc(FeedingTask::getCreatedAt);
-        Page<FeedingTask> result = feedingTaskService.page(page, wrapper);
+        Long sponsorId = (Boolean.TRUE.equals(mine))
+                ? (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR) : null;
+        Page<FeedingTask> result = feedingTaskService.listTasks(pageNum, pageSize, status, sponsorId, keyword);
         feedingTaskService.fillDisplayInfo(result.getRecords());
         return Result.success(result);
     }
