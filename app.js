@@ -4,9 +4,9 @@ App({
     token: null,
     focusCatId: null,
     // 域名侧 nginx 443 + Let's Encrypt 已就绪，备案已通过，启用 HTTPS 域名
-    //baseUrl: 'https://straycat.fun/api'
+    baseUrl: 'https://straycat.fun/api'
     //baseUrl: 'http://47.95.149.170/api'
-    baseUrl: 'http://47.97.253.32:8082/api'
+    //baseUrl: 'http://47.97.253.32:8082/api'
     //baseUrl: 'http://192.168.1.6:8080/api'
   },
 
