@@ -8,6 +8,8 @@ import com.straycat.entity.SysUser;
 import com.straycat.interceptor.AuthInterceptor;
 import com.straycat.service.ContentSecurityService;
 import com.straycat.service.SysUserService;
+import com.straycat.vo.UserProfileVO;
+import com.straycat.vo.UserPublicVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,19 +57,30 @@ public class UserController {
         return Result.success(issueToken(user));
     }
 
+    @Operation(summary = "账号密码用户绑定微信（code 来自 wx.login）")
+    @PostMapping("/bindWechat")
+    public Result<UserProfileVO> bindWechat(@RequestParam String code, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
+        if (userId == null) {
+            return Result.error(ResultCode.UNAUTHORIZED);
+        }
+        return Result.success(UserProfileVO.of(sysUserService.bindWechat(userId, code)));
+    }
+
     private Map<String, Object> issueToken(SysUser user) {
         String token = UUID.randomUUID().toString().replace("-", "");
         redisTemplate.opsForValue().set("token:" + token, user.getId(), 7, TimeUnit.DAYS);
 
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);
-        data.put("user", user);
+        // 只下发白名单字段，实体上的 openid/unionId/时间戳等不要跟着一起出去
+        data.put("user", UserProfileVO.of(user));
         return data;
     }
 
     @Operation(summary = "获取当前登录用户信息")
     @GetMapping("/current")
-    public Result<SysUser> getCurrentUser(HttpServletRequest request) {
+    public Result<UserProfileVO> getCurrentUser(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
         if (userId == null) {
             return Result.error(ResultCode.UNAUTHORIZED);
@@ -76,18 +89,18 @@ public class UserController {
         if (user == null) {
             return Result.error("用户不存在");
         }
-        return Result.success(user);
+        return Result.success(UserProfileVO.of(user));
     }
 
     @Operation(summary = "获取用户公开信息")
     @GetMapping("/info")
-    public Result<SysUser> getInfo(@RequestParam Long userId) {
+    public Result<UserPublicVO> getInfo(@RequestParam Long userId) {
         SysUser user = sysUserService.getById(userId);
         if (user == null) {
             return Result.success(null);
         }
-        // 对外只暴露展示字段，手机号/证件号等即使将来被写入也不会从这里流出
-        SysUser safe = new SysUser();
+        // 用独立 VO 做字段白名单：对外只暴露展示字段，手机号/证件号等即使将来被写入也不会从这里流出
+        UserPublicVO safe = new UserPublicVO();
         safe.setId(user.getId());
         safe.setNickname(user.getNickname());
         safe.setAvatarUrl(user.getAvatarUrl());
@@ -112,7 +125,7 @@ public class UserController {
         update.setAvatarUrl(trimTo(form.getAvatarUrl(), 255));
         update.setUpdatedAt(LocalDateTime.now());
         sysUserService.updateById(update);
-        return Result.success(sysUserService.getById(userId));
+        return Result.success(UserProfileVO.of(sysUserService.getById(userId)));
     }
 
     @Operation(summary = "授予或撤销角色")

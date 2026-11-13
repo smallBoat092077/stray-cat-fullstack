@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <el-card class="login-card">
-      <h2 class="login-title">流浪猫喂养后台</h2>
+      <h2 class="login-title">猫遇猫舍后台</h2>
       <p class="login-sub">管理员账号登录（role=3）</p>
       <el-form :model="form" label-position="top" @submit.prevent>
         <el-form-item label="账号">

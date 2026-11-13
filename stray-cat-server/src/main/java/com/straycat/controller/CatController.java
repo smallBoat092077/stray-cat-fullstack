@@ -119,7 +119,8 @@ public class CatController {
         contentSecurityService.check(userId, ContentSecurityService.SCENE_PROFILE,
                 catProfile.getName(), catProfile.getAgeEstimate(), catProfile.getBreed(),
                 catProfile.getColor(), catProfile.getPersonality(),
-                catProfile.getLocationDesc(), catProfile.getDescription());
+                catProfile.getLocationDesc(), catProfile.getDescription(),
+                catProfile.getEnvironmentDesc());
         catProfile.setId(id);
         // 生活状态、领养人和累计猫粮只走服务端联动，不接受这里直接改
         catProfile.setLifeStatus(null);

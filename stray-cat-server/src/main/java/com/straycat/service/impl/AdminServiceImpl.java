@@ -20,6 +20,7 @@ import com.straycat.mapper.SysUserMapper;
 import com.straycat.service.AdminService;
 import com.straycat.vo.AdminTipVO;
 import com.straycat.vo.CoinLedgerVO;
+import com.straycat.vo.UserAdminVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<SysUser> pageUsers(String keyword, Integer role, Integer pageNum, Integer pageSize) {
+    public Page<UserAdminVO> pageUsers(String keyword, Integer role, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
         if (keyword != null && !keyword.isBlank()) {
             String trimmed = keyword.trim();
@@ -102,7 +103,11 @@ public class AdminServiceImpl implements AdminService {
             wrapper.eq(SysUser::getRole, role);
         }
         wrapper.orderByDesc(SysUser::getId);
-        return sysUserMapper.selectPage(page(pageNum, pageSize), wrapper);
+        // 先在库里分页，再把当页结果转成白名单 VO，避免整表查出来再筛
+        Page<SysUser> raw = sysUserMapper.selectPage(page(pageNum, pageSize), wrapper);
+        Page<UserAdminVO> result = new Page<>(raw.getCurrent(), raw.getSize(), raw.getTotal());
+        result.setRecords(raw.getRecords().stream().map(UserAdminVO::of).collect(Collectors.toList()));
+        return result;
     }
 
     @Override

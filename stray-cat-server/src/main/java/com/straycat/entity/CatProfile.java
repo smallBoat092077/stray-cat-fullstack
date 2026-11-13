@@ -57,6 +57,21 @@ public class CatProfile {
 
     private String coverImage;
 
+    /**
+     * 猫咪照片，逗号分隔的 /uploads/ 相对路径，最多 3 张（详情轮播按它渲染）
+     */
+    private String images;
+
+    /**
+     * 周边环境照片，逗号分隔的 /uploads/ 相对路径，最多 6 张
+     */
+    private String environmentImages;
+
+    /**
+     * 周边环境描述：猫咪出没处的环境情况，方便后来的志愿者找到它
+     */
+    private String environmentDesc;
+
     private Integer viewCount;
 
     private Integer likeCount;

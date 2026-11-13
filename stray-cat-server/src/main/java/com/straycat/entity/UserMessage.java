@@ -30,5 +30,14 @@ public class UserMessage {
 
     private Integer readFlag;
 
+    /**
+     * 微信订阅消息的推送结果：0 仅站内（未配置模板或无需推送）、1 已推送、
+     * 2 无订阅额度（用户没授权或额度已用完）、3 推送失败、4 未绑定微信。
+     */
+    private Integer pushStatus;
+
+    /** 推送失败原因摘要（errcode + errmsg），仅排查用 */
+    private String pushError;
+
     private LocalDateTime createdAt;
 }

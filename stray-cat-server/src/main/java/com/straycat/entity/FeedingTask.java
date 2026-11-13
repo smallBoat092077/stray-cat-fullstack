@@ -83,4 +83,13 @@ public class FeedingTask {
      */
     @TableField(exist = false)
     private Integer volunteerDoneCount;
+
+    /**
+     * 接单人志愿者等级与称号，来自 sys_user + VolunteerLevel
+     */
+    @TableField(exist = false)
+    private Integer volunteerLevel;
+
+    @TableField(exist = false)
+    private String volunteerLevelName;
 }

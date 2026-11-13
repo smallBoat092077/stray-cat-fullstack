@@ -86,8 +86,8 @@ wechat:
     # true：review 与接口异常也拦截（提审前建议打开，避免检测接口挂了导致违规内容直接入库）
     strict: false
   # 订阅消息。模板 ID 在小程序后台「功能-订阅消息」申请后填进来，留空=只写站内消息、不调微信接口。
-  # 字段名约定见 util/NotifyTemplates（thing1 猫咪 / thing2 相关人 / time3 时间），
-  # 后台选的模板字段顺序对不上时改 NotifyTemplates，不要改调用点。
+  # 槽位含义（猫咪 / 对方 / 时间或状态）见 util/NotifyTemplates；
+  # 「槽位填到哪个字段」由下面的 fields 决定——公共模板库同形状模板的字段序号并不固定。
   subscribe:
     enabled: true
     # trial 体验版 / formal 正式版 / developer 开发版；体验期填 trial，否则用户点进去打不开
@@ -102,6 +102,32 @@ wechat:
       adoption-rejected: ${WX_TPL_ADOPTION_REJECTED:}
       follow-up-due: ${WX_TPL_FOLLOW_UP_DUE:}
       record-pending: ${WX_TPL_RECORD_PENDING:}
+      # 共同领养：邀请与回应。没申请模板时留空即可，只落站内消息
+      co-adoption-invite: ${WX_TPL_CO_ADOPTION_INVITE:}
+      co-adoption-result: ${WX_TPL_CO_ADOPTION_RESULT:}
+    # 每个模板 content 里的字段名，逗号分隔，按位置对应三个槽位。
+    # 默认值已按 2026-11-09 线上实际选用的模板填好（用 wxaapi/newtmpl/gettemplate 拉出来的真字段），
+    # 换模板时只改这里或对应的 WX_TPL_FIELD_* 环境变量，不要改代码。
+    # 注意 phrase 类字段只能填模板自带的枚举值，业务文案塞不进去，选模板时避开。
+    fields:
+      # 接单提醒（2026-11-13 换模板：任务名称/接单人/接单时间 → thing13/thing10/time11）
+      task-accepted: ${WX_TPL_FIELD_TASK_ACCEPTED:thing13,thing10,time11}
+      # 打卡提醒（2026-11-13 换模板：打卡名称/打卡人/打卡时间 → thing4/thing10/time9）
+      record-submitted: ${WX_TPL_FIELD_RECORD_SUBMITTED:thing6,thing5,time1}
+      record-approved: ${WX_TPL_FIELD_RECORD_APPROVED:thing4,thing10,time9}
+      record-rejected: ${WX_TPL_FIELD_RECORD_REJECTED:thing4,thing10,time9}
+      adoption-new: ${WX_TPL_FIELD_ADOPTION_NEW:thing1,thing2,thing3}
+      # 审核结果通知（2026-11-13 换模板：任务名称/申请人/审核结果 → thing20/thing11/phrase1，
+      # phrase 限 5 个汉字固定短语，代码传「审核通过/审核未通过」）
+      adoption-approved: ${WX_TPL_FIELD_ADOPTION_APPROVED:thing20,thing11,phrase1}
+      adoption-rejected: ${WX_TPL_FIELD_ADOPTION_REJECTED:thing20,thing11,phrase1}
+      # 访客提醒（2026-11-13 换模板：到访地点/时间/来访事由 → 猫名/领养通过时间/回访阶段）
+      follow-up-due: ${WX_TPL_FIELD_FOLLOW_UP_DUE:thing20,time3,thing11}
+      record-pending: ${WX_TPL_FIELD_RECORD_PENDING:thing1,thing2,time3}
+      # 记账邀请通知（2026-11-13 换模板：邀请人/被邀请人/备注/时间 → thing1/thing2/thing3/time4）
+      co-adoption-invite: ${WX_TPL_FIELD_CO_ADOPTION_INVITE:thing1,thing2,thing3,time4}
+      # 审核结果通知（2026-11-13 复用领养审核同款：任务名称/申请人/审核结果 → thing20/thing11/phrase1）
+      co-adoption-result: ${WX_TPL_FIELD_CO_ADOPTION_RESULT:thing20,thing11,phrase1}
 
 notify:
   follow-up-reminder:

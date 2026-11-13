@@ -34,9 +34,12 @@ public enum ResultCode {
     RECHARGE_PACK_INVALID(3008, "充值礼包不存在或已下架"),
     RECHARGE_ORDER_NOT_FOUND(3009, "充值订单不存在"),
     XPAY_NOT_CONFIGURED(3010, "虚拟支付尚未开通"),
-    XPAY_WX_LOGIN_REQUIRED(3011, "请使用微信登录后再充值"),
+    XPAY_WX_LOGIN_REQUIRED(3011, "请先在「我的」页面绑定微信后再充值"),
     CONTENT_RISKY(3012, "内容包含违规信息，请修改后重新提交"),
     CONTENT_CHECK_UNAVAILABLE(3013, "内容安全校验暂不可用，请稍后再试"),
+    WECHAT_ALREADY_BOUND(3014, "当前账号已绑定微信"),
+    WECHAT_BIND_CONFLICT(3015, "该微信号已绑定其他账号，请先用微信登录确认"),
+    WECHAT_CODE_INVALID(3016, "微信登录凭证无效，请重试"),
     
     // 系统相关 9xxx
     SYSTEM_ERROR(9001, "系统异常"),

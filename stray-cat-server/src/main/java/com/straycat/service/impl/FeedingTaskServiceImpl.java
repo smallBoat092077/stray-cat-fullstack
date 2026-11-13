@@ -18,9 +18,11 @@ import com.straycat.mapper.SysUserMapper;
 import com.straycat.service.CoinService;
 import com.straycat.service.FeedingTaskService;
 import com.straycat.service.NotifyService;
+import com.straycat.service.VolunteerLevelService;
 import com.straycat.util.CatLifeStatus;
 import com.straycat.util.GeoDistance;
 import com.straycat.util.NotifyTemplates;
+import com.straycat.util.VolunteerLevel;
 import com.straycat.vo.FeedingRecordVO;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -86,6 +88,9 @@ public class FeedingTaskServiceImpl extends ServiceImpl<FeedingTaskMapper, Feedi
 
     @Resource
     private NotifyService notifyService;
+
+    @Resource
+    private VolunteerLevelService volunteerLevelService;
 
     @Override
     public Long createTask(FeedingTask task) {
@@ -286,6 +291,8 @@ public class FeedingTaskServiceImpl extends ServiceImpl<FeedingTaskMapper, Feedi
             if (record.getVolunteerId() != null) {
                 sysUserMapper.addCredit(record.getVolunteerId(), CREDIT_REWARD);
                 log.info("打卡审核通过: record={}, volunteer={}, 信用积分 +{}", recordId, record.getVolunteerId(), CREDIT_REWARD);
+                // 等级由已完成打卡数决定，审核通过这一刻才是真正的「完成」，顺带结算升级奖励
+                volunteerLevelService.refresh(record.getVolunteerId());
             }
         } else {
             // 驳回后退回「已接单」，让接单人重新打卡
@@ -469,6 +476,9 @@ public class FeedingTaskServiceImpl extends ServiceImpl<FeedingTaskMapper, Feedi
             task.setVolunteerName(user.getNickname());
             task.setVolunteerRole(user.getRole());
             task.setVolunteerDoneCount(doneCounts.getOrDefault(user.getId(), 0));
+            VolunteerLevel level = VolunteerLevel.byLevel(user.getVolunteerLevel());
+            task.setVolunteerLevel(level.getLevel());
+            task.setVolunteerLevelName(level.getTitle());
         }
     }
 

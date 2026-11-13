@@ -59,4 +59,16 @@ public class AdoptionApplication {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    /**
+     * 猫咪名，来自 cat_profile；列表页要显示申请的是哪只猫
+     */
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String catName;
+
+    /**
+     * 已同意的共同领养人数
+     */
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private Integer coAdopterCount;
 }

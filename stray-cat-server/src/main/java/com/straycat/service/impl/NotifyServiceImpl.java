@@ -1,7 +1,6 @@
 package com.straycat.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.straycat.common.MessageType;
 import com.straycat.config.WxSubscribeProperties;
@@ -10,6 +9,7 @@ import com.straycat.entity.UserMessage;
 import com.straycat.mapper.SysUserMapper;
 import com.straycat.mapper.UserMessageMapper;
 import com.straycat.service.NotifyService;
+import com.straycat.util.NotifyTemplates;
 import com.straycat.weixin.WxSubscribeClient;
 import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
@@ -31,6 +31,8 @@ public class NotifyServiceImpl implements NotifyService {
     private static final int CONTENT_MAX = 300;
     /** 订阅消息 thing 类字段上限 20 字，超了微信直接报错 */
     private static final int WX_THING_MAX = 20;
+    /** 与 user_message.push_error 列宽一致 */
+    private static final int PUSH_ERROR_MAX = 120;
     private static final int ROLE_ADMIN = 3;
 
     @Resource
@@ -61,6 +63,7 @@ public class NotifyServiceImpl implements NotifyService {
             return;
         }
         String page = type.page(bizId);
+        Long messageId = null;
         try {
             UserMessage message = new UserMessage();
             message.setUserId(userId);
@@ -70,8 +73,10 @@ public class NotifyServiceImpl implements NotifyService {
             message.setPage(page);
             message.setBizId(bizId);
             message.setReadFlag(0);
+            message.setPushStatus(WxSubscribeClient.PUSH_ONLY_IN_APP);
             message.setCreatedAt(LocalDateTime.now());
             userMessageMapper.insert(message);
+            messageId = message.getId();
         } catch (Exception e) {
             log.warn("站内消息写入失败: type={}, user={}, {}", type, userId, e.getMessage());
             return;
@@ -81,7 +86,10 @@ public class NotifyServiceImpl implements NotifyService {
         if (templateId == null || !subscribeProperties.ready() || templateData == null || templateData.isEmpty()) {
             return;
         }
-        afterCommit(() -> pushSubscribe(templateId, userId, page, templateData));
+        // 槽位值 → 模板真实字段名（thing1/thing5/time2…），字段名由 wechat.subscribe.fields 决定
+        Map<String, String> wxData = NotifyTemplates.remap(templateData, subscribeProperties.fieldSpec(type.getTemplateKey()));
+        Long id = messageId;
+        afterCommit(() -> pushSubscribe(id, templateId, userId, page, wxData));
     }
 
     @Override
@@ -128,26 +136,55 @@ public class NotifyServiceImpl implements NotifyService {
         return userMessageMapper.markAllRead(userId);
     }
 
-    private void pushSubscribe(String templateId, Long userId, String page, Map<String, String> templateData) {
+    private void pushSubscribe(Long messageId, String templateId, Long userId, String page,
+                               Map<String, String> templateData) {
         try {
             SysUser user = sysUserMapper.selectById(userId);
             String openid = user == null ? null : user.getOpenid();
+            WxSubscribeClient.SendResult result;
             if (openid == null || openid.isBlank()) {
-                // 账号密码注册的用户没有 openid，只能看站内消息
-                return;
+                result = new WxSubscribeClient.SendResult(WxSubscribeClient.PUSH_NO_OPENID, "未绑定微信");
+            } else {
+                result = subscribeClient.send(templateId, openid, page, clampData(templateData));
             }
-            subscribeClient.send(templateId, openid, page, clampData(templateData));
+            markPush(messageId, result);
         } catch (Exception e) {
             log.warn("订阅消息发送异常: user={}, {}", userId, e.getMessage());
+            markPush(messageId, new WxSubscribeClient.SendResult(WxSubscribeClient.PUSH_FAILED, e.getMessage()));
         }
     }
 
+    /**
+     * 推送结果回写。发送在事务提交后的独立线程里跑，所以这里是一次独立更新；
+     * 回写失败不影响业务，只丢排查线索。
+     */
+    private void markPush(Long messageId, WxSubscribeClient.SendResult result) {
+        if (messageId == null || result == null) {
+            return;
+        }
+        try {
+            UserMessage update = new UserMessage();
+            update.setId(messageId);
+            update.setPushStatus(result.status());
+            String error = result.message();
+            update.setPushError(error == null ? null : truncate(error, PUSH_ERROR_MAX));
+            userMessageMapper.updateById(update);
+        } catch (Exception e) {
+            log.warn("推送结果回写失败: message={}, {}", messageId, e.getMessage());
+        }
+    }
+
+    /**
+     * 只截 thing 类字段：微信对 thing 有 20 字上限，time（19 字）和 phrase（枚举）不能截，
+     * 截了反而对不上模板。
+     */
     private Map<String, String> clampData(Map<String, String> data) {
         if (data == null || data.isEmpty()) {
             return Map.of();
         }
         Map<String, String> clamped = new java.util.LinkedHashMap<>();
-        data.forEach((key, value) -> clamped.put(key, truncate(value, WX_THING_MAX)));
+        data.forEach((key, value) -> clamped.put(key,
+                key != null && key.startsWith("thing") ? truncate(value, WX_THING_MAX) : value));
         return clamped;
     }
 

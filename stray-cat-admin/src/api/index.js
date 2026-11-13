@@ -39,3 +39,8 @@ export const posterApi = {
   },
   delete: (id) => http.delete(`/poster/${id}`)
 };
+
+export const feedbackApi = {
+  list: (params) => http.get('/admin/feedback', { params }),
+  handle: (id, status, reply) => http.post('/admin/feedback/handle', { id, status, reply })
+};

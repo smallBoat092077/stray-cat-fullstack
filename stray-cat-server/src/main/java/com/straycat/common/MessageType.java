@@ -24,8 +24,16 @@ public enum MessageType {
     COMMENT_REPLY("commentReply", "有人回复了你的评论", "/pages/cat/detail?id=%d"),
     /** 新的领养申请等待审核（发给管理员） */
     ADOPTION_NEW("adoptionNew", "有新的领养申请待审核", "/pages/admin/review"),
+    /** 收到共同领养邀请 */
+    CO_ADOPTION_INVITE("coAdoptionInvite", "收到共同领养邀请", "/pages/adoption/list"),
+    /** 我发出的共同领养邀请有回应 */
+    CO_ADOPTION_RESULT("coAdoptionResult", "共同领养邀请有回应", "/pages/adoption/list"),
     /** 新的打卡记录等待审核（发给管理员） */
-    RECORD_PENDING("recordPending", "有新的投喂打卡待审核", "/pages/admin/review");
+    RECORD_PENDING("recordPending", "有新的投喂打卡待审核", "/pages/admin/review"),
+    /** 用户提交了新反馈（发给管理员），跳小程序端反馈处理页，?id 直达对应那条 */
+    FEEDBACK_NEW("feedbackNew", "收到新的用户反馈", "/pages/admin/feedback?id=%d"),
+    /** 管理员回复了用户的反馈（发给反馈人） */
+    FEEDBACK_REPLIED("feedbackReplied", "你的反馈有回复了", "/pages/feedback/index");
 
     private final String templateKey;
     private final String title;

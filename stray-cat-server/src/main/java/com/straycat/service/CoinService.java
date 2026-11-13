@@ -9,6 +9,7 @@ public interface CoinService {
     String BIZ_SIGNIN = "SIGNIN";
     String BIZ_REPORT = "REPORT";
     String BIZ_CHECKIN = "CHECKIN";
+    String BIZ_VOLUNTEER_LEVEL = "VOLUNTEER_LEVEL";
     String BIZ_FOLLOWUP = "FOLLOWUP";
     String BIZ_TIP = "TIP";
     String BIZ_RECHARGE = "RECHARGE";

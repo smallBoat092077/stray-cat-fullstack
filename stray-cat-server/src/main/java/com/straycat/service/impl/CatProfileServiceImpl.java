@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,15 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
 
     /** 人气榜单接口一次最多返回多少只，防止前端传个大 limit 当列表刷 */
     private static final int POPULAR_LIMIT_MAX = 10;
+
+    /** 上报时的图片与描述上限，与小程序端 picker 的 count 保持一致 */
+    private static final int CAT_IMAGE_MAX = 3;
+
+    private static final int ENV_IMAGE_MAX = 6;
+
+    private static final int ENV_DESC_MIN = 10;
+
+    private static final int ENV_DESC_MAX = 200;
 
     @Override
     public List<CatProfile> getNearbyCats(double latitude, double longitude, double radius) {
@@ -79,10 +89,37 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
 
     @Override
     public Long reportCat(CatProfile catProfile) {
+        catProfile.setImages(normalizeImages(catProfile.getImages(), CAT_IMAGE_MAX, "猫咪照片"));
+        catProfile.setEnvironmentImages(normalizeImages(catProfile.getEnvironmentImages(), ENV_IMAGE_MAX, "周边环境照片"));
+        if (catProfile.getEnvironmentImages() == null) {
+            throw new BusinessException(ResultCode.PARAM_MISSING.getCode(), "请至少上传一张周边环境照片");
+        }
+        String envDesc = catProfile.getEnvironmentDesc() == null ? null : catProfile.getEnvironmentDesc().trim();
+        if (envDesc == null || envDesc.isEmpty()) {
+            throw new BusinessException(ResultCode.PARAM_MISSING.getCode(), "请填写周边环境描述");
+        }
+        if (envDesc.length() < ENV_DESC_MIN) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),
+                    "周边环境描述太短了，至少 " + ENV_DESC_MIN + " 个字");
+        }
+        if (envDesc.length() > ENV_DESC_MAX) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),
+                    "周边环境描述最多 " + ENV_DESC_MAX + " 个字");
+        }
+        catProfile.setEnvironmentDesc(envDesc);
+
+        // 只传了一张封面图的老客户端，也补进多图字段，详情轮播不至于空着
+        if (catProfile.getImages() == null && catProfile.getCoverImage() != null) {
+            catProfile.setImages(catProfile.getCoverImage());
+        }
+        if (catProfile.getCoverImage() == null && catProfile.getImages() != null) {
+            catProfile.setCoverImage(catProfile.getImages().split(",")[0]);
+        }
+
         contentSecurityService.check(catProfile.getDiscovererId(), ContentSecurityService.SCENE_PROFILE,
                 catProfile.getName(), catProfile.getAgeEstimate(), catProfile.getBreed(),
                 catProfile.getColor(), catProfile.getPersonality(),
-                catProfile.getLocationDesc(), catProfile.getDescription());
+                catProfile.getLocationDesc(), catProfile.getDescription(), envDesc);
 
         save(catProfile);
 
@@ -96,6 +133,27 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
         coinService.grant(catProfile.getDiscovererId(), CoinService.REPORT_REWARD,
                 CoinService.BIZ_REPORT, catProfile.getId(), "上报流浪猫");
         return catProfile.getId();
+    }
+
+    /**
+     * 逗号分隔的图片路径去空、去重、限长；全部为空时返回 null，便于调用方区分"没传"和"传了空串"
+     */
+    private String normalizeImages(String raw, int max, String label) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        List<String> paths = Arrays.stream(raw.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .distinct()
+                .collect(Collectors.toList());
+        if (paths.isEmpty()) {
+            return null;
+        }
+        if (paths.size() > max) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), label + "最多 " + max + " 张");
+        }
+        return String.join(",", paths);
     }
 
     @Override

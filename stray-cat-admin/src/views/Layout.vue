@@ -3,7 +3,7 @@
     <el-header class="shell-header">
       <div class="brand">
         <span class="brand-mark">喵</span>
-        <span>流浪猫喂养 · 后台管理</span>
+        <span>猫遇猫舍 · 后台管理</span>
       </div>
       <div class="account">
         <span class="muted">{{ auth.user?.nickname || auth.user?.username }}</span>
@@ -24,6 +24,7 @@
           <el-menu-item index="/ledger">猫粮流水</el-menu-item>
           <el-menu-item index="/tips">打赏记录</el-menu-item>
           <el-menu-item index="/posters">海报管理</el-menu-item>
+          <el-menu-item index="/feedback">用户反馈</el-menu-item>
         </el-menu>
       </el-aside>
 

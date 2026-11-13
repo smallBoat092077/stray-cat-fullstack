@@ -136,8 +136,8 @@ baseUrl: 'http://localhost:8080/api'  // 开发环境
 - [x] 图片上传（打卡照片）
 - [x] 打赏（改为站内猫粮积分，不走现金支付）
 - [x] 猫粮充值（微信虚拟支付道具直购）
-- [ ] 订阅消息推送
-- [ ] 共同领养功能
-- [ ] 志愿者等级体系
+- [x] 订阅消息推送（站内消息为底座，微信一次性订阅为增强：`wechat.subscribe.templates` 配 `WX_TPL_*` 环境变量，未配置时自动退化为只落站内消息；`user_message.push_status` 记录每条消息的推送结果（0 仅站内 / 1 已推送 / 2 无订阅额度 / 3 推送失败 / 4 未绑定微信），消息中心据此提示原因并提供「开启微信通知」一键补授权；共同领养的邀请与回应也已接入。模板字段名不再写死在代码里——`NotifyTemplates` 只产出「猫咪/对方/时间」三个槽位，槽位落到 `thing1`/`thing5`/`time2` 哪个字段由 `wechat.subscribe.fields` 配置决定，换模板只改配置不发版；回归测试 `WxSubscribeFieldsTest` 锁住线上 7 个模板的真实字段顺序）
+- [x] 共同领养功能（主申请人按账号名/昵称邀请，最多 3 位共同领养人；被邀请人同意/拒绝，审核结果同步通知；`adoption_co_adopter` 表，接口 `/adoption/application/{id}/co-adopter`、`/adoption/co-adoption/mine`）
+- [x] 志愿者等级体系（按已审核通过的打卡数分 6 级：见习/初级/骨干/资深/金牌/守护者，每次打卡记 0.5 小时；升级一次性发猫粮奖励，等级只升不降；`sys_user.volunteer_level`，接口 `/feeding/volunteer/stats`、`/feeding/volunteer/leaderboard`）
 - [x] UGC 留言接入 msgSecCheck 内容安全接口（见上方「内容安全」）
-- [ ] 账号密码用户绑定微信 openid（当前这类账号无法购买猫粮）
+- [x] 账号密码用户绑定微信 openid（「我的」页 → 绑定微信，绑定时用 wx.login 的 code 换 openid + session_key 落库；绑定后可走虚拟支付充值，下次微信登录直接进入该账号。后端接口 `POST /user/bindWechat`，openid 唯一索引兜底防重复绑定）
