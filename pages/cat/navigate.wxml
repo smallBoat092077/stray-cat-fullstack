@@ -1,3 +1,4 @@
+<brand-nav back="{{true}}" />
 <view class="page">
   <view class="map-wrap">
     <map

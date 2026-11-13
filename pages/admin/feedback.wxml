@@ -1,0 +1,59 @@
+<brand-nav back="{{true}}" />
+<view class="container" wx:if="{{ready}}">
+  <view class="filter-bar">
+    <view class="filter-item {{status === 0 ? 'active' : ''}}" bindtap="onStatus" data-status="0">待处理</view>
+    <view class="filter-item {{status === 1 ? 'active' : ''}}" bindtap="onStatus" data-status="1">已回复</view>
+    <view class="filter-item {{status === 2 ? 'active' : ''}}" bindtap="onStatus" data-status="2">已忽略</view>
+    <view class="filter-item {{status === null ? 'active' : ''}}" bindtap="onStatus" data-status="all">全部</view>
+  </view>
+
+  <view class="card fb-item {{item.highlight ? 'highlight' : ''}}"
+        wx:for="{{list}}" wx:key="id" wx:for-index="fi">
+    <view class="item-head" bindtap="onToggle" data-id="{{item.id}}">
+      <view class="head-left">
+        <text class="fb-type">{{item.typeText}}</text>
+        <text class="item-title">#{{item.id}} · {{item.nickname || '匿名用户'}}</text>
+      </view>
+      <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
+    </view>
+
+    <view class="fb-content" wx:if="{{item.expanded}}">{{item.content}}</view>
+    <view class="fb-brief" wx:else>{{item.content}}</view>
+
+    <view class="imgs" wx:if="{{item.images.length > 0 && item.expanded}}">
+      <image class="img" wx:for="{{item.images}}" wx:for-item="img" wx:for-index="ii" wx:key="*this"
+             src="{{img}}" mode="aspectFill"
+             data-img="{{img}}" data-index="{{fi}}" catchtap="previewImage" />
+    </view>
+
+    <view class="fb-meta">
+      <text>{{item.timeText}}</text>
+      <text class="fb-toggle" bindtap="onToggle" data-id="{{item.id}}">{{item.expanded ? '收起' : '展开'}}</text>
+    </view>
+
+    <view class="fb-reply" wx:if="{{item.reply}}">
+      <text class="fb-reply-label">回复</text>
+      <text class="fb-reply-content">{{item.reply}}</text>
+    </view>
+
+    <view class="reply-box" wx:if="{{replyFor === item.id}}">
+      <textarea class="reply-input" value="{{replyText}}" bindinput="onReplyInput"
+                maxlength="200" placeholder="写一句回复，用户会在反馈页看到"
+                auto-height="{{true}}" />
+      <view class="reply-ops">
+        <view class="act-btn ghost" bindtap="cancelReply">收起</view>
+        <view class="act-btn solid" bindtap="submitReply">发送回复</view>
+      </view>
+      <view class="reply-hint">发送后标记为「已回复」，用户会收到通知</view>
+    </view>
+
+    <view class="actions" wx:if="{{item.status === 0 && replyFor !== item.id}}">
+      <view class="act-btn ghost" data-id="{{item.id}}" bindtap="onIgnore">忽略</view>
+      <view class="act-btn solid" data-id="{{item.id}}" bindtap="openReply">回复</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && list.length === 0}}">
+    <text>{{status === 0 ? '没有待处理的反馈' : '这里还没有反馈记录'}}</text>
+  </view>
+</view>

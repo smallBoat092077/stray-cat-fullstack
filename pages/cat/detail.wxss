@@ -433,3 +433,38 @@
   color: #F7F2E6;
   background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
 }
+
+/* 周边环境 */
+.env-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.env-img {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 10rpx;
+  background: var(--cream);
+}
+
+.env-tip {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+/* 投喂记录标题行：右侧标明只展示最近几条 */
+.feed-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feed-count {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  letter-spacing: 1rpx;
+}

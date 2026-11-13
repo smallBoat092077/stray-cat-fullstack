@@ -3,10 +3,22 @@ const { userApi, coinApi, feedingApi, messageApi, uploadFile, resolveImageUrl } 
 const ROLE_MAP = { 0: '普通用户', 1: '志愿者', 2: '领养人', 3: '管理员' };
 const TAB_PAGES = ['/pages/index/index', '/pages/cat/list', '/pages/feeding/list', '/pages/profile/index'];
 
+const EMPTY_VOLUNTEER = {
+  feedingCount: 0,
+  serviceHours: 0,
+  level: 1,
+  levelName: '见习志愿者',
+  nextLevelName: '初级志愿者',
+  remainToNext: 3,
+  progressPercent: 0,
+  nextReward: 10,
+  completedCount: 0
+};
+
 Page({
   data: {
     userInfo: null,
-    volunteerData: { feedingCount: 0, serviceHours: 0 },
+    volunteerData: { ...EMPTY_VOLUNTEER },
     coinBalance: 0,
     coinTipped: 0,
     signedToday: false,
@@ -27,10 +39,10 @@ Page({
           avatarUrl: resolveImageUrl(userInfo.avatarUrl),
           roleText: ROLE_MAP[userInfo.role] || '普通用户'
         },
-        volunteerData: { feedingCount: 0, serviceHours: 0 }
+        volunteerData: { ...EMPTY_VOLUNTEER }
       });
       this.loadCoin();
-      this.loadFeedingCount();
+      this.loadVolunteerStats();
       this.loadUnread();
       this.refreshRole();
     } else {
@@ -40,7 +52,7 @@ Page({
         coinTipped: 0,
         signedToday: false,
         unreadCount: 0,
-        volunteerData: { feedingCount: 0, serviceHours: 0 }
+        volunteerData: { ...EMPTY_VOLUNTEER }
       });
     }
   },
@@ -55,13 +67,28 @@ Page({
     }
   },
 
-  // 投喂次数就是自己打的打卡数，用记录接口的 total 直接给
-  async loadFeedingCount() {
+  // 投喂次数 / 服务时长 / 志愿者等级都来自同一个统计接口，等级由已审核打卡数推导
+  async loadVolunteerStats() {
     try {
-      const page = await feedingApi.listMyRecords({ pageNum: 1, pageSize: 1 });
-      this.setData({ 'volunteerData.feedingCount': (page && page.total) || 0 });
+      const stats = await feedingApi.volunteerStats();
+      if (!stats) {
+        return;
+      }
+      this.setData({
+        volunteerData: {
+          feedingCount: stats.completedCount || 0,
+          completedCount: stats.completedCount || 0,
+          serviceHours: stats.serviceHours || 0,
+          level: stats.level || 1,
+          levelName: stats.levelName || '见习志愿者',
+          nextLevelName: stats.nextLevelName || '',
+          remainToNext: stats.remainToNext || 0,
+          progressPercent: stats.progressPercent || 0,
+          nextReward: stats.nextReward || 0
+        }
+      });
     } catch (err) {
-      // 未登录或网络异常时保持 0
+      // 未登录或网络异常时保持默认值
     }
   },
 
@@ -119,8 +146,10 @@ Page({
     this.setData({ saving: true });
     try {
       let avatarUrl = this.data.editAvatar;
-      // chooseAvatar 给的是本机临时路径，必须上传到服务端才能持久化
-      if (avatarUrl && avatarUrl.indexOf('wxfile://') === 0) {
+      // chooseAvatar 给的是本机临时路径，必须上传到服务端才能持久化。
+      // 注意路径因平台而异：Android 是 wxfile://，iOS 是 http://tmp/，
+      // 所以这里不能只认 wxfile:// 前缀——只要不是已经上传过的网络地址就上传
+      if (avatarUrl && !/^https?:\/\//i.test(avatarUrl)) {
         avatarUrl = await uploadFile(avatarUrl);
       }
       const user = await userApi.updateInfo({ nickname, avatarUrl });
@@ -135,6 +164,9 @@ Page({
       wx.showToast({ title: '已保存', icon: 'success' });
     } catch (err) {
       this.setData({ saving: false });
+      // 上传或保存失败必须给反馈，否则用户对着按钮毫无反应（曾因静默失败被当成 bug 报障）
+      const msg = (err && (err.message || err.errMsg)) || '';
+      wx.showToast({ title: msg ? '保存失败：' + msg : '保存失败，请重试', icon: 'none', duration: 3000 });
     }
   },
 
@@ -211,10 +243,38 @@ Page({
     });
   },
 
+  // 账号密码用户绑定微信，绑定后才能充值猫粮（虚拟支付需要 openid + session_key）
+  onBindWechat() {
+    wx.showModal({
+      title: '绑定微信',
+      content: '绑定后可以充值猫粮，下次微信登录也会直接进入本账号。确定绑定吗？',
+      success: (res) => {
+        if (!res.confirm) {
+          return;
+        }
+        wx.showLoading({ title: '绑定中...' });
+        getApp().bindWechat().then((user) => {
+          wx.hideLoading();
+          this.setData({
+            userInfo: {
+              ...user,
+              avatarUrl: resolveImageUrl(user.avatarUrl),
+              roleText: ROLE_MAP[user.role] || '普通用户'
+            }
+          });
+          wx.showToast({ title: '绑定成功', icon: 'success' });
+        }).catch(() => {
+          // 失败原因由 request 统一弹 toast，这里不用重复提示
+          wx.hideLoading();
+        });
+      }
+    });
+  },
+
   onAbout() {
     wx.showModal({
       title: '关于我们',
-      content: '流浪猫喂养小程序 v1.0.9\n关爱流浪动物，从每一次投喂开始',
+      content: '猫遇猫舍 v1.0.9\n遇一只猫，安一个家',
       showCancel: false
     });
   },

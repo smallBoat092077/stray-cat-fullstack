@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "意见反馈",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  }
+}

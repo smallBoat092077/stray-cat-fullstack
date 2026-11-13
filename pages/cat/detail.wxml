@@ -1,12 +1,14 @@
+<brand-nav back="{{true}}" />
 <view class="container" wx:if="{{cat}}">
   <!-- 图片轮播 -->
   <swiper class="cat-swiper" indicator-dots autoplay circular
           indicator-color="rgba(255,253,247,0.55)" indicator-active-color="#C3A15F">
-    <swiper-item wx:for="{{cat.images}}" wx:key="index">
-      <image class="swiper-img" src="{{item}}" mode="aspectFill" />
+    <swiper-item wx:for="{{catImages}}" wx:key="index">
+      <image class="swiper-img" src="{{item}}" mode="aspectFill"
+             data-src="{{item}}" bindtap="previewCatImage" />
     </swiper-item>
-    <swiper-item wx:if="{{!cat.images || cat.images.length === 0}}">
-      <image class="swiper-img" src="{{cat.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+    <swiper-item wx:if="{{catImages.length === 0}}">
+      <image class="swiper-img" src="/images/default-cat.png" mode="aspectFill" />
     </swiper-item>
   </swiper>
 
@@ -53,6 +55,17 @@
     <text class="section-content">{{cat.personality}}</text>
   </view>
 
+  <!-- 周边环境：上报人拍的现场环境，方便后面的人按环境找到它 -->
+  <view class="card" wx:if="{{envImages.length > 0 || envDesc}}">
+    <text class="section-title">周边环境</text>
+    <text class="section-content" wx:if="{{envDesc}}">{{envDesc}}</text>
+    <view class="env-grid" wx:if="{{envImages.length > 0}}">
+      <image class="env-img" wx:for="{{envImages}}" wx:key="*this"
+             src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="previewEnvImage" />
+    </view>
+    <text class="env-tip" wx:if="{{envImages.length > 0}}">点击照片可看大图</text>
+  </view>
+
   <!-- 猫粮 -->
   <view class="card">
     <view class="coin-head">
@@ -72,9 +85,12 @@
     </view>
   </view>
 
-  <!-- 投喂打卡 -->
+  <!-- 投喂打卡（只展示审核通过的） -->
   <view class="card" wx:if="{{feedRecords.length > 0}}">
-    <text class="section-title">投喂记录</text>
+    <view class="feed-title-row">
+      <text class="section-title">投喂记录</text>
+      <text class="feed-count">最近 {{feedRecords.length}} 次</text>
+    </view>
     <view class="feed-item" wx:for="{{feedRecords}}" wx:key="id">
       <view class="feed-head">
         <text class="feed-name">{{item.volunteerName}}</text>

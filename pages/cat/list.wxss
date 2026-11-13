@@ -47,8 +47,15 @@
   box-shadow: 0 6rpx 24rpx rgba(20, 73, 60, 0.10);
 }
 
+/* 海报宽高比不一时容器取最大高度，矮的在容器内垂直居中，避免头部对齐留白一边倒 */
+.poster-swiper swiper-item {
+  display: flex;
+  align-items: center;
+}
+
 .poster-img {
   width: 100%;
+  display: block;
 }
 
 /* 筛选栏 */

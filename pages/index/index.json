@@ -1,4 +1,7 @@
 {
-  "navigationBarTitleText": "流浪猫地图",
-  "usingComponents": {}
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "猫遇猫舍",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  }
 }

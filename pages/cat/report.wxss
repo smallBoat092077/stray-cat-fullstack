@@ -24,6 +24,13 @@
   border-radius: 10rpx;
 }
 
+.location-alt {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--brand, #14493C);
+  text-decoration: underline;
+}
+
 .location-content { display: flex; align-items: center; flex: 1; overflow: hidden; }
 .location-icon { font-size: 36rpx; margin-right: 16rpx; }
 .location-text { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
@@ -32,6 +39,14 @@
 .location-arrow { font-size: 32rpx; color: var(--gold-deep); margin-left: 16rpx; }
 
 /* 图片上传 */
+.form-hint {
+  display: block;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  line-height: 1.5;
+  margin-top: 8rpx;
+}
+.desc-counter { text-align: right; }
 .image-upload-area { margin-top: 12rpx; }
 .image-list { display: flex; flex-wrap: wrap; gap: 16rpx; }
 .image-item {

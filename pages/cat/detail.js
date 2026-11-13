@@ -14,11 +14,22 @@ function prettyTime(iso) {
   return iso ? iso.slice(0, 16).replace('T', ' ') : '';
 }
 
+// 多图字段是逗号分隔的相对路径，空串要当"没有图"处理
+function splitImages(raw) {
+  if (!raw) {
+    return [];
+  }
+  return String(raw).split(',').map(s => s.trim()).filter(Boolean);
+}
+
 const COMMENT_PAGE_SIZE = 20;
 
 Page({
   data: {
     cat: null,
+    catImages: [],
+    envImages: [],
+    envDesc: '',
     supporters: [],
     feedRecords: [],
     // 评论面板
@@ -54,15 +65,21 @@ Page({
     try {
       const cat = await catApi.getDetail(id);
       const statusInfo = LIFE_STATUS_MAP[cat.lifeStatus] || { text: '未知', class: 'info' };
+      const cover = resolveImageUrl(cat.coverImage);
+      const catImages = splitImages(cat.images).map(resolveImageUrl);
       this.setData({
         cat: {
           ...cat,
-          coverImage: resolveImageUrl(cat.coverImage),
+          coverImage: cover,
           lifeStatusText: statusInfo.text,
           lifeStatusClass: statusInfo.class,
           genderText: GENDER_MAP[cat.gender] || '未知',
           healthTags: HEALTH_TAGS_MAP[cat.healthStatus] || []
-        }
+        },
+        // 老数据只有封面图，兜一张进去，轮播不至于空着
+        catImages: catImages.length > 0 ? catImages : (cover ? [cover] : []),
+        envImages: splitImages(cat.environmentImages).map(resolveImageUrl),
+        envDesc: cat.environmentDesc || ''
       });
       this.loadSupporters(id);
       this.loadFeedRecords(id);
@@ -101,6 +118,16 @@ Page({
     const current = e.currentTarget.dataset.src;
     const urls = this.data.feedRecords.reduce((acc, item) => acc.concat(item.images), []);
     wx.previewImage({ current, urls });
+  },
+
+  previewEnvImage(e) {
+    const current = e.currentTarget.dataset.src;
+    wx.previewImage({ current, urls: this.data.envImages });
+  },
+
+  previewCatImage(e) {
+    const current = e.currentTarget.dataset.src;
+    wx.previewImage({ current, urls: this.data.catImages });
   },
 
   onTip() {
@@ -340,7 +367,8 @@ Page({
   onShareAppMessage() {
     return {
       title: `来看看${this.data.cat.name}，${this.data.cat.description}`,
-      path: `/pages/cat/detail?id=${this.data.cat.id}`
+      path: `/pages/cat/detail?id=${this.data.cat.id}`,
+      imageUrl: '/images/share-cover.png'
     };
   }
 });

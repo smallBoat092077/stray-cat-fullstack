@@ -188,6 +188,29 @@ App({
     });
   },
 
+  // 账号密码用户绑定微信：绑定后才能充值猫粮，下次微信登录也会直接进这个账号
+  bindWechat() {
+    return new Promise((resolve, reject) => {
+      wx.login({
+        success: (res) => {
+          if (!res.code) {
+            reject(new Error('获取微信凭证失败'));
+            return;
+          }
+          // code 走查询串，后端是 @RequestParam，发 JSON body 会绑不上
+          this.request({
+            url: `/user/bindWechat?code=${res.code}`,
+            method: 'POST'
+          }).then((user) => {
+            this.saveSession(this.globalData.token, user);
+            resolve(user);
+          }).catch(reject);
+        },
+        fail: () => reject(new Error('获取微信凭证失败'))
+      });
+    });
+  },
+
   // 封装请求
   request(options) {
     return new Promise((resolve, reject) => {

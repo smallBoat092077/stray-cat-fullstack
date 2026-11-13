@@ -2,6 +2,7 @@ const { feedingApi, uploadFile } = require('../../utils/api');
 const { TASK_TYPE_MAP, TASK_STATUS_MAP } = require('../../utils/constants');
 const { prettyTime, volunteerLine } = require('../../utils/format');
 const { prefetchTemplates, requestSubscribe, SUBSCRIBE_KEYS } = require('../../utils/subscribe');
+const { getCurrentLocation, describeError } = require('../../utils/location');
 
 Page({
   data: {
@@ -159,47 +160,50 @@ Page({
   onCheckIn() {
     // 订阅弹窗必须由点击直接触发，模板 ID 已在 onLoad 预取，这里不再等网络
     requestSubscribe(SUBSCRIBE_KEYS.checkIn).then(() => {
-      wx.getLocation({
-        type: 'gcj02',
-        success: (res) => {
-          if (this.data.recognizeMode && !this.data.selectedCatId) {
-            // 需要先识别
-            wx.showModal({
-              title: '请先识别猫咪',
-              content: '拍照识别猫咪身份后再打卡，或选择任务关联的猫咪',
-              confirmText: '去拍照',
-              cancelText: '选任务猫',
-              success: (modalRes) => {
-                if (modalRes.confirm) {
-                  this.onRecognizeCat();
-                } else if (modalRes.cancel) {
-                  this.onSelectTaskCat();
-                }
-              }
-            });
-          } else {
-            // 直接打卡或带识别打卡
-            wx.showModal({
-              title: '确认打卡',
-              content: '请确认你已到达投喂点并完成投喂',
-              success: (modalRes) => {
-                if (modalRes.confirm) {
-                  if (this.data.recognizeMode && this.data.selectedCatId && this.data.images.length > 0) {
-                    // 带识别的打卡
-                    this.doCheckInWithRecognize(res.latitude, res.longitude);
-                  } else {
-                    // 普通打卡
-                    this.doCheckIn(res.latitude, res.longitude);
-                  }
-                }
-              }
-            });
+      getCurrentLocation()
+        .then((loc) => this.confirmCheckIn(loc))
+        .catch((err) => {
+          const tip = describeError(err);
+          wx.showToast({ title: tip.title, icon: 'none', duration: 3000 });
+        });
+    });
+  },
+
+  // 打卡前的确认链路：先看要不要识别猫咪，再弹确认框
+  confirmCheckIn(loc) {
+    if (this.data.recognizeMode && !this.data.selectedCatId) {
+      // 需要先识别
+      wx.showModal({
+        title: '请先识别猫咪',
+        content: '拍照识别猫咪身份后再打卡，或选择任务关联的猫咪',
+        confirmText: '去拍照',
+        cancelText: '选任务猫',
+        success: (modalRes) => {
+          if (modalRes.confirm) {
+            this.onRecognizeCat();
+          } else if (modalRes.cancel) {
+            this.onSelectTaskCat();
           }
-        },
-        fail: () => {
-          wx.showToast({ title: '获取位置失败', icon: 'none' });
         }
       });
+      return;
+    }
+    // 直接打卡或带识别打卡
+    wx.showModal({
+      title: '确认打卡',
+      content: '请确认你已到达投喂点并完成投喂',
+      success: (modalRes) => {
+        if (!modalRes.confirm) {
+          return;
+        }
+        if (this.data.recognizeMode && this.data.selectedCatId && this.data.images.length > 0) {
+          // 带识别的打卡
+          this.doCheckInWithRecognize(loc.latitude, loc.longitude);
+        } else {
+          // 普通打卡
+          this.doCheckIn(loc.latitude, loc.longitude);
+        }
+      }
     });
   },
 

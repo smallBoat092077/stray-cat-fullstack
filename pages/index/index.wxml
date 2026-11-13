@@ -1,4 +1,7 @@
 <view class="container">
+  <!-- 自定义导航：与全站统一用 brand-nav 组件；地图是原生组件，fixed 层可能被盖住，走文档流 -->
+  <brand-nav fixed="{{false}}" />
+
   <!-- 地图 -->
   <map
     id="catMap"
@@ -10,14 +13,64 @@
     bindmarkertap="onMarkerTap"
     show-location="{{true}}"
   >
-    <!-- 自定义覆盖物 -->
+    <!-- 自定义覆盖物：真机上 cover-view 嵌套 cover-text / 纵向 flex / 特殊符号都可能不渲染，
+         所以按钮一律扁平写法：纯 cover-view 文本 + 横向排列 -->
     <cover-view class="map-controls">
+      <!-- 主操作：我的位置，失败时变暖橙重试入口 -->
+      <cover-view class="control-btn control-btn-primary {{locationFailed ? 'control-btn-warn' : ''}}" bindtap="onRelocate">
+        <cover-image class="control-icon" src="/images/icon-locate.png" />
+        <cover-view class="control-text control-text-light">{{locating ? '定位中' : (locationFailed ? '重试定位' : '我的位置')}}</cover-view>
+      </cover-view>
       <cover-view class="control-btn" bindtap="onNearbyTap">
         <cover-image class="control-icon" src="/images/icon-nearby.png" />
-        <cover-text>{{mode === 'popular' ? '人气猫咪' : '附近猫咪'}}</cover-text>
+        <cover-view class="control-text">{{mode === 'popular' ? '人气猫咪' : '附近猫咪'}}</cover-view>
+      </cover-view>
+      <!-- GPS 拿不到定位时的兜底入口：不依赖本机定位，直接地图上选点 -->
+      <cover-view class="control-btn" wx:if="{{locationFailed}}" bindtap="onChooseLocation">
+        <cover-view class="control-text">手动选点</cover-view>
       </cover-view>
     </cover-view>
   </map>
+
+  <!-- 定位失败横幅：人话标题 + 原始 errMsg（发布环境没有调试面板，靠它上报真实原因） -->
+  <view class="loc-banner" wx:if="{{locationFailed && !privacyConsentNeeded}}">
+    <text class="loc-banner-title">{{locateTitle || '定位失败'}}</text>
+    <text class="loc-banner-detail">{{locateError}}</text>
+  </view>
+
+  <!-- 首次使用同意卡片：隐私弹窗必须由用户点击触发，冷启动自动弹会被微信抑制，
+       所以检测到未同意时展示这张卡片，用户点击「同意并开启定位」再弹官方弹窗 -->
+  <view class="privacy-card" wx:if="{{privacyConsentNeeded}}">
+    <text class="privacy-title">{{locateTitle || '需同意《用户隐私保护指引》后才能定位'}}</text>
+    <text class="privacy-desc">同意后才能使用自动定位，查看你附近的猫咪与投喂点；也可以先在地图上手动选点。</text>
+    <view class="privacy-actions">
+      <!-- 用官方隐私同意按钮：点击即完成授权，不再依赖常被抑制的 requirePrivacyAuthorize 弹窗 -->
+      <button
+        class="privacy-btn-main"
+        open-type="agreePrivacyAuthorization"
+        bindagreeprivacyauthorization="onPrivacyAgreeByButton"
+        bindtap="onPrivacyAgreeTap"
+      >同意并开启定位</button>
+      <view class="privacy-btn-sub" bindtap="onChooseLocation">先手动选点</view>
+    </view>
+    <text class="privacy-detail">{{locateError}}</text>
+  </view>
+
+  <!-- 首屏骨架：数据没回来前先把抽屉的形占住，比白屏或「加载中」更稳 -->
+  <view class="bottom-sheet" wx:if="{{loading && nearbyCats.length === 0 && popularCats.length === 0}}">
+    <view class="sheet-header">
+      <view class="sk-bar sk-title"></view>
+    </view>
+    <view class="cat-scroll">
+      <view class="cat-card sk-card" wx:for="{{[1, 2, 3]}}" wx:key="*this">
+        <view class="sk-avatar"></view>
+        <view class="sk-body">
+          <view class="sk-bar sk-line-lg"></view>
+          <view class="sk-bar sk-line-sm"></view>
+        </view>
+      </view>
+    </view>
+  </view>
 
   <!-- 底部猫咪列表：附近有人 → 附近猫咪；附近空 → 人气猫咪 TOP3 -->
   <view class="bottom-sheet" wx:if="{{mode === 'nearby' ? nearbyCats.length > 0 : popularCats.length > 0}}">
@@ -55,11 +108,6 @@
     <text class="empty-icon">🐱</text>
     <text>附近暂无流浪猫</text>
     <button class="btn-primary" style="margin-top: 30rpx;" bindtap="onReportTap">上报流浪猫</button>
-  </view>
-
-  <!-- 加载 -->
-  <view class="loading" wx:if="{{loading}}">
-    <text>加载中...</text>
   </view>
 
   <!-- 点地图猫头弹出的 3D 信息卡 -->

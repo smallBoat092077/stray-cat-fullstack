@@ -1,0 +1,15 @@
+<!-- 占位：fixed 时把内容顶下来，避免遮住页面首屏 -->
+<view wx:if="{{fixed}}" style="height: {{totalHeight}}px;"></view>
+
+<view class="bn-wrap {{fixed ? 'bn-fixed' : ''}}" style="padding-top: {{statusBarHeight}}px;">
+  <view class="bn-bar" style="height: {{navBarHeight}}px;">
+    <view class="bn-back" wx:if="{{back}}" catchtap="onBack">
+      <view class="bn-back-arrow"></view>
+    </view>
+    <image class="bn-logo" src="/images/logo-mark-mono.png" mode="aspectFit" />
+    <view class="bn-text">
+      <text class="bn-name">猫遇猫舍</text>
+      <text class="bn-slogan">遇一只猫 · 安一个家</text>
+    </view>
+  </view>
+</view>

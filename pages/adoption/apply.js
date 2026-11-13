@@ -82,7 +82,23 @@ Page({
       setTimeout(() => wx.navigateBack(), 1500);
     } catch (err) {
       wx.hideLoading();
-      wx.showToast({ title: err.message || '提交失败', icon: 'none' });
+      const msg = (err && err.message) || '提交失败';
+      if (msg.indexOf('已提交') >= 0) {
+        // 后端防重复：同一人对同一只猫只允许一张在途申请，引导去领养页看进度而不是停在表单上
+        wx.showModal({
+          title: '申请已在审核中',
+          content: '你之前提交过这只猫的领养申请，请耐心等待志愿者审核，可在「领养」页查看进度。',
+          confirmText: '去查看',
+          cancelText: '知道了',
+          success: (res) => {
+            if (res.confirm) {
+              wx.navigateTo({ url: '/pages/adoption/list' });
+            }
+          }
+        });
+      } else {
+        wx.showToast({ title: msg, icon: 'none' });
+      }
     }
   }
 });

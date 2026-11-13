@@ -1,4 +1,29 @@
+<brand-nav back="{{true}}" />
 <view class="container">
+  <!-- 待回应的共同领养邀请 -->
+  <view class="co-section card" wx:if="{{pendingInvites.length > 0}}">
+    <text class="co-title">共同领养邀请</text>
+    <view class="co-item" wx:for="{{pendingInvites}}" wx:key="id">
+      <view class="co-item-main">
+        <text class="co-cat">{{item.catName}}</text>
+        <text class="co-inviter">{{item.inviterName}} 邀请你一起照顾</text>
+      </view>
+      <view class="co-actions">
+        <view class="co-btn co-btn-ghost" bindtap="onRespond" data-id="{{item.id}}" data-accept="0">婉拒</view>
+        <view class="co-btn co-btn-solid" bindtap="onRespond" data-id="{{item.id}}" data-accept="1">同意</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 我已参与的共同领养 -->
+  <view class="co-section card" wx:if="{{acceptedCoAdoptions.length > 0}}">
+    <text class="co-title">我参与的共同领养</text>
+    <view class="co-done" wx:for="{{acceptedCoAdoptions}}" wx:key="id">
+      <text class="co-cat">{{item.catName}}</text>
+      <text class="co-done-meta">{{item.inviterName}} 发起 · 申请{{item.appStatusText}}</text>
+    </view>
+  </view>
+
   <!-- 状态筛选 -->
   <view class="filter-bar">
     <view class="filter-item {{currentStatus === '' ? 'active' : ''}}" bindtap="onFilter" data-status="">全部</view>
@@ -20,9 +45,18 @@
       <view class="adoption-info" wx:if="{{item.reviewComment}}">
         <text>审核意见: {{item.reviewComment}}</text>
       </view>
+      <view class="adoption-info co-count" wx:if="{{item.coAdopterCount > 0}}"
+            bindtap="onShowCoAdopters" data-id="{{item.id}}">
+        <text>共同领养 {{item.coAdopterCount}} 人 · 查看名单 ›</text>
+      </view>
       <view class="adoption-actions">
-        <button class="btn-small btn-outline" wx:if="{{item.status === 3}}" bindtap="onReapply" data-id="{{item.id}}">
+        <button class="btn-small btn-outline" wx:if="{{item.status === 3}}" bindtap="onReapply"
+                data-id="{{item.id}}" data-cat-id="{{item.catId}}">
           重新申请
+        </button>
+        <button class="btn-small btn-outline invite-btn" wx:if="{{item.canInvite}}"
+                bindtap="onInvite" data-id="{{item.id}}">
+          邀请共同领养
         </button>
       </view>
     </view>

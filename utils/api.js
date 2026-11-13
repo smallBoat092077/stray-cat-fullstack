@@ -131,7 +131,11 @@ const feedingApi = {
       data: status === null || status === undefined ? { limit } : { status, limit }
     }),
   reviewRecord: (id, status, comment) =>
-    request({ url: '/feeding/record/review', method: 'POST', data: { id, status, comment } })
+    request({ url: '/feeding/record/review', method: 'POST', data: { id, status, comment } }),
+  // 志愿者等级
+  volunteerStats: () => request({ url: '/feeding/volunteer/stats' }),
+  volunteerLeaderboard: (limit = 10) =>
+    request({ url: '/feeding/volunteer/leaderboard', data: { limit } })
 };
 
 // 领养相关
@@ -142,7 +146,18 @@ const adoptionApi = {
   getFollowUpList: (params) => request({ url: '/adoption/followup/list', data: params }),
   submitFollowUp: (data) => request({ url: '/adoption/followup/submit', method: 'POST', data }),
   review: (id, status, comment) =>
-    request({ url: '/adoption/review', method: 'POST', data: { id, status, comment } })
+    request({ url: '/adoption/review', method: 'POST', data: { id, status, comment } }),
+  // 共同领养：后端这几个参数是 @RequestParam，必须走查询串
+  inviteCoAdopter: (applicationId, keyword) =>
+    request({
+      url: `/adoption/application/${applicationId}/co-adopter?keyword=${encodeURIComponent(keyword)}`,
+      method: 'POST'
+    }),
+  getCoAdopters: (applicationId) => request({ url: `/adoption/application/${applicationId}/co-adopters` }),
+  cancelCoAdopter: (id) => request({ url: `/adoption/co-adopter/${id}`, method: 'DELETE' }),
+  myCoAdoptions: () => request({ url: '/adoption/co-adoption/mine' }),
+  respondCoAdoption: (id, accept) =>
+    request({ url: `/adoption/co-adoption/${id}/respond?accept=${accept}`, method: 'POST' })
 };
 
 // 猫粮（站内虚拟积分，无现金价值）
@@ -177,6 +192,19 @@ const messageApi = {
   templates: () => request({ url: '/message/templates' })
 };
 
+// 意见反馈（必须登录，后端 24 小时内限 3 条）
+const feedbackApi = {
+  submit: (data) => request({ url: '/feedback/submit', method: 'POST', data }),
+  mine: (pageNum = 1, pageSize = 20) => request({ url: '/feedback/my', data: { pageNum, pageSize } })
+};
+
+// 反馈处理（管理员专用，后端 @RequireRole(3)，消息中心「收到新的用户反馈」直达这里）
+const feedbackAdminApi = {
+  page: (params) => request({ url: '/admin/feedback', data: params }),
+  handle: (id, status, reply) =>
+    request({ url: '/admin/feedback/handle', method: 'POST', data: { id, status, reply } })
+};
+
 module.exports = {
   resolveImageUrl,
   userApi,
@@ -188,6 +216,8 @@ module.exports = {
   tipApi,
   rechargeApi,
   messageApi,
+  feedbackApi,
+  feedbackAdminApi,
   posterApi,
   uploadFile: (filePath) => {
     return new Promise((resolve, reject) => {

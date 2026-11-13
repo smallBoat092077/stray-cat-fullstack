@@ -1,4 +1,14 @@
+<brand-nav back="{{true}}" />
 <view class="container">
+  <!-- 一次性订阅没有持久开关，这里让用户把各类通知的额度一次性攒好 -->
+  <view class="notify-banner card" wx:if="{{canNotify}}" bindtap="onEnableNotify">
+    <view class="notify-main">
+      <text class="notify-title">开启微信通知</text>
+      <text class="notify-desc">重要消息直接推送到微信；微信一次只弹一批，共需点 3 次</text>
+    </view>
+    <text class="notify-action">{{notifyTip ? '已开启' : '去开启'}}</text>
+  </view>
+
   <view class="item card {{item.unread ? 'unread' : ''}}"
         wx:for="{{messages}}"
         wx:key="id"
@@ -12,6 +22,7 @@
       <text class="item-time">{{item.timeText}}</text>
     </view>
     <text class="item-content">{{item.content}}</text>
+    <text class="item-push" wx:if="{{item.pushHint}}">{{item.pushHint}}</text>
     <text class="item-arrow" wx:if="{{item.page}}">查看 ›</text>
   </view>
 

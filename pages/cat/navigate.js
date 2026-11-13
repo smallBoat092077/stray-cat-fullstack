@@ -1,5 +1,6 @@
 const { catApi, geoApi } = require('../../utils/api');
 const { LIFE_STATUS_MAP } = require('../../utils/constants');
+const { getCurrentLocation, describeError } = require('../../utils/location');
 
 function formatDistance(meters) {
   return meters < 1000 ? `${Math.round(meters)} 米` : `${(meters / 1000).toFixed(1)} 公里`;
@@ -51,17 +52,14 @@ Page({
       return;
     }
     this.setData({ locating: true, errorMsg: '' });
-    wx.getLocation({
-      // 上报走的是 chooseLocation，返回的就是 gcj02；这里换成 wgs84 会整体偏上百米
-      type: 'gcj02',
-      success: (res) => this.requestRoute(res.latitude, res.longitude),
-      fail: () => {
-        this.setData({
-          locating: false,
-          errorMsg: '没拿到你的位置。点右上角「···」→「设置」里允许获取位置，再点重新定位'
-        });
-      }
-    });
+    getCurrentLocation()
+      .then((res) => {
+        this.requestRoute(res.latitude, res.longitude);
+      })
+      .catch((err) => {
+        const tip = describeError(err);
+        this.setData({ locating: false, errorMsg: tip.content || tip.title });
+      });
   },
 
   requestRoute(myLat, myLng) {

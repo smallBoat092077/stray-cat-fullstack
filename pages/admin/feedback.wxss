@@ -1,0 +1,145 @@
+.fb-item {
+  padding: 24rpx;
+  transition: opacity 0.3s;
+}
+
+.fb-item.highlight {
+  border: 1rpx solid var(--brand);
+  box-shadow: 0 4rpx 16rpx rgba(20, 73, 60, 0.15);
+}
+
+.head-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.fb-type {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  color: var(--brand);
+  border: 1rpx solid var(--brand);
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+  margin-right: 12rpx;
+}
+
+.item-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fb-content {
+  font-size: 28rpx;
+  color: var(--ink);
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
+  padding: 8rpx 0;
+}
+
+.fb-brief {
+  font-size: 28rpx;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  padding: 8rpx 0;
+}
+
+.fb-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+  padding-top: 8rpx;
+}
+
+.fb-toggle {
+  color: var(--brand);
+}
+
+.fb-reply {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background: var(--paper);
+  border-radius: 12rpx;
+  border-left: 6rpx solid var(--brand);
+}
+
+.fb-reply-label {
+  font-size: 24rpx;
+  color: var(--brand);
+  font-weight: 600;
+  margin-right: 12rpx;
+}
+
+.fb-reply-content {
+  font-size: 26rpx;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.reply-box {
+  margin-top: 16rpx;
+}
+
+.reply-input {
+  width: 100%;
+  min-height: 120rpx;
+  box-sizing: border-box;
+  padding: 16rpx;
+  font-size: 26rpx;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.reply-ops {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16rpx;
+}
+
+/* 操作按钮（样式原本只定义在 review.wxss，页面级样式不互通，这里补一份） */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20rpx;
+}
+
+.act-btn {
+  min-width: 160rpx;
+  padding: 14rpx 0;
+  margin-left: 20rpx;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.act-btn.ghost {
+  color: var(--brick);
+  border: 1rpx solid var(--brick);
+}
+
+.act-btn.solid {
+  color: var(--paper);
+  background: var(--brand);
+}
+
+.reply-hint {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  text-align: right;
+  margin-top: 8rpx;
+}

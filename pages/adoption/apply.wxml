@@ -1,3 +1,4 @@
+<brand-nav back="{{true}}" />
 <view class="container">
   <view class="card">
     <text class="section-title">领养申请</text>

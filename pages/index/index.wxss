@@ -10,34 +10,150 @@
   width: 100%;
 }
 
-.map-controls {
-  position: absolute;
-  right: 24rpx;
-  top: 24rpx;
-}
-
-/* cover-view 是原生组件，CSS 支持有限，这里用字面色值而非 var() */
-.control-btn {
+/* 定位失败横幅（普通 view，非 cover-view，样式可以完整生效） */
+.loc-banner {
+  background: #FDF3E7;
+  border-bottom: 1rpx solid #E0A458;
+  padding: 14rpx 24rpx;
   display: flex;
   flex-direction: column;
+}
+
+.loc-banner-title {
+  font-size: 26rpx;
+  color: #B06A1F;
+  font-weight: 600;
+}
+
+.loc-banner-detail {
+  font-size: 20rpx;
+  color: #B06A1F;
+  opacity: 0.75;
+  margin-top: 4rpx;
+  word-break: break-all;
+}
+
+/* 首次使用同意卡片：隐私弹窗被抑制时替代横幅，用户点击后再触发官方弹窗 */
+.privacy-card {
+  background: #FDF3E7;
+  border-bottom: 1rpx solid #E0A458;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.privacy-title {
+  font-size: 28rpx;
+  color: #B06A1F;
+  font-weight: 600;
+}
+
+.privacy-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #B06A1F;
+  opacity: 0.85;
+  margin-top: 8rpx;
+}
+
+.privacy-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+/* 这是 <button open-type="agreePrivacyAuthorization">，必须重置原生按钮样式
+   （默认带 14px 内边距、灰底、::after 边框），否则会比旁边的「先手动选点」大一圈 */
+.privacy-btn-main {
+  flex: 1;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #FFFDF8;
+  background: #144B3C;
+  border-radius: 12rpx;
+}
+
+.privacy-btn-main::after {
+  border: none;
+}
+
+.privacy-btn-sub {
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 32rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #144B3C;
+  background: rgba(20, 75, 60, 0.1);
+  border-radius: 12rpx;
+}
+
+.privacy-detail {
+  font-size: 20rpx;
+  color: #B06A1F;
+  opacity: 0.75;
+  margin-top: 12rpx;
+  word-break: break-all;
+}
+
+/* cover-view 是原生组件，真机 CSS 支持有限：不用 var()、不用嵌套标签选择器、
+   不依赖 flex 纵向排列，横向单行最稳 */
+.map-controls {
+  position: absolute;
+  right: 20rpx;
+  top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* 副按钮：纸白底 + 金色细边 + 墨绿字，与底部抽屉同风格 */
+.control-btn {
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  height: 64rpx;
+  padding: 0 24rpx;
+  margin-top: 14rpx;
   background: #FFFDF7;
-  border: 1rpx solid rgba(195, 161, 95, 0.28);
+  border: 1rpx solid rgba(195, 161, 95, 0.5);
   border-radius: 999rpx;
-  padding: 18rpx 22rpx;
-  box-shadow: 0 6rpx 18rpx rgba(20, 73, 60, 0.16);
+}
+
+/* 主按钮：墨绿底 + 米白字，地图上第一眼看到的是「回到我的位置」 */
+.control-btn-primary {
+  background: #14493C;
+  border: 1rpx solid #14493C;
+}
+
+/* 定位失败：换成暖橙，提示可以点它重试 */
+.control-btn-warn {
+  background: #E0A458;
+  border: 1rpx solid #E0A458;
 }
 
 .control-icon {
-  width: 40rpx;
-  height: 40rpx;
-  margin-bottom: 8rpx;
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
 }
 
-.control-btn cover-text {
-  font-size: 20rpx;
+.control-text {
+  font-size: 22rpx;
+  font-weight: 500;
   color: #14493C;
-  letter-spacing: 1rpx;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.control-text-light {
+  color: #F7F2E6;
 }
 
 /* 底部弹窗 —— 纸白到米黄的抽屉 */
@@ -401,4 +517,47 @@
     transform: translateZ(30rpx) rotate(12deg) translateX(300%);
     opacity: 0;
   }
+}
+
+/* 首屏骨架：复用真实卡片的尺寸，避免数据回来时布局跳动 */
+.sk-card {
+  pointer-events: none;
+}
+
+.sk-avatar {
+  width: 240rpx;
+  height: 240rpx;
+  background: #EFEADF;
+}
+
+.sk-body {
+  padding: 16rpx;
+}
+
+.sk-bar {
+  background: linear-gradient(90deg, #EFEADF 25%, #F8F5EC 37%, #EFEADF 63%);
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.4s ease infinite;
+  border-radius: 8rpx;
+}
+
+.sk-title {
+  width: 220rpx;
+  height: 34rpx;
+}
+
+.sk-line-lg {
+  width: 140rpx;
+  height: 28rpx;
+  margin-bottom: 14rpx;
+}
+
+.sk-line-sm {
+  width: 100rpx;
+  height: 22rpx;
+}
+
+@keyframes sk-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
 }

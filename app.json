@@ -16,14 +16,16 @@
     "pages/recharge/index",
     "pages/recharge/history",
     "pages/admin/review",
+    "pages/admin/feedback",
     "pages/message/index",
+    "pages/feedback/index",
     "pages/privacy/index",
     "pages/profile/index"
   ],
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#E3EFDE",
-    "navigationBarTitleText": "流浪猫喂养",
+    "navigationBarTitleText": "猫遇猫舍",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#E3EFDE"
   },
@@ -66,7 +68,7 @@
   ],
   "permission": {
     "scope.userLocation": {
-      "desc": "你的位置信息将用于查找附近的流浪猫和投喂点"
+      "desc": "位置信息用于查找附近流浪猫、投喂打卡与上报"
     }
   },
   "lazyCodeLoading": "requiredComponents" 

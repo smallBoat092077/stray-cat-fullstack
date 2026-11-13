@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "投喂任务",
   "enablePullDownRefresh": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
 }

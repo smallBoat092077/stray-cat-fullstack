@@ -1,3 +1,4 @@
+<brand-nav back="{{true}}" />
 <view class="container">
   <view class="card">
     <text class="section-title">上报流浪猫</text>
@@ -37,12 +38,13 @@
         <view class="location-content">
           <text class="location-icon">📍</text>
           <view class="location-text">
-            <text class="location-name">{{locationName || '点击选择猫咪出没位置'}}</text>
+            <text class="location-name">{{locationName || '点击在地图上选择猫咪出没位置'}}</text>
             <text class="location-coord" wx:if="{{latitude}}">({{latitude}}, {{longitude}})</text>
           </view>
         </view>
         <text class="location-arrow">></text>
       </view>
+      <view class="location-alt" bindtap="useCurrentLocationAsSpot">不在现场？用我当前位置标记</view>
     </view>
 
     <view class="form-item">
@@ -65,7 +67,7 @@
       <view class="image-upload-area">
         <view class="image-list">
           <view class="image-item" wx:for="{{images}}" wx:key="index">
-            <image src="{{item}}" mode="aspectFill" />
+            <image src="{{item}}" mode="aspectFill" data-src="{{item}}" data-group="cat" bindtap="previewLocalImage" />
             <view class="image-remove" data-index="{{index}}" bindtap="removeImage">×</view>
           </view>
           <view class="image-add" bindtap="chooseImage" wx:if="{{images.length < 3}}">
@@ -74,6 +76,31 @@
           </view>
         </view>
       </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">周边环境照片 <text class="required">必填</text></text>
+      <text class="form-hint">拍下猫咪出没的角落、楼道、喂食点，后来的志愿者就能按环境找到它</text>
+      <view class="image-upload-area">
+        <view class="image-list">
+          <view class="image-item" wx:for="{{envImages}}" wx:key="index">
+            <image src="{{item}}" mode="aspectFill" data-src="{{item}}" data-group="env" bindtap="previewLocalImage" />
+            <view class="image-remove" data-index="{{index}}" bindtap="removeEnvImage">×</view>
+          </view>
+          <view class="image-add" bindtap="chooseEnvImage" wx:if="{{envImages.length < 6}}">
+            <text class="add-icon">+</text>
+            <text class="add-text">添加环境照</text>
+          </view>
+        </view>
+        <text class="form-hint">已选 {{envImages.length}}/6 张</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">周边环境描述 <text class="required">必填</text></text>
+      <textarea class="form-textarea" placeholder="如：小区西门垃圾房旁的绿化带，白天有阳光，旁边有个蓝色垃圾桶"
+                maxlength="200" value="{{envDesc}}" bindinput="onEnvDescInput" />
+      <text class="form-hint desc-counter">{{envDesc.length}}/200，至少10个字</text>
     </view>
 
     <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onSubmit" disabled="{{uploading}}">

@@ -85,6 +85,9 @@
 }
 
 .amount-item {
+  /* 默认 content-box 会把 2rpx 边框加在宽度之外，三格合计超容器 12rpx，
+     第三个格子被挤到下一行和第四个同排；border-box 让宽度计算包含边框 */
+  box-sizing: border-box;
   width: calc((100% - 48rpx) / 3);
   margin: 0 24rpx 24rpx 0;
   padding: 28rpx 0;
@@ -127,7 +130,11 @@
 .custom-input,
 .message-input {
   margin-top: 8rpx;
-  padding: 26rpx 24rpx;
+  /* input 组件内部行高固定，用上下 padding 撑高会把文字下缘裁掉；
+     改为固定高度 + line-height 居中，垂直方向只留水平 padding */
+  height: 92rpx;
+  line-height: 92rpx;
+  padding: 0 24rpx;
   font-size: 30rpx;
   color: var(--ink);
 }

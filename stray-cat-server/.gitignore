@@ -1,7 +1,0 @@
-target/
-uploads/
-config/application.yml
-*.local.log
-.local-backend.log
-.local-backend.err.log
-.idea/

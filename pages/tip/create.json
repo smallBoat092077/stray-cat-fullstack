@@ -1,4 +1,7 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "送猫粮"
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationBarTitleText": "送猫粮",
+  "navigationStyle": "custom"
 }

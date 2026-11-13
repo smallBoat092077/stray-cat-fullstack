@@ -1,0 +1,78 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <!-- 提交表单 -->
+  <view class="card form-card">
+    <view class="section-title">写点什么给我们</view>
+    <view class="type-row">
+      <view
+        wx:for="{{typeOptions}}"
+        wx:key="value"
+        class="type-chip {{typeIndex === index ? 'active' : ''}}"
+        bindtap="onTypeChange"
+        data-index="{{index}}"
+      >{{item.label}}</view>
+    </view>
+    <textarea
+      class="content-input"
+      placeholder="说说你的建议，或遇到的 bug（截图更能说明问题）"
+      placeholder-class="input-placeholder"
+      maxlength="500"
+      value="{{content}}"
+      bindinput="onContentInput"
+    />
+    <view class="char-count">{{content.length}}/500</view>
+
+    <view class="img-grid">
+      <view class="img-item" wx:for="{{images}}" wx:key="*this">
+        <image class="img-thumb" src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="previewImage" />
+        <view class="img-remove" catchtap="removeImage" data-index="{{index}}">×</view>
+      </view>
+      <view class="img-add" wx:if="{{images.length < 3}}" bindtap="chooseImage">
+        <text class="img-add-plus">＋</text>
+        <text class="img-add-text">截图</text>
+      </view>
+    </view>
+
+    <button class="btn-primary submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+      {{submitting ? '提交中...' : '提交反馈'}}
+    </button>
+    <view class="tips">每人每天最多 3 条 · 提交前我们会对内容做安全校验</view>
+  </view>
+
+  <!-- 我的反馈 -->
+  <view class="mine-head" wx:if="{{records.length}}">
+    <text class="section-title">我的反馈</text>
+    <text class="mine-count">共 {{total}} 条</text>
+  </view>
+
+  <view class="card record-card" wx:for="{{records}}" wx:key="id">
+    <view class="record-head">
+      <text class="record-type">{{typeOptions[item.type] ? typeOptions[item.type].label : '其他'}}</text>
+      <text class="record-status s{{item.status}}">{{statusText[item.status]}}</text>
+    </view>
+    <text class="record-content">{{item.content}}</text>
+    <view class="record-imgs" wx:if="{{item.images}}">
+      <image
+        wx:for="{{item.imageList}}"
+        wx:for-item="img"
+        wx:key="*this"
+        class="record-img"
+        src="{{img}}"
+        mode="aspectFill"
+        data-urls="{{item.imageList}}"
+        data-src="{{img}}"
+        bindtap="previewRecordImage"
+      />
+    </view>
+    <view class="record-reply" wx:if="{{item.reply}}">
+      <text class="reply-label">官方回复</text>
+      <text class="reply-text">{{item.reply}}</text>
+    </view>
+    <view class="record-time">{{item.createdAtText}}</view>
+  </view>
+
+  <view class="empty" wx:if="{{!records.length && !loadingMore}}">
+    <text class="empty-text">还没有反馈记录</text>
+  </view>
+  <view class="load-all" wx:if="{{records.length && !hasMore}}">— 到底了 —</view>
+</view>

@@ -21,7 +21,15 @@
 
 .brand {
   text-align: center;
-  padding: 40rpx 0 60rpx;
+  padding: 24rpx 0 60rpx;
+}
+
+.brand-logo {
+  width: 152rpx;
+  height: 152rpx;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(12, 51, 41, 0.18);
 }
 
 .brand-title {

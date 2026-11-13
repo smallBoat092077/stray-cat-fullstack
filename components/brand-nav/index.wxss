@@ -1,0 +1,70 @@
+/* 组件样式与页面隔离，这里用字面色值，不依赖 app.wxss 的 CSS 变量 */
+.bn-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+}
+
+.bn-wrap {
+  background: #E3EFDE;
+}
+
+.bn-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 24rpx;
+}
+
+/* 返回箭头用两条边框旋转绘制，避免「‹」在部分机型字体缺字形 */
+.bn-back {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -8rpx;
+  margin-right: 4rpx;
+}
+
+.bn-back-arrow {
+  width: 20rpx;
+  height: 20rpx;
+  border-left: 4rpx solid #14493C;
+  border-bottom: 4rpx solid #14493C;
+  transform: rotate(45deg);
+  margin-left: 6rpx;
+}
+
+.bn-logo {
+  width: 54rpx;
+  height: 54rpx;
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+
+.bn-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bn-name {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  line-height: 1.1;
+  color: #14493C;
+}
+
+.bn-slogan {
+  font-size: 18rpx;
+  letter-spacing: 2rpx;
+  line-height: 1.2;
+  margin-top: 2rpx;
+  color: #A5854A;
+}

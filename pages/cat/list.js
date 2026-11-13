@@ -58,16 +58,30 @@ Page({
     }
   },
 
-  _calcSwiperHeight(posters) {
+  async _calcSwiperHeight(posters) {
     if (!posters.length) return;
-    wx.getImageInfo({
-      src: posters[0].imageUrl,
-      success: (res) => {
-        const sw = wx.getSystemInfoSync().windowWidth;
-        const ratio = res.width / res.height;
-        this.setData({ swiperHeight: Math.round(sw / ratio) });
-      },
-      fail: () => this.setData({ swiperHeight: 340 })
+    // 等 swiper 渲染出来后量它的实际宽度：页面容器有左右 padding，
+    // 不能直接拿全屏 windowWidth 算，否则高度和图片真实高度对不齐
+    wx.nextTick(() => {
+      wx.createSelectorQuery().in(this)
+        .select('.poster-swiper').boundingClientRect()
+        .exec(async (rects) => {
+          const rect = rects && rects[0];
+          const sw = rect && rect.width
+            ? rect.width
+            : wx.getSystemInfoSync().windowWidth - 24; // 兜底：量不到就按容器宽估算
+          // 轮播里每张海报宽高比可能不同，容器高度只能统一取最大那张，
+          // 否则更高的海报会被裁掉（2026-11-10 用户反馈「轮播图没有显示完整」）
+          const heights = await Promise.all(posters.map((p) => new Promise((resolve) => {
+            wx.getImageInfo({
+              src: p.imageUrl,
+              success: (r) => resolve(Math.round(sw * r.height / r.width)),
+              fail: () => resolve(0)
+            });
+          })));
+          const valid = heights.filter((h) => h > 0);
+          this.setData({ swiperHeight: valid.length ? Math.max(...valid) : 340 });
+        });
     });
   },
 

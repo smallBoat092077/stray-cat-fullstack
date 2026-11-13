@@ -1,3 +1,4 @@
+<brand-nav back="{{true}}" />
 <view class="container" wx:if="{{ready}}">
   <view class="filter-bar">
     <view class="filter-item {{tab === 'adoption' ? 'active' : ''}}" bindtap="onTab" data-tab="adoption">领养申请</view>

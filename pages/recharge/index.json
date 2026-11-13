@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "充值猫粮",
-  "usingComponents": {}
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
 }

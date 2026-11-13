@@ -4,8 +4,9 @@
     <text class="back-text">返回</text>
   </view>
   <view class="brand">
-    <text class="brand-title">流浪猫喂养</text>
-    <text class="brand-sub">关爱流浪动物 · 从每一次投喂开始</text>
+    <image class="brand-logo" src="/images/logo-mark.png" mode="aspectFit" />
+    <text class="brand-title">猫遇猫舍</text>
+    <text class="brand-sub">遇一只猫 · 安一个家</text>
   </view>
 
   <view class="card">

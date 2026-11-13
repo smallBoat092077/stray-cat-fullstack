@@ -1,3 +1,4 @@
+<brand-nav />
 <view class="container">
   <!-- 搜索框 -->
   <view class="search-bar">
@@ -31,7 +32,7 @@
     <view class="task-item card" wx:for="{{taskList}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
       <view class="task-header">
         <text class="task-type">{{item.taskTypeText}}</text>
-        <text class="tag tag-warning" wx:if="{{item.tipId}}">打赏委托</text>
+        <text class="tag tag-warning" wx:if="{{item.tipId}}">投喂委托</text>
         <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
       </view>
       <view class="task-cat">
@@ -41,7 +42,7 @@
         <text>📍 {{item.locationDesc}}</text>
       </view>
       <view class="task-info" wx:if="{{item.amount}}">
-        <text>认捐猫粮: {{item.amount}} 份</text>
+        <text>投喂猫粮: {{item.amount}} 份</text>
       </view>
       <view class="task-volunteer" wx:if="{{item.volunteerText}}">{{item.volunteerText}}</view>
       <view class="task-hint" wx:if="{{item.status === 2}}">志愿者已打卡，等待管理员审核</view>

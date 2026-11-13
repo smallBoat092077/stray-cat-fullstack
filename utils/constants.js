@@ -48,9 +48,16 @@ const COIN_BIZ_MAP = {
   REPORT: '上报猫咪',
   CHECKIN: '投喂打卡',
   FOLLOWUP: '领养回访',
+  VOLUNTEER_LEVEL: '志愿者升级',
   TIP: '送猫粮',
   RECHARGE: '购买猫粮',
   RECHARGE_REFUND: '退款回收'
+};
+
+const CO_ADOPTION_STATUS_MAP = {
+  0: { text: '待确认', class: 'warning' },
+  1: { text: '已同意', class: 'success' },
+  2: { text: '已拒绝', class: 'danger' }
 };
 
 module.exports = {
@@ -62,5 +69,6 @@ module.exports = {
   TASK_STATUS_MAP,
   ADOPTION_STATUS_MAP,
   RECORD_STATUS_MAP,
-  COIN_BIZ_MAP
+  COIN_BIZ_MAP,
+  CO_ADOPTION_STATUS_MAP
 };

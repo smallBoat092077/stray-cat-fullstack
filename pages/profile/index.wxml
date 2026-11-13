@@ -1,3 +1,4 @@
+<brand-nav />
 <view class="container">
   <!-- 用户信息 -->
   <view class="user-card card">
@@ -32,6 +33,24 @@
     </view>
   </view>
 
+  <!-- 志愿者等级 -->
+  <view class="level-card card" wx:if="{{userInfo}}">
+    <view class="level-head">
+      <view class="level-badge">Lv.{{volunteerData.level}}</view>
+      <view class="level-main">
+        <text class="level-name">{{volunteerData.levelName}}</text>
+        <text class="level-desc" wx:if="{{volunteerData.nextLevelName}}">
+          再完成 {{volunteerData.remainToNext}} 次投喂升级为{{volunteerData.nextLevelName}}，奖励 +{{volunteerData.nextReward}} 猫粮
+        </text>
+        <text class="level-desc" wx:else>已是最高等级，谢谢你的守护</text>
+      </view>
+    </view>
+    <view class="level-bar">
+      <view class="level-bar-fill" style="width: {{volunteerData.progressPercent}}%"></view>
+    </view>
+    <text class="level-foot">已审核投喂 {{volunteerData.completedCount}} 次 · 服务 {{volunteerData.serviceHours}} 小时</text>
+  </view>
+
   <!-- 猫粮 -->
   <view class="coin-card card">
     <view class="coin-left">
@@ -63,6 +82,11 @@
       <text class="menu-text">充值记录</text>
       <text class="menu-arrow">></text>
     </view>
+    <!-- 只有账号密码注册（没有 openid）的用户显示，绑定后即可充值猫粮 -->
+    <view class="menu-item card" bindtap="onBindWechat" wx:if="{{userInfo && !userInfo.openid}}">
+      <text class="menu-text">绑定微信</text>
+      <text class="menu-arrow">></text>
+    </view>
     <view class="menu-item card" bindtap="goToPage" data-url="/pages/adoption/list">
       <text class="menu-text">我的领养</text>
       <text class="menu-arrow">></text>
@@ -89,6 +113,10 @@
     </view>
     <view class="menu-item card" bindtap="goToPage" data-url="/pages/privacy/index">
       <text class="menu-text">隐私政策</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/feedback/index">
+      <text class="menu-text">意见反馈</text>
       <text class="menu-arrow">></text>
     </view>
     <view class="menu-item card" bindtap="onAbout">
