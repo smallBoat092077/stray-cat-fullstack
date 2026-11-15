@@ -5,10 +5,15 @@
         <span class="brand-mark">喵</span>
         <span>猫遇猫舍 · 后台管理</span>
       </div>
-      <div class="account">
-        <span class="muted">{{ auth.user?.nickname || auth.user?.username }}</span>
-        <el-button link type="primary" @click="onRefresh">刷新身份</el-button>
-        <el-button link @click="onLogout">退出</el-button>
+
+      <div class="header-right">
+        <ThemeSwitcher />
+
+        <div class="account">
+          <span class="muted">{{ auth.user?.nickname || auth.user?.username }}</span>
+          <el-button link type="primary" @click="onRefresh">刷新身份</el-button>
+          <el-button link @click="onLogout">退出</el-button>
+        </div>
       </div>
     </el-header>
 
@@ -24,7 +29,12 @@
           <el-menu-item index="/ledger">猫粮流水</el-menu-item>
           <el-menu-item index="/tips">打赏记录</el-menu-item>
           <el-menu-item index="/posters">海报管理</el-menu-item>
+          <el-menu-item index="/campaigns">活动管理</el-menu-item>
           <el-menu-item index="/feedback">用户反馈</el-menu-item>
+          <el-menu-item index="/home-content">首页内容</el-menu-item>
+          <el-menu-item index="/lost-cat-review">寻猫审核</el-menu-item>
+          <el-menu-item index="/lost-cat-clue-review">线索审核</el-menu-item>
+          <el-menu-item index="/recognizer-sample">花纹样本</el-menu-item>
         </el-menu>
       </el-aside>
 
@@ -39,6 +49,7 @@
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useAuthStore } from '../stores/auth';
+import ThemeSwitcher from '../components/ThemeSwitcher.vue';
 
 const auth = useAuthStore();
 const route = useRoute();
@@ -58,62 +69,3 @@ function onLogout() {
   router.replace('/login');
 }
 </script>
-
-<style scoped>
-.shell {
-  height: 100vh;
-}
-
-.shell-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #14493c;
-  color: #f7f2e6;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  letter-spacing: 1px;
-}
-
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #c3a15f;
-  color: #14493c;
-  font-weight: 700;
-}
-
-.account {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-}
-
-.account :deep(.el-button) {
-  color: #f7f2e6;
-}
-
-.account .muted {
-  color: #d8cdb4;
-}
-
-.shell-aside {
-  background: #fff;
-  border-right: 1px solid #e6e3da;
-}
-
-.shell-main {
-  padding: 0;
-  overflow: auto;
-}
-</style>

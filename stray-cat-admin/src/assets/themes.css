@@ -1,0 +1,251 @@
+/* ─── 猫遇猫舍 · 5 套 Apple 风格主题 ─── */
+/* 切换时只改 <html data-theme>，所有变量全局级联，0.4s 过渡 */
+
+[data-theme='midnight'] {
+  --bg:        #0a0b10;
+  --glass:     rgba(255, 255, 255, 0.06);
+  --glass-hi:  rgba(255, 255, 255, 0.10);
+  --border:    rgba(255, 255, 255, 0.10);
+  --fg:        #f5f5f7;
+  --fg-muted:  rgba(245, 245, 247, 0.55);
+  --accent:    #8b9cf7;
+  --gradient:  linear-gradient(135deg, #0d1b2a 0%, #1a1040 50%, #2d1530 100%);
+  --ambient:   radial-gradient(ellipse at 30% 0%, rgba(80, 120, 255, 0.18) 0%, transparent 60%),
+               radial-gradient(ellipse at 70% 100%, rgba(200, 80, 160, 0.12) 0%, transparent 60%);
+  --shadow:    0 8px 32px rgba(0, 0, 0, 0.55);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 32px rgba(0, 0, 0, 0.3);
+  --input-bg:  rgba(255, 255, 255, 0.07);
+}
+
+[data-theme='vibrant'] {
+  --bg:        #0e0618;
+  --glass:     rgba(180, 80, 255, 0.10);
+  --glass-hi:  rgba(255, 80, 200, 0.18);
+  --border:    rgba(180, 100, 255, 0.28);
+  --fg:        #f0e6ff;
+  --fg-muted:  rgba(240, 230, 255, 0.50);
+  --accent:    #c040ff;
+  --gradient:  linear-gradient(145deg, #120624 0%, #1e0a3c 40%, #3a0a38 100%);
+  --ambient:   radial-gradient(circle at 20% 20%, rgba(160, 40, 255, 0.30) 0%, transparent 50%),
+               radial-gradient(circle at 80% 80%, rgba(0, 180, 255, 0.22) 0%, transparent 50%),
+               radial-gradient(circle at 60% 30%, rgba(255, 40, 140, 0.18) 0%, transparent 40%);
+  --shadow:    0 8px 32px rgba(100, 0, 200, 0.45);
+  --card-shadow: 0 1px 2px rgba(100, 0, 200, 0.3), 0 8px 32px rgba(100, 0, 200, 0.25);
+  --input-bg:  rgba(180, 80, 255, 0.10);
+}
+
+[data-theme='graphite'] {
+  --bg:        #18181b;
+  --glass:     rgba(255, 255, 255, 0.05);
+  --glass-hi:  rgba(255, 255, 255, 0.09);
+  --border:    rgba(255, 255, 255, 0.09);
+  --fg:        #fafafa;
+  --fg-muted:  rgba(250, 250, 250, 0.45);
+  --accent:    #a1a1aa;
+  --gradient:  linear-gradient(160deg, #18181b 0%, #1f1f23 100%);
+  --ambient:   none;
+  --shadow:    0 2px 8px rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  --input-bg:  rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='sun'] {
+  --bg:        #fbfbfd;
+  --glass:     rgba(255, 255, 255, 0.72);
+  --glass-hi:  rgba(255, 255, 255, 0.90);
+  --border:    rgba(0, 0, 0, 0.07);
+  --fg:        #1d1d1f;
+  --fg-muted:  rgba(29, 29, 31, 0.48);
+  --accent:    #0071e3;
+  --gradient:  linear-gradient(160deg, #fbfbfd 0%, #f2f2f7 100%);
+  --ambient:   none;
+  --shadow:    0 1px 3px rgba(0, 0, 0, 0.06);
+  --card-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --input-bg:  rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='dawn'] {
+  --bg:        #fefaf3;
+  --glass:     rgba(255, 248, 240, 0.70);
+  --glass-hi:  rgba(255, 248, 240, 0.88);
+  --border:    rgba(200, 140, 80, 0.16);
+  --fg:        #3d2e1f;
+  --fg-muted:  rgba(61, 46, 31, 0.50);
+  --accent:    #d4783a;
+  --gradient:  linear-gradient(145deg, #fdf3e0 0%, #fce8d0 45%, #fde2df 100%);
+  --ambient:   radial-gradient(ellipse at 10% 0%, rgba(220, 160, 60, 0.22) 0%, transparent 55%),
+               radial-gradient(ellipse at 90% 100%, rgba(220, 100, 120, 0.14) 0%, transparent 55%);
+  --shadow:    0 2px 12px rgba(180, 120, 60, 0.12);
+  --card-shadow: 0 1px 3px rgba(180, 120, 60, 0.10), 0 8px 24px rgba(180, 120, 60, 0.08);
+  --input-bg:  rgba(212, 160, 80, 0.07);
+}
+
+/* ─── 全局过渡 ─── */
+html {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--gradient);
+  background-attachment: fixed;
+  color: var(--fg);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* 环境光叠层（仅暗色主题生效） */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--ambient);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.4s ease;
+}
+
+[data-theme='sun'], [data-theme='graphite'] {
+  body::before { opacity: 0; }
+}
+
+/* ─── 玻璃卡片通用样式 ─── */
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.4s ease, border-color 0.4s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  background: var(--glass-hi);
+}
+
+/* ─── 标题渐变文字 ─── */
+.gradient-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── 页面基础 ─── */
+.page {
+  padding: 28px 28px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.25s ease, background 0.4s ease, border-color 0.4s ease, box-shadow 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  background: var(--glass-hi);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--fg-muted);
+  letter-spacing: 0.02em;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 4px;
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  color: var(--fg-muted);
+}
+
+.cell-images {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cell-images img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 0.5px solid var(--border);
+}
+
+.pager {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ─── fadeUp 入场动效 ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.fade-up-d1 { animation-delay: 0.04s; }
+.fade-up-d2 { animation-delay: 0.08s; }
+.fade-up-d3 { animation-delay: 0.12s; }
+.fade-up-d4 { animation-delay: 0.16s; }
+.fade-up-d5 { animation-delay: 0.20s; }
