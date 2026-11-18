@@ -42,6 +42,12 @@ public class SysUser {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String phone;
 
+    /** 已验证的安全邮箱；未验证的不写入 */
+    private String email;
+
+    /** 邮箱验证状态: 0 未绑定 / 1 已验证 */
+    private Integer emailVerified;
+
     /**
      * 角色: 0普通用户 1志愿者 2领养人 3管理员
      */

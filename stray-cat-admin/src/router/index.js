@@ -20,10 +20,15 @@ const routes = [
       { path: 'campaigns', name: 'campaigns', component: () => import('../views/CampaignList.vue'), meta: { title: '活动管理' } },
       { path: 'feedback', name: 'feedback', component: () => import('../views/FeedbackList.vue'), meta: { title: '用户反馈' } },
       { path: 'home-content', name: 'home-content', component: () => import('../views/HomeContentList.vue'), meta: { title: '首页内容' } },
+      { path: 'wiki-manage', name: 'wiki-manage', component: () => import('../views/WikiManage.vue'), meta: { title: '猫咪百科' } },
       { path: 'lost-cat-review', name: 'lost-cat-review', component: () => import('../views/LostCatReview.vue'), meta: { title: '寻猫审核' } },
+      { path: 'transfer-review', name: 'transfer-review', component: () => import('../views/TransferReview.vue'), meta: { title: '爱猫搬家审核' } },
       { path: 'lost-cat-clue-review', name: 'lost-cat-clue-review', component: () => import('../views/LostCatClueReview.vue'), meta: { title: '线索审核' } },
       { path: 'recognizer-sample', name: 'recognizer-sample', component: () => import('../views/RecognizerSample.vue'), meta: { title: '花纹样本' } },
-      { path: 'region-data', name: 'region-data', component: () => import('../views/RegionData.vue'), meta: { title: '区域数据' } }
+      { path: 'region-data', name: 'region-data', component: () => import('../views/RegionData.vue'), meta: { title: '区域数据' } },
+      { path: 'about-config', name: 'about-config', component: () => import('../views/AboutConfig.vue'), meta: { title: '关于我们' } },
+      { path: 'operation-log', name: 'OperationLog', component: () => import('../views/OperationLog.vue'), meta: { title: '操作日志' } },
+      { path: 'reset-requests', name: 'ResetRequests', component: () => import('../views/PasswordResetRequest.vue'), meta: { title: '密码找回申请' } }
     ]
   },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' }

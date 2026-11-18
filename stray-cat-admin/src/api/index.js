@@ -48,6 +48,25 @@ export const userApi = {
   grantRole: (userId, role) => http.put(`/user/${userId}/role`, { role })
 };
 
+// 后台用户管理 · 新增用户 / 重置密码 / 操作日志 / 密码找回申请（后端 @RequireRole(3)）
+// 注意：create 走 body；action/status/remark 等筛选项与操作参数走 query（params），与 campaignApi/lostCatApi 同口径。
+export const adminUserApi = {
+  // 新增用户：body { username, password, nickname, role }
+  create: (data) => http.post('/admin/user/create', data),
+  // 重置密码：服务端生成临时密码，明文仅响应一次
+  resetPassword: (id, data) => http.post(`/admin/user/${id}/reset-password`, data || {}),
+  // 操作日志分页：GET query { action, keyword, pageNum, pageSize }
+  operationLog: (params) => http.get('/admin/user/operation-log', { params }),
+  // 密码找回申请分页：GET query { status, pageNum, pageSize }
+  resetRequests: (params) => http.get('/admin/user/reset-requests', { params }),
+  // 核实/忽略找回申请：status=1 重置 / status=2 忽略，参数走 query
+  handleResetRequest: (id, params) => http.post(`/admin/user/reset-request/${id}/handle`, null, { params }),
+  // 解除账号锁定：只清安全状态，不改密码、不恢复管理员手动禁用
+  unlock: (id) => http.post(`/admin/user/${id}/unlock`),
+  // 安全事件分页：GET query { userId, eventType, pageNum, pageSize }
+  securityEvents: (params) => http.get('/admin/user/security-events', { params })
+};
+
 export const posterApi = {
   getList: () => http.get('/poster/list'),
   upload: (file) => {
@@ -123,4 +142,28 @@ export const recognizerApi = {
   },
   // 三期：删除一条基准样本（后端转发 Python /delete 并重建索引）
   removeSample: (featureId) => http.post('/admin/recognize/samples/' + featureId + '/delete')
+};
+
+// 首页三大功能 · 爱猫搬家审核（后端 @RequireRole(3)）
+export const transferApi = {
+  list: (params) => http.get('/admin/transfer/posts', { params }),
+  // 审核接口用 @RequestParam 取 status / remark，必须走 params（query 串），
+  // 不能用 body，否则参数静默丢失（与 lostCatApi.audit 同口径）。
+  audit: (id, params) => http.post(`/admin/transfer/post/${id}/audit`, null, { params })
+};
+
+// 首页三大功能 · 猫咪百科维护（后端 @RequireRole(3)）
+export const wikiApi = {
+  questions: () => http.get('/admin/wiki/questions'),
+  saveQuestion: (data) => http.post('/admin/wiki/questions', data),
+  deleteQuestion: (id) => http.delete(`/admin/wiki/questions/${id}`),
+  articles: () => http.get('/admin/wiki/articles'),
+  saveArticle: (data) => http.post('/admin/wiki/articles', data),
+  deleteArticle: (id) => http.delete(`/admin/wiki/articles/${id}`)
+};
+
+// 「关于我们」页面配置（后端 @RequireRole(3)；保存后客户端即时生效）
+export const aboutApi = {
+  get: () => http.get('/admin/about'),
+  save: (data) => http.put('/admin/about', data)
 };

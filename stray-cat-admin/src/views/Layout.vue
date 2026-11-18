@@ -26,16 +26,21 @@
           <el-menu-item index="/tasks">投喂任务</el-menu-item>
           <el-menu-item index="/cats">猫咪管理</el-menu-item>
           <el-menu-item index="/users">用户与角色</el-menu-item>
+          <el-menu-item index="/reset-requests">密码找回申请</el-menu-item>
           <el-menu-item index="/ledger">猫粮流水</el-menu-item>
           <el-menu-item index="/tips">打赏记录</el-menu-item>
           <el-menu-item index="/posters">海报管理</el-menu-item>
           <el-menu-item index="/campaigns">活动管理</el-menu-item>
           <el-menu-item index="/feedback">用户反馈</el-menu-item>
           <el-menu-item index="/home-content">首页内容</el-menu-item>
+          <el-menu-item index="/wiki-manage">猫咪百科</el-menu-item>
           <el-menu-item index="/lost-cat-review">寻猫审核</el-menu-item>
+          <el-menu-item index="/transfer-review">爱猫搬家审核</el-menu-item>
           <el-menu-item index="/lost-cat-clue-review">线索审核</el-menu-item>
           <el-menu-item index="/recognizer-sample">花纹样本</el-menu-item>
           <el-menu-item index="/region-data">区域数据</el-menu-item>
+          <el-menu-item index="/about-config">关于我们</el-menu-item>
+          <el-menu-item index="/operation-log">操作日志</el-menu-item>
         </el-menu>
       </el-aside>
 

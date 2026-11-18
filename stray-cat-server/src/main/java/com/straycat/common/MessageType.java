@@ -42,7 +42,13 @@ public enum MessageType {
     DAILY_REPORT("dailyReport", "渠道日报", "/pages/profile/index"),
 
     /** 寻猫线索审核通过（发给启事发布者）：bizId 是线索 id，点消息跳线索详情页 */
-    LOST_CAT_CLUE_NEW("lostCatClueNew", "有人见过你的猫，快来看线索", "/pages/lost-cat/clue-detail?id=%d");
+    LOST_CAT_CLUE_NEW("lostCatClueNew", "有人见过你的猫，快来看线索", "/pages/lost-cat/clue-detail?id=%d"),
+
+    /** 有人申请接养我发布的猫（发给转让发布人），bizId 是转让信息 id */
+    CAT_TRANSFER_APPLY("catTransferApply", "有人想接你的猫", "/pages/transfer/mine"),
+
+    /** 我申请的猫已被转让（发给该信息的全部申请人），bizId 是转让信息 id */
+    CAT_TRANSFER_CLOSED("catTransferClosed", "你申请的猫已找到新家", "/pages/transfer/my-apply");
 
     private final String templateKey;
     private final String title;

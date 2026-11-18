@@ -59,6 +59,16 @@ public class HomeServiceImpl implements HomeService {
     @Value("${home.modules.weather:true}")
     private boolean moduleWeather;
 
+    // 首页六宫格第二行三个新功能开关，沿用同一套 modules 灰度机制
+    @Value("${home.modules.cat-transfer:true}")
+    private boolean catTransfer;
+
+    @Value("${home.modules.cat-wiki:true}")
+    private boolean catWiki;
+
+    @Value("${home.modules.cat-toolbox:true}")
+    private boolean catToolbox;
+
     @Override
     public HomeBootstrapVO bootstrap() {
         HomeBootstrapVO cached = homeCache.get(BOOTSTRAP_KEY, HomeBootstrapVO.class);
@@ -96,6 +106,9 @@ public class HomeServiceImpl implements HomeService {
         modules.put("leaderboard", moduleLeaderboard);
         modules.put("lostCat", moduleLostCat);
         modules.put("weather", moduleWeather);
+        modules.put("catTransfer", catTransfer);
+        modules.put("catWiki", catWiki);
+        modules.put("catToolbox", catToolbox);
         vo.setModules(modules);
 
         homeCache.set(BOOTSTRAP_KEY, vo, bootstrapCacheSeconds);

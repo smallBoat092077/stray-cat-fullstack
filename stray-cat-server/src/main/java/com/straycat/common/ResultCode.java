@@ -18,7 +18,17 @@ public enum ResultCode {
     TOKEN_INVALID(1005, "Token无效"),
     UNAUTHORIZED(1006, "未授权"),
     FORBIDDEN(1007, "无权限"),
-    
+
+    // 账号安全相关 1xxx
+    LOGIN_TEMP_LOCKED(1008, "账号已临时锁定，请稍后再试"),
+    LOGIN_PERMANENT_LOCKED(1009, "账号已被锁定，请联系管理员"),
+    PASSWORD_SAME(1010, "新密码不能与当前密码相同"),
+    PASSWORD_CONFIRM_MISMATCH(1011, "两次输入的新密码不一致"),
+    EMAIL_INVALID(1012, "邮箱格式不正确"),
+    EMAIL_CODE_INVALID(1013, "验证码错误或已过期"),
+    EMAIL_SEND_TOO_FAST(1014, "发送过于频繁，请稍后再试"),
+    EMAIL_NOT_BOUND(1015, "该用户未绑定验证邮箱，无法通过邮件重置"),
+
     // 参数相关 2xxx
     PARAM_ERROR(2001, "参数错误"),
     PARAM_MISSING(2002, "参数缺失"),

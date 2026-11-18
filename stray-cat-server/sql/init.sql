@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS sys_user (
     nickname VARCHAR(50) COMMENT '昵称',
     avatar_url VARCHAR(255) COMMENT '头像',
     phone VARCHAR(20) COMMENT '手机号',
+    email VARCHAR(120) COMMENT '已验证安全邮箱',
+    email_verified TINYINT DEFAULT 0 COMMENT '邮箱验证状态: 0未绑定 1已验证',
     role TINYINT DEFAULT 0 COMMENT '角色: 0普通用户 1志愿者 2领养人 3管理员',
     credit_score INT DEFAULT 100 COMMENT '信用积分',
     coin_balance INT NOT NULL DEFAULT 0 COMMENT '猫粮余额(站内虚拟积分,无现金价值)',
@@ -344,3 +346,173 @@ CREATE TABLE IF NOT EXISTS lost_cat_clue (
     INDEX idx_post_audit (post_id, audit_status, created_at),
     INDEX idx_reporter (reporter_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='寻猫线索';
+
+-- 首页六宫格新增：爱猫搬家（转让信息 + 接猫申请）。手机号仅受控接口返回，不在列表/详情下发。
+CREATE TABLE IF NOT EXISTS cat_transfer_post (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '转让信息ID',
+    user_id BIGINT NOT NULL COMMENT '发布人',
+    cat_name VARCHAR(40) COMMENT '猫咪名字',
+    breed VARCHAR(40) COMMENT '品种',
+    age_months INT COMMENT '月龄',
+    gender VARCHAR(10) COMMENT '性别',
+    neutered TINYINT NOT NULL DEFAULT 0 COMMENT '0未绝育 1已绝育',
+    vaccinated TINYINT NOT NULL DEFAULT 0 COMMENT '0未疫苗 1已疫苗',
+    health_note VARCHAR(300) COMMENT '健康情况说明',
+    personality VARCHAR(300) COMMENT '性格描述',
+    province_code VARCHAR(12) COMMENT '归属省',
+    city_code VARCHAR(12) COMMENT '归属市',
+    district_code VARCHAR(12) COMMENT '归属区',
+    address_hint VARCHAR(100) COMMENT '模糊地点，不到门牌',
+    reason VARCHAR(500) COMMENT '转让原因',
+    requirement VARCHAR(500) COMMENT '领养要求',
+    photos VARCHAR(1000) COMMENT '逗号分隔 /uploads/...，最多6张',
+    contact_name VARCHAR(40) COMMENT '联系人称呼，公开接口不返回',
+    contact_phone VARCHAR(20) COMMENT '联系手机号，公开接口不返回',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '0待审 1在架 2已转让 3已下架 4驳回',
+    view_count INT NOT NULL DEFAULT 0 COMMENT '浏览次数',
+    apply_count INT NOT NULL DEFAULT 0 COMMENT '申请次数',
+    reviewer_id BIGINT COMMENT '审核人',
+    review_remark VARCHAR(200) COMMENT '审核意见',
+    reviewed_at DATETIME COMMENT '审核时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_status_created (status, created_at),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='爱猫搬家-转让信息';
+
+CREATE TABLE IF NOT EXISTS cat_transfer_apply (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+    post_id BIGINT NOT NULL COMMENT '转让信息ID',
+    applicant_id BIGINT NOT NULL COMMENT '申请人',
+    apply_note VARCHAR(500) COMMENT '申请说明',
+    contact_phone VARCHAR(20) COMMENT '申请人手机号，仅发布人可见',
+    family_agree TINYINT COMMENT '家人是否同意',
+    has_other_pets TINYINT COMMENT '是否已有其他宠物',
+    promise_visit TINYINT COMMENT '是否同意回访',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '0待处理 1已联系 2不合适',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '提交时间',
+    UNIQUE INDEX uk_post_user (post_id, applicant_id),
+    INDEX idx_applicant (applicant_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='爱猫搬家-接猫申请';
+
+-- 首页六宫格新增：猫咪百科（题库 / 文章 / 测评记录）。与 DatabaseMigration 双写。
+CREATE TABLE IF NOT EXISTS wiki_question (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '题目ID',
+    category VARCHAR(20) NOT NULL COMMENT 'feeding/health/behavior/hygiene/firstaid',
+    title VARCHAR(200) NOT NULL COMMENT '题干',
+    options_json VARCHAR(500) COMMENT '选项JSON数组',
+    answer_index INT COMMENT '正确答案原始下标',
+    analysis VARCHAR(300) COMMENT '解析',
+    sort INT NOT NULL DEFAULT 0 COMMENT '排序',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '0草稿 1启用',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_category_status (category, status, sort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='猫咪百科-题库';
+
+CREATE TABLE IF NOT EXISTS wiki_article (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '文章ID',
+    title VARCHAR(120) NOT NULL COMMENT '标题',
+    summary VARCHAR(300) COMMENT '摘要',
+    content TEXT COMMENT '正文',
+    cover_url VARCHAR(255) COMMENT '封面',
+    category VARCHAR(20) COMMENT '分类',
+    tags VARCHAR(200) COMMENT '逗号分隔标签',
+    read_minutes INT NOT NULL DEFAULT 3 COMMENT '阅读分钟数',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '0草稿 1发布',
+    sort INT NOT NULL DEFAULT 0 COMMENT '排序',
+    view_count INT NOT NULL DEFAULT 0 COMMENT '阅读数',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_category_status (category, status, sort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='猫咪百科-文章';
+
+CREATE TABLE IF NOT EXISTS wiki_quiz_result (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '测评ID',
+    user_id BIGINT NOT NULL COMMENT '答题用户',
+    answers_json VARCHAR(1000) COMMENT '答案JSON',
+    score INT NOT NULL DEFAULT 0 COMMENT '总分',
+    weak_categories_json VARCHAR(300) COMMENT '薄弱维度JSON',
+    recommended_json VARCHAR(300) COMMENT '推荐文章ID JSON',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '提交时间',
+    INDEX idx_user_time (user_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='猫咪百科-测评记录';
+
+-- 后台用户新增/重置密码 + 小程序密码找回。与 DatabaseMigration 双写。
+CREATE TABLE IF NOT EXISTS admin_operation_log (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    operator_id BIGINT COMMENT '操作管理员id',
+    operator_name VARCHAR(50) COMMENT '操作管理员账号名（冗余防改名）',
+    action VARCHAR(30) NOT NULL COMMENT 'CREATE_USER / RESET_PASSWORD / RESET_REQUEST_HANDLE',
+    target_user_id BIGINT COMMENT '目标用户id（找回申请场景为申请id）',
+    target_username VARCHAR(50) COMMENT '目标用户账号',
+    detail VARCHAR(300) COMMENT '备注，不含密码',
+    ip VARCHAR(50) COMMENT '操作来源IP',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+    INDEX idx_time (created_at),
+    INDEX idx_target (target_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='后台操作日志';
+
+CREATE TABLE IF NOT EXISTS password_reset_request (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    username VARCHAR(50) NOT NULL COMMENT '用户填写的账号',
+    nickname VARCHAR(50) COMMENT '用户填写的昵称',
+    phone VARCHAR(20) NOT NULL COMMENT '预留手机号',
+    reason VARCHAR(300) COMMENT '情况说明',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '0待处理 1已重置 2已忽略',
+    operator_id BIGINT COMMENT '处理管理员id',
+    operator_name VARCHAR(50) COMMENT '处理管理员账号名',
+    handled_at DATETIME COMMENT '处理时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '提交时间',
+    ip VARCHAR(50) COMMENT '提交来源IP',
+    INDEX idx_phone_created (phone, created_at),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='密码找回申请';
+
+-- 账号安全：阶梯锁定状态 + 安全事件审计。与 DatabaseMigration.java 双写。
+CREATE TABLE IF NOT EXISTS user_login_security (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    user_id BIGINT COMMENT '用户id（账号不存在时为空）',
+    username VARCHAR(50) NOT NULL COMMENT '规范化账号',
+    failed_count INT DEFAULT 0 COMMENT '当前周期连续失败次数',
+    lock_stage TINYINT DEFAULT 0 COMMENT '0正常 1临时锁 2永久锁',
+    lock_until DATETIME COMMENT '临时锁到期时间；永久锁为NULL',
+    first_failed_at DATETIME COMMENT '本周期首次失败时间',
+    last_failed_at DATETIME COMMENT '本周期末次失败时间',
+    unlocked_at DATETIME COMMENT '最近一次解锁时间（管理员或24小时到期）',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_username (username),
+    KEY idx_user (user_id),
+    KEY idx_stage (lock_stage)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='登录安全状态（阶梯锁定）';
+
+CREATE TABLE IF NOT EXISTS user_security_event (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    user_id BIGINT COMMENT '用户id',
+    username VARCHAR(50) COMMENT '账号（冗余）',
+    event_type VARCHAR(30) NOT NULL COMMENT 'PWD_CHANGE/TEMP_LOCK/PERMANENT_LOCK/ADMIN_UNLOCK/EMAIL_CODE_SEND/EMAIL_BIND/EMAIL_UNBIND/ADMIN_PWD_RESET',
+    detail VARCHAR(300) COMMENT '备注（绝不记录密码与验证码）',
+    ip VARCHAR(50) COMMENT '来源IP',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '事件时间',
+    KEY idx_user_time (user_id, created_at),
+    KEY idx_type (event_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='账号安全事件审计';
+
+CREATE TABLE IF NOT EXISTS app_about (
+    id BIGINT PRIMARY KEY COMMENT '恒为1，单行配置',
+    app_name VARCHAR(50) NOT NULL COMMENT '应用名',
+    version VARCHAR(20) NOT NULL COMMENT '当前版本号',
+    slogan VARCHAR(100) COMMENT '品牌slogan',
+    motto_main VARCHAR(200) COMMENT '理念主句',
+    motto_sub VARCHAR(200) COMMENT '理念副句',
+    phone VARCHAR(20) COMMENT '管理员电话（点击拨打）',
+    email VARCHAR(120) COMMENT '联系邮箱（点击复制）',
+    contact_tip VARCHAR(300) COMMENT '联系时间提示',
+    copyright VARCHAR(300) COMMENT '底部版权文案',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='关于我们页面配置';
+
+INSERT IGNORE INTO app_about (id, app_name, version, slogan, motto_main, motto_sub, phone, email, contact_tip, copyright)
+VALUES (1, '猫遇猫舍', 'v1.1.0', '遇一只猫 · 安一个家', '让领养代替购买\n爱不流浪', '遇一只猫，安一个家',
+        '17671710525', '1343076057@qq.com', '如有领养咨询、流浪猫求助或合作意向，欢迎在工作时间（9:00–21:00）与我们联系。',
+        '猫遇猫舍 · 用心善待每一只小猫\n© 2026 CatMeet Cattery');

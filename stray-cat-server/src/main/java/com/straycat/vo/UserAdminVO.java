@@ -36,6 +36,12 @@ public class UserAdminVO {
     /** 状态: 0禁用 1正常 */
     private Integer status;
 
+    /** 锁定阶段: 0正常 1临时锁 2永久锁 */
+    private Integer lockStage;
+
+    /** 临时锁到期时间 */
+    private LocalDateTime lockUntil;
+
     private LocalDateTime createdAt;
 
     public static UserAdminVO of(SysUser user) {

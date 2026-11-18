@@ -12,6 +12,7 @@ import com.straycat.mapper.SysUserMapper;
 import com.straycat.service.CoinService;
 import com.straycat.service.ShareLinkService;
 import com.straycat.service.SysUserService;
+import com.straycat.service.UserSecurityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private ShareLinkService shareLinkService;
+
+    @Resource
+    private UserSecurityService userSecurityService;
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -81,6 +85,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         SysUser user = getByOpenid(openid);
         boolean isNewUser = (user == null);
+        // 永久锁：密码登录与微信登录都拒绝（Q2）；临时锁期间微信登录照常放行
+        if (!isNewUser) {
+            userSecurityService.checkWechatLoginAllowed(user.getUsername());
+        }
         if (isNewUser) {
             user = new SysUser();
             user.setOpenid(openid);
@@ -253,14 +261,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public SysUser loginByPassword(String username, String rawPassword) {
-        SysUser user = getByUsername(username == null ? null : username.trim());
-        if (user == null || user.getPassword() == null
-                || rawPassword == null || !BCrypt.checkpw(rawPassword, user.getPassword())) {
-            throw new BusinessException(ResultCode.LOGIN_FAILED.getCode(), "用户名或密码错误");
-        }
-        if (user.getStatus() != null && user.getStatus() == 0) {
+        String normalized = username == null ? null : username.trim();
+        SysUser user = getByUsername(normalized);
+
+        // 管理员禁用优先级最高，不参与失败计数
+        if (user != null && user.getStatus() != null && user.getStatus() == 0) {
             throw new BusinessException(ResultCode.USER_DISABLED);
         }
+
+        // 密码登录前先检查临时锁 / 永久锁；临时锁到期会在这里自动解锁并清零
+        userSecurityService.checkPasswordLoginAllowed(normalized);
+
+        boolean passwordOk = user != null && user.getPassword() != null
+                && rawPassword != null && BCrypt.checkpw(rawPassword, user.getPassword());
+        if (!passwordOk) {
+            // 账号不存在也走同一套计数，统一话术不暴露账号是否存在
+            userSecurityService.recordFailure(normalized, user == null ? null : user.getId());
+        }
+        userSecurityService.recordSuccess(normalized, user == null ? null : user.getId());
         return user;
     }
 

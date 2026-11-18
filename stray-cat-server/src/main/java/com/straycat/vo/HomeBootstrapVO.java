@@ -21,7 +21,7 @@ public class HomeBootstrapVO {
     /** feeding / food / active 三榜默认月榜 */
     private Map<String, List<RankItemVO>> boards;
 
-    /** hotspot / notice / leaderboard / lostCat / weather 灰度开关，可单独关闭任一模块 */
+    /** hotspot / notice / leaderboard / lostCat / weather / catTransfer / catWiki / catToolbox 灰度开关，可单独关闭任一模块 */
     private Map<String, Boolean> modules;
 
     /**

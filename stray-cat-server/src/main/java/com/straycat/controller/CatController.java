@@ -155,6 +155,21 @@ public class CatController {
         return Result.success(catProfileService.getPopularCats(limit));
     }
 
+    @Operation(summary = "我上报的猫咪（工具箱关联用，最近 50 只）")
+    @GetMapping("/mine")
+    public Result<List<CatProfile>> mine(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
+        if (userId == null) {
+            // GET 匿名放行是项目约定；未登录按空列表返回，避免 eq(null) 生成异常 SQL
+            return Result.success(List.of());
+        }
+        List<CatProfile> cats = catProfileService.list(new LambdaQueryWrapper<CatProfile>()
+                .eq(CatProfile::getDiscovererId, userId)
+                .orderByDesc(CatProfile::getId)
+                .last("LIMIT 50"));
+        return Result.success(cats);
+    }
+
     @Operation(summary = "更新猫咪信息")
     @PutMapping("/{id}")
     @RequireRole(0)

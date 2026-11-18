@@ -42,6 +42,21 @@ spring:
       max-file-size: 10MB
       max-request-size: 50MB
 
+  # 安全邮件 SMTP 通道（security.mail.provider=smtp 时启用）。QQ 邮箱：host smtp.qq.com，
+  # 465 SSL；password 是「授权码」不是 QQ 密码；username 必须与 MAIL_FROM 一致。
+  mail:
+    host: ${MAIL_SMTP_HOST:smtp.qq.com}
+    port: ${MAIL_SMTP_PORT:465}
+    username: ${MAIL_SMTP_USER:}
+    password: ${MAIL_SMTP_AUTH_CODE:}
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
+
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   type-aliases-package: com.straycat.entity
@@ -208,6 +223,11 @@ home:
   leaderboard-cache-seconds: 300
   hotspot-limit: 3
   board-limit: 5
+  # 首页六宫格新增模块开关（默认全开，灰度时单独关闭不发版）
+  modules:
+    cat-transfer: true
+    cat-wiki: true
+    cat-toolbox: true
 
 # 花纹识别一期（方案 5.2.5）：阈值以本服务 app.env 为唯一口径，
 # Python 侧 MATCH_THRESHOLD 硬编码且读不到 app.env，Java 忽略其 success/message 自行分级。
@@ -228,3 +248,18 @@ recognizer:
   margin-threshold: ${RECOGNIZER_MARGIN_THRESHOLD:0.05}
   top-k: 3
   failure-cooldown-seconds: 30
+
+# 账号安全：安全邮件通道，按 provider 三选一互斥激活（缺省 log=模拟发信，验证码打日志便于验收取值）。
+#   log  = 模拟发信，只写日志（UAT 默认）
+#   smtp = QQ 邮箱 SMTP 真实发信（个人可用，凭据 = 邮箱 + SMTP 授权码，走 spring.mail 段）
+#   ses  = 腾讯云 SES（备选，个人一般开不了）
+# 所有凭据只走环境变量，不写进仓库。发件人 MAIL_FROM 必须与授权邮箱一致。
+security:
+  mail:
+    provider: ${MAIL_PROVIDER:log}
+    from: ${MAIL_FROM:}
+    from-name: 猫遇猫舍安全中心
+    # 备选 SES 通道（provider=ses 时生效）
+    ses-secret-id: ${MAIL_SES_SECRET_ID:}
+    ses-secret-key: ${MAIL_SES_SECRET_KEY:}
+    region: ap-guangzhou

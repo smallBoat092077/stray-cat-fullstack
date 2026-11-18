@@ -10,6 +10,7 @@ import com.straycat.entity.CoinTransaction;
 import com.straycat.entity.FeedingRecord;
 import com.straycat.entity.FeedingTask;
 import com.straycat.entity.SysUser;
+import com.straycat.entity.UserLoginSecurity;
 import com.straycat.mapper.AdoptionApplicationMapper;
 import com.straycat.mapper.CatProfileMapper;
 import com.straycat.mapper.CatTipMapper;
@@ -17,6 +18,7 @@ import com.straycat.mapper.CoinTransactionMapper;
 import com.straycat.mapper.FeedingRecordMapper;
 import com.straycat.mapper.FeedingTaskMapper;
 import com.straycat.mapper.SysUserMapper;
+import com.straycat.mapper.UserLoginSecurityMapper;
 import com.straycat.service.AdminService;
 import com.straycat.vo.AdminTipVO;
 import com.straycat.vo.CoinLedgerVO;
@@ -44,6 +46,7 @@ public class AdminServiceImpl implements AdminService {
     private final FeedingRecordMapper feedingRecordMapper;
     private final CoinTransactionMapper coinTransactionMapper;
     private final CatTipMapper catTipMapper;
+    private final UserLoginSecurityMapper loginSecurityMapper;
 
     @Override
     public Map<String, Object> stats() {
@@ -105,8 +108,31 @@ public class AdminServiceImpl implements AdminService {
         wrapper.orderByDesc(SysUser::getId);
         // 先在库里分页，再把当页结果转成白名单 VO，避免整表查出来再筛
         Page<SysUser> raw = sysUserMapper.selectPage(page(pageNum, pageSize), wrapper);
+
+        // 批量查安全状态再按 userId 回填，避免逐行查询的 N+1
+        List<Long> userIds = raw.getRecords().stream().map(SysUser::getId)
+                .filter(Objects::nonNull).distinct().toList();
+        Map<Long, UserLoginSecurity> securityByUser = new HashMap<>();
+        if (!userIds.isEmpty()) {
+            LambdaQueryWrapper<UserLoginSecurity> securityWrapper = new LambdaQueryWrapper<>();
+            securityWrapper.in(UserLoginSecurity::getUserId, userIds);
+            for (UserLoginSecurity security : loginSecurityMapper.selectList(securityWrapper)) {
+                securityByUser.put(security.getUserId(), security);
+            }
+        }
+
         Page<UserAdminVO> result = new Page<>(raw.getCurrent(), raw.getSize(), raw.getTotal());
-        result.setRecords(raw.getRecords().stream().map(UserAdminVO::of).collect(Collectors.toList()));
+        result.setRecords(raw.getRecords().stream().map(user -> {
+            UserAdminVO vo = UserAdminVO.of(user);
+            UserLoginSecurity security = securityByUser.get(user.getId());
+            if (security == null) {
+                vo.setLockStage(0);
+            } else {
+                vo.setLockStage(security.getLockStage() == null ? 0 : security.getLockStage());
+                vo.setLockUntil(security.getLockUntil());
+            }
+            return vo;
+        }).collect(Collectors.toList()));
         return result;
     }
 
