@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.straycat.annotation.RequireRole;
 import com.straycat.common.Result;
 import com.straycat.common.ResultCode;
+import com.straycat.dto.AttributionParam;
 import com.straycat.entity.SysUser;
 import com.straycat.interceptor.AuthInterceptor;
 import com.straycat.service.ContentSecurityService;
+import com.straycat.service.ShareLinkService;
 import com.straycat.service.SysUserService;
 import com.straycat.vo.UserProfileVO;
 import com.straycat.vo.UserPublicVO;
@@ -32,11 +34,19 @@ public class UserController {
     private final SysUserService sysUserService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ContentSecurityService contentSecurityService;
+    private final ShareLinkService shareLinkService;
 
     @Operation(summary = "微信登录")
     @PostMapping("/login")
-    public Result<Map<String, Object>> login(@RequestParam String code) {
-        SysUser user = sysUserService.wxLogin(code);
+    public Result<Map<String, Object>> login(
+            @RequestParam String code,
+            @RequestParam(required = false) String sid,
+            @RequestParam(required = false) String channel,
+            @RequestParam(required = false) String campaign,
+            @RequestParam(required = false) String entryType,
+            @RequestParam(required = false) String sceneValue) {
+        SysUser user = sysUserService.wxLogin(code,
+                AttributionParam.of(sid, channel, campaign, entryType, sceneValue));
         if (user == null) {
             return Result.error("登录失败");
         }
@@ -45,8 +55,15 @@ public class UserController {
 
     @Operation(summary = "账号密码注册")
     @PostMapping("/register")
-    public Result<Map<String, Object>> register(@RequestBody SysUser form) {
-        SysUser user = sysUserService.register(form.getUsername(), form.getPassword());
+    public Result<Map<String, Object>> register(
+            @RequestBody SysUser form,
+            @RequestParam(required = false) String sid,
+            @RequestParam(required = false) String channel,
+            @RequestParam(required = false) String campaign,
+            @RequestParam(required = false) String entryType,
+            @RequestParam(required = false) String sceneValue) {
+        SysUser user = sysUserService.register(form.getUsername(), form.getPassword(),
+                AttributionParam.of(sid, channel, campaign, entryType, sceneValue));
         return Result.success(issueToken(user));
     }
 
@@ -59,12 +76,22 @@ public class UserController {
 
     @Operation(summary = "账号密码用户绑定微信（code 来自 wx.login）")
     @PostMapping("/bindWechat")
-    public Result<UserProfileVO> bindWechat(@RequestParam String code, HttpServletRequest request) {
+    public Result<UserProfileVO> bindWechat(
+            @RequestParam String code,
+            HttpServletRequest request,
+            @RequestParam(required = false) String sid,
+            @RequestParam(required = false) String entryType,
+            @RequestParam(required = false) String sceneValue) {
         Long userId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
         if (userId == null) {
             return Result.error(ResultCode.UNAUTHORIZED);
         }
-        return Result.success(UserProfileVO.of(sysUserService.bindWechat(userId, code)));
+        SysUser user = sysUserService.bindWechat(userId, code);
+        // 老账号绑定微信不覆盖首触来源，只补一条可归属的访问记录
+        if (sid != null && !sid.isBlank()) {
+            shareLinkService.recordVisit(sid, userId, false, entryType, sceneValue);
+        }
+        return Result.success(UserProfileVO.of(user));
     }
 
     private Map<String, Object> issueToken(SysUser user) {

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -89,6 +91,46 @@ public class CoinServiceImpl implements CoinService {
                .eq(CoinTransaction::getBizType, BIZ_SIGNIN)
                .eq(CoinTransaction::getBizId, todayKey);
         return coinTransactionMapper.selectCount(wrapper) > 0;
+    }
+
+    /**
+     * 连续签到天数。签到记录的 bizId 就是 yyyyMMdd 数字串，
+     * 按天倒序遍历：当前连续段从今天（未签则从昨天）起逐日回数；
+     * 历史最长在遍历过程中顺手取。单用户签到记录量级极小，全量查即可。
+     */
+    @Override
+    public Map<String, Integer> signInStats(Long userId) {
+        LambdaQueryWrapper<CoinTransaction> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CoinTransaction::getUserId, userId)
+               .eq(CoinTransaction::getBizType, BIZ_SIGNIN)
+               .orderByDesc(CoinTransaction::getBizId);
+        List<Long> dayKeys = coinTransactionMapper.selectList(wrapper).stream()
+                .map(CoinTransaction::getBizId)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+
+        long todayKey = Long.parseLong(LocalDate.now().toString().replace("-", ""));
+        long yesterdayKey = Long.parseLong(LocalDate.now().minusDays(1).toString().replace("-", ""));
+        // 今天没签不打断连续：昨天还在链上就算「连续 N 天，今天待续」
+        java.util.Set<Long> signed = new java.util.HashSet<>(dayKeys);
+        long cursor = signed.contains(todayKey) ? todayKey : yesterdayKey;
+        int current = 0;
+        while (signed.contains(cursor)) {
+            current++;
+            cursor--;
+        }
+        int max = 0;
+        int run = 0;
+        long prev = Long.MIN_VALUE;
+        for (Long key : dayKeys) {
+            run = (prev != Long.MIN_VALUE && key == prev - 1) ? run + 1 : 1;
+            max = Math.max(max, run);
+            prev = key;
+        }
+        Map<String, Integer> stats = new java.util.LinkedHashMap<>();
+        stats.put("current", current);
+        stats.put("max", Math.max(max, current));
+        return stats;
     }
 
     @Override

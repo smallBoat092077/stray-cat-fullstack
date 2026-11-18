@@ -38,6 +38,7 @@ public class CoinController {
         data.put("balance", coinService.getBalance(userId));
         data.put("tipped", coinService.sumTipped(userId));
         data.put("signedToday", coinService.hasSignedIn(userId));
+        data.put("signInStreak", coinService.signInStats(userId));
         return Result.success(data);
     }
 
@@ -66,6 +67,7 @@ public class CoinController {
         data.put("granted", granted);
         data.put("reward", granted ? CoinService.SIGNIN_REWARD : 0);
         data.put("balance", coinService.getBalance(userId));
+        data.put("signInStreak", coinService.signInStats(userId));
         return Result.success(granted ? "签到成功" : "今日已签到", data);
     }
 }

@@ -13,11 +13,13 @@ const saved = localStorage.getItem('wb_theme') || 'midnight';
 document.documentElement.setAttribute('data-theme', saved);
 
 const app = createApp(App);
+const pinia = createPinia();
 app
-  .use(createPinia())
+  .use(pinia)
   .use(router)
   .use(ElementPlus, { locale: zhCn })
   .mount('#app');
 
 // 将已保存的主题同步进 Pinia store（供 ThemeSwitcher 等组件读取）
-useThemeStore.__hydrate(saved);
+// useThemeStore 是 defineStore 返回的定义函数，必须先调用它拿到 store 实例，才能访问 actions 里的 __hydrate
+useThemeStore(pinia).__hydrate(saved);

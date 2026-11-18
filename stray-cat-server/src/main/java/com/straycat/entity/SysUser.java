@@ -62,6 +62,15 @@ public class SysUser {
      */
     private Integer volunteerLevel;
 
+    /** 首触来源：mp / share / wxacode / offline / direct，只在创建时写入 */
+    private String userSource;
+
+    /** 首触短码，创建时写入，永不覆盖 */
+    private String sourceSid;
+
+    /** 首触邀请人 userId，官方物料为 null */
+    private Long inviterId;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String realName;
 

@@ -15,7 +15,14 @@ public interface FeedingTaskMapper extends BaseMapper<FeedingTask> {
             "WHERE (#{keyword} IS NULL OR #{keyword} = '' OR c.name LIKE CONCAT('%', #{keyword}, '%') OR c.location_desc LIKE CONCAT('%', #{keyword}, '%')) " +
             "AND (#{status} IS NULL OR t.status = #{status}) " +
             "AND (#{sponsorId} IS NULL OR t.sponsor_id = #{sponsorId}) " +
+            // 区域过滤（区域划分需求 D7：投喂地点随猫，按猫的归属区域过滤）；不带参数 = 全部口径
+            "AND (#{provinceCode} IS NULL OR #{provinceCode} = '' OR c.province_code = #{provinceCode}) " +
+            "AND (#{cityCode} IS NULL OR #{cityCode} = '' OR c.city_code = #{cityCode}) " +
+            "AND (#{districtCode} IS NULL OR #{districtCode} = '' OR c.district_code = #{districtCode}) " +
             "ORDER BY t.created_at DESC")
     Page<FeedingTask> selectTaskPage(Page<FeedingTask> page, @Param("keyword") String keyword,
-                                     @Param("status") Integer status, @Param("sponsorId") Long sponsorId);
+                                     @Param("status") Integer status, @Param("sponsorId") Long sponsorId,
+                                     @Param("provinceCode") String provinceCode,
+                                     @Param("cityCode") String cityCode,
+                                     @Param("districtCode") String districtCode);
 }

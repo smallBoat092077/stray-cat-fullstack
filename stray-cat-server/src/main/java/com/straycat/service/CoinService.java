@@ -3,6 +3,8 @@ package com.straycat.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.straycat.entity.CoinTransaction;
 
+import java.util.Map;
+
 public interface CoinService {
 
     String BIZ_REGISTER = "REGISTER";
@@ -34,6 +36,12 @@ public interface CoinService {
     boolean signIn(Long userId);
 
     boolean hasSignedIn(Long userId);
+
+    /**
+     * 连续签到统计：current 从今天（今天没签则从昨天）向回数连续天数，
+     * max 为历史最长。纯查询推导，不做缓存。
+     */
+    Map<String, Integer> signInStats(Long userId);
 
     int getBalance(Long userId);
 

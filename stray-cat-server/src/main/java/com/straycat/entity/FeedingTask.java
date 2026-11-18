@@ -70,6 +70,20 @@ public class FeedingTask {
     private String locationDesc;
 
     /**
+     * 猫咪上报选点的真实地址，来自 cat_profile.location_name（地点名错位修复）；
+     * 导航优先用它，避免把手填的 locationDesc 当地点名
+     */
+    @TableField(exist = false)
+    private String locationName;
+
+    /**
+     * 被投喂猫咪头像（/uploads 相对路径），口径见 CatAvatarUtil：
+     * cover_image 优先，否则上报图片第一张；前端无值时显示默认占位图
+     */
+    @TableField(exist = false)
+    private String catCoverImage;
+
+    /**
      * 接单人的昵称和角色，来自 sys_user
      */
     @TableField(exist = false)

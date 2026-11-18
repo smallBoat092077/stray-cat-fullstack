@@ -20,12 +20,50 @@ CREATE TABLE IF NOT EXISTS sys_user (
     coin_balance INT NOT NULL DEFAULT 0 COMMENT '猫粮余额(站内虚拟积分,无现金价值)',
     real_name VARCHAR(50) COMMENT '真实姓名',
     id_card VARCHAR(20) COMMENT '身份证号',
+    user_source VARCHAR(20) COMMENT '首触来源: mp/share/wxacode/offline/direct',
+    source_sid VARCHAR(12) COMMENT '首触渠道短码',
+    inviter_id BIGINT COMMENT '首触邀请人',
     status TINYINT DEFAULT 1 COMMENT '状态: 0禁用 1正常',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_openid (openid),
-    INDEX idx_role (role)
+    INDEX idx_role (role),
+    INDEX idx_union_id (union_id),
+    INDEX idx_user_source (user_source),
+    INDEX idx_inviter (inviter_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+-- 渠道归因：公众号图文 / 微信分享卡片 / 小程序码 / 线下物料共用一个短码
+CREATE TABLE IF NOT EXISTS share_link (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    sid VARCHAR(12) NOT NULL COMMENT '对外短码',
+    channel VARCHAR(20) NOT NULL COMMENT 'mp_article/mp_menu/mp_card/wxacode/share_card/offline',
+    campaign VARCHAR(40) COMMENT '活动代号',
+    inviter_id BIGINT COMMENT '分享人 userId，官方物料为 NULL',
+    biz_type VARCHAR(20) COMMENT 'cat/feeding/adoption',
+    biz_id BIGINT COMMENT '落地对象 id',
+    landing_page VARCHAR(80) COMMENT '已发布页面路径，不带 / 与 query',
+    owner_role TINYINT NOT NULL DEFAULT 0 COMMENT '0官方 1用户分享',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '0停用 1正常',
+    expire_at DATETIME COMMENT 'NULL 表示长期有效',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE INDEX uk_sid (sid),
+    INDEX idx_campaign (campaign),
+    INDEX idx_inviter (inviter_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道短码主表';
+
+CREATE TABLE IF NOT EXISTS share_visit (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    sid VARCHAR(12) NOT NULL,
+    visit_user_id BIGINT NOT NULL,
+    is_new_user TINYINT NOT NULL DEFAULT 0,
+    entry_type VARCHAR(16) COMMENT 'share_card/wxacode/mp_card/mp_article',
+    scene_value VARCHAR(64) COMMENT '原始 scene，仅排查用',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE INDEX uk_sid_user (sid, visit_user_id),
+    INDEX idx_created (created_at),
+    INDEX idx_sid (sid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道归因明细';
 
 -- 猫咪档案表
 CREATE TABLE IF NOT EXISTS cat_profile (
@@ -41,6 +79,10 @@ CREATE TABLE IF NOT EXISTS cat_profile (
     latitude DECIMAL(10, 7) COMMENT '纬度',
     longitude DECIMAL(10, 7) COMMENT '经度',
     location_desc VARCHAR(200) COMMENT '位置描述',
+    location_name VARCHAR(255) COMMENT '上报选点的真实地址（地点名错位修复）',
+    province_code VARCHAR(12) COMMENT '上报时归属省（国标行政区码）',
+    city_code VARCHAR(12) COMMENT '上报时归属市',
+    district_code VARCHAR(12) COMMENT '上报时归属区',
     discoverer_id BIGINT COMMENT '发现人ID',
     caregiver_id BIGINT COMMENT '主要照顾者ID',
     adopter_id BIGINT COMMENT '领养人ID',
@@ -99,6 +141,10 @@ CREATE TABLE IF NOT EXISTS feeding_record (
     reviewer_id BIGINT COMMENT '审核人ID',
     review_comment VARCHAR(200) COMMENT '审核意见',
     reviewed_at DATETIME COMMENT '审核时间',
+    matched_cat_id BIGINT COMMENT '识别候选猫ID（人工确认后，仅作参考，不决定归属）',
+    similarity DECIMAL(5,4) COMMENT '最高候选相似度',
+    recognize_status TINYINT DEFAULT 0 COMMENT '0未识别 1高置信确认 2人工确认 3低置信 4服务降级',
+    recognized_at DATETIME COMMENT '识别时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     INDEX idx_task_id (task_id),
     INDEX idx_cat_id (cat_id),
@@ -184,10 +230,26 @@ CREATE TABLE IF NOT EXISTS cat_comment (
 CREATE TABLE IF NOT EXISTS cat_poster (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '海报ID',
     image_url VARCHAR(255) NOT NULL COMMENT '海报图片URL',
+    link_url VARCHAR(120) DEFAULT NULL COMMENT '点击跳转的小程序内页面路径',
     sort_order INT NOT NULL DEFAULT 0 COMMENT '排序权重，越小越靠前',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='首页海报轮播表';
+
+-- 营销活动：code 与 share_link.campaign 对齐，带参小程序码/分享落地 pages/campaign/index
+CREATE TABLE IF NOT EXISTS campaign (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '活动ID',
+    code VARCHAR(40) NOT NULL COMMENT '活动代号，与 share_link.campaign 对齐',
+    name VARCHAR(60) NOT NULL COMMENT '活动名',
+    description VARCHAR(500) COMMENT '活动介绍',
+    cover_url VARCHAR(255) COMMENT '封面图相对路径',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '0下线 1上线',
+    start_time DATETIME DEFAULT NULL COMMENT '开始时间，NULL 不限',
+    end_time DATETIME DEFAULT NULL COMMENT '结束时间，NULL 不限',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_code (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='营销活动表';
 
 -- 插入测试数据
 INSERT INTO sys_user (openid, nickname, role, status) VALUES
@@ -199,3 +261,86 @@ INSERT INTO cat_profile (name, gender, age_estimate, color, health_status, life_
 ('小花', 0, '2岁', '橘白相间', 2, 1, 31.230416, 121.473701, '上海市黄浦区南京东路', '性格温顺，喜欢被人摸'),
 ('咪咪', 1, '1岁', '黑色', 1, 0, 31.240416, 121.483701, '上海市黄浦区外滩', '比较怕生，需要耐心接近'),
 ('大黄', 1, '3岁', '黄色', 3, 2, 31.220416, 121.463701, '上海市黄浦区人民广场', '已绝育已疫苗，等待领养');
+
+-- 首页内容位：热点轮播 + 系统通告统一内容表（方案 4.1）
+CREATE TABLE IF NOT EXISTS home_content (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '内容ID',
+    type VARCHAR(16) NOT NULL COMMENT 'HOTSPOT 热点 / NOTICE 通告',
+    title VARCHAR(80) NOT NULL COMMENT '热点标题 / 通告标题',
+    summary VARCHAR(200) COMMENT '副标题 / 通告正文摘要',
+    cover_url VARCHAR(255) COMMENT '热点封面，NOTICE 可空',
+    tag VARCHAR(20) COMMENT '角标文案，如 热点/公告',
+    link_type VARCHAR(16) DEFAULT 'none' COMMENT 'campaign / cat / page / none',
+    link_url VARCHAR(255) COMMENT '站内路径或业务参数，须过 LINK_PATTERN',
+    sort_order INT NOT NULL DEFAULT 0 COMMENT '升序；同序按 created_at 倒序',
+    pinned TINYINT NOT NULL DEFAULT 0 COMMENT '通告置顶',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '0 下线 / 1 上线',
+    start_time DATETIME DEFAULT NULL COMMENT '生效开始时间，NULL 不限',
+    end_time DATETIME DEFAULT NULL COMMENT '生效结束时间，NULL 不限',
+    pv INT NOT NULL DEFAULT 0 COMMENT '点击/阅读数',
+    created_by BIGINT COMMENT '管理员 id',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_type_status (type, status, sort_order),
+    INDEX idx_time (start_time, end_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='首页内容位（热点+系统通告）';
+
+-- 寻猫启事（方案 4.2）。不设赏金/悬赏/支付字段，联系方式默认站内消息
+CREATE TABLE IF NOT EXISTS lost_cat_post (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '启事ID',
+    user_id BIGINT NOT NULL COMMENT '发布人',
+    cat_name VARCHAR(40) COMMENT '猫咪名字',
+    coat_desc VARCHAR(200) COMMENT '毛色 / 花纹描述（为二期花纹识别预留）',
+    images VARCHAR(1000) COMMENT '逗号分隔 /uploads/...，最多 6 张',
+    lost_at DATETIME COMMENT '丢失时间',
+    latitude DECIMAL(10,7) COMMENT '丢失地点纬度',
+    longitude DECIMAL(10,7) COMMENT '丢失地点经度',
+    address_desc VARCHAR(200) COMMENT '地点文字',
+    province_code VARCHAR(12) COMMENT '发布时归属省（国标行政区码）',
+    city_code VARCHAR(12) COMMENT '发布时归属市',
+    district_code VARCHAR(12) COMMENT '发布时归属区',
+    contact_way VARCHAR(20) DEFAULT 'inapp' COMMENT 'inapp 站内消息 / phone 电话',
+    contact_value VARCHAR(100) COMMENT '联系方式，公开展示前脱敏',
+    status TINYINT NOT NULL DEFAULT 0 COMMENT '0 寻找中 / 1 已找到 / 2 已关闭',
+    audit_status TINYINT NOT NULL DEFAULT 0 COMMENT '0 待审 / 1 通过 / 2 驳回',
+    audit_remark VARCHAR(200) COMMENT '驳回原因',
+    reviewer_id BIGINT COMMENT '审核人',
+    reviewed_at DATETIME COMMENT '审核时间',
+    view_count INT NOT NULL DEFAULT 0 COMMENT '浏览次数',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_status_audit (status, audit_status, created_at),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='寻猫启事';
+
+-- 行政区域（国标，只读字典）。数据由管理端 /admin/region/sync 从腾讯 district API 拉取，与 DatabaseMigration 双写。
+CREATE TABLE IF NOT EXISTS region (
+    code VARCHAR(12) PRIMARY KEY COMMENT '国标行政区码，如 420100',
+    name VARCHAR(50) NOT NULL COMMENT '名称，如 武汉市',
+    parent_code VARCHAR(12) COMMENT '上级行政区码，省级为 NULL',
+    level TINYINT NOT NULL COMMENT '1省 2市 3区',
+    sort INT NOT NULL DEFAULT 0 COMMENT '同级排序',
+    INDEX idx_parent (parent_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='行政区域（国标，只读）';
+
+-- 寻猫线索上报（二期 B，方案 4.2）：先审后发，与 DatabaseMigration.run() 末尾 DDL 双写。
+-- 双方不暴露任何联系方式，表内不含手机号 / 微信号 / openid / userId 明细字段。
+CREATE TABLE IF NOT EXISTS lost_cat_clue (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '线索ID',
+    post_id BIGINT NOT NULL COMMENT '关联 lost_cat_post.id',
+    reporter_id BIGINT NOT NULL COMMENT '上报人',
+    found_at DATETIME COMMENT '发现时间',
+    latitude DECIMAL(10,7) COMMENT '发现地点纬度',
+    longitude DECIMAL(10,7) COMMENT '发现地点经度',
+    address_desc VARCHAR(200) COMMENT '地点文字',
+    images VARCHAR(1000) COMMENT '逗号分隔 /uploads/...，最多 6 张',
+    description VARCHAR(500) COMMENT '线索描述',
+    audit_status TINYINT DEFAULT 0 COMMENT '0 待审 / 1 通过 / 2 驳回',
+    audit_remark VARCHAR(200) COMMENT '驳回原因',
+    reviewer_id BIGINT COMMENT '审核人',
+    reviewed_at DATETIME COMMENT '审核时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_post_audit (post_id, audit_status, created_at),
+    INDEX idx_reporter (reporter_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='寻猫线索';

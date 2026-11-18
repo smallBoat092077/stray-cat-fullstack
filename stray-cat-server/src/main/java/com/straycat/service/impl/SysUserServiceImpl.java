@@ -4,17 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cn.hutool.crypto.digest.BCrypt;
 import com.straycat.common.ResultCode;
+import com.straycat.dto.AttributionParam;
 import com.straycat.entity.SysUser;
 import com.straycat.exception.BusinessException;
 import com.straycat.interceptor.RoleInterceptor;
 import com.straycat.mapper.SysUserMapper;
 import com.straycat.service.CoinService;
+import com.straycat.service.ShareLinkService;
 import com.straycat.service.SysUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.Resource;
@@ -33,6 +36,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private CoinService coinService;
 
     @Resource
+    private ShareLinkService shareLinkService;
+
+    @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Value("${wechat.appid}")
@@ -45,8 +51,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysUser wxLogin(String code) {
-        log.info("微信登录, code: {}", code);
+        return wxLogin(code, null);
+    }
+
+    /**
+     * 微信一键登录是新建用户的主入口，首触来源必须跟「建用户 + 注册赠猫粮」
+     * 放在同一事务里：这里没有第二次归因机会，事务拆开会出现用户建了但来源没写。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public SysUser wxLogin(String code, AttributionParam attribution) {
+        log.info("微信登录");
 
         Map response = jscode2session(code);
         if (response == null) {
@@ -55,33 +72,45 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         String openid = (String) response.get("openid");
         String sessionKey = (String) response.get("session_key");
+        String unionId = (String) response.get("unionid");
 
         if (openid == null || openid.isEmpty()) {
-            log.error("微信登录失败, openid为空, response={}", response);
+            log.error("微信登录失败, openid为空");
             return null;
         }
 
-        // 查找或创建用户
         SysUser user = getByOpenid(openid);
-        if (user == null) {
+        boolean isNewUser = (user == null);
+        if (isNewUser) {
             user = new SysUser();
             user.setOpenid(openid);
             user.setSessionKey(sessionKey);
+            user.setUnionId(unionId);
             user.setRole(0);
             user.setCreditScore(100);
             user.setStatus(1);
             user.setCoinBalance(0);
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
+            // 首触归因：渠道/活动/邀请人只认服务端 share_link 表
+            shareLinkService.applyAttribution(user, attribution);
             save(user);
             coinService.grant(user.getId(), CoinService.REGISTER_GRANT,
                     CoinService.BIZ_REGISTER, user.getId(), "注册赠送");
         } else {
             user.setSessionKey(sessionKey);
+            // 未绑定开放平台时微信不下发 unionid，为空不覆盖已有值
+            if (unionId != null && !unionId.isEmpty()) {
+                user.setUnionId(unionId);
+            }
             user.setUpdatedAt(LocalDateTime.now());
             updateById(user);
         }
 
+        if (attribution != null && attribution.hasSid()) {
+            shareLinkService.recordVisit(attribution.getSid(), user.getId(), isNewUser,
+                    attribution.getEntryType(), attribution.getSceneValue());
+        }
         return user;
     }
 
@@ -96,8 +125,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         try {
             String responseBody = restTemplate.getForObject(url, String.class);
-            log.info("微信响应: {}", responseBody);
-
             if (responseBody == null || responseBody.isEmpty()) {
                 log.error("微信接口无响应");
                 return null;
@@ -109,6 +136,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 log.error("微信接口无响应");
                 return null;
             }
+
+            // 原始响应含 session_key / unionid，只打结构性信息，不落明文
+            log.info("微信登录响应: errcode={}, hasOpenid={}, hasUnionid={}",
+                    response.get("errcode"), response.get("openid") != null,
+                    response.get("unionid") != null);
 
             if (response.containsKey("errcode")) {
                 Object errcode = response.get("errcode");
@@ -179,7 +211,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysUser register(String username, String rawPassword) {
+        return register(username, rawPassword, null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public SysUser register(String username, String rawPassword, AttributionParam attribution) {
         if (username == null || username.trim().isEmpty()) {
             throw new BusinessException(ResultCode.PARAM_MISSING.getCode(), "用户名不能为空");
         }
@@ -201,9 +240,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setCoinBalance(0);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
+        shareLinkService.applyAttribution(user, attribution);
         save(user);
         coinService.grant(user.getId(), CoinService.REGISTER_GRANT,
                 CoinService.BIZ_REGISTER, user.getId(), "注册赠送");
+        if (attribution != null && attribution.hasSid()) {
+            shareLinkService.recordVisit(attribution.getSid(), user.getId(), true,
+                    attribution.getEntryType(), attribution.getSceneValue());
+        }
         return user;
     }
 

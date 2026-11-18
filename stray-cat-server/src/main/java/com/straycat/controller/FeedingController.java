@@ -2,14 +2,20 @@ package com.straycat.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.straycat.annotation.RequireRole;
+import com.straycat.common.PhotoValidator;
 import com.straycat.common.Result;
 import com.straycat.common.ResultCode;
+import com.straycat.config.RecognizerProperties;
 import com.straycat.dto.ReviewForm;
 import com.straycat.entity.FeedingTask;
 import com.straycat.interceptor.AuthInterceptor;
 import com.straycat.service.FeedingTaskService;
+import com.straycat.service.RecognitionAsyncService;
+import com.straycat.service.RecognitionService;
 import com.straycat.service.VolunteerLevelService;
 import com.straycat.vo.FeedingRecordVO;
+import com.straycat.vo.RecognizeConfigVO;
+import com.straycat.vo.RecognizeResultVO;
 import com.straycat.vo.VolunteerRankVO;
 import com.straycat.vo.VolunteerStatsVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +44,12 @@ public class FeedingController {
     private final FeedingTaskService feedingTaskService;
 
     private final VolunteerLevelService volunteerLevelService;
+
+    private final RecognitionService recognitionService;
+
+    private final RecognitionAsyncService recognitionAsyncService;
+
+    private final RecognizerProperties recognizerProperties;
 
     @Value("${file.upload-path:./uploads}")
     private String uploadPath;
@@ -86,24 +98,39 @@ public class FeedingController {
         return Result.success();
     }
 
-    @Operation(summary = "拍照识别猫咪（小程序打卡的识别步骤）")
-    @PostMapping("/recognize")
-    public Result<Map<String, Object>> recognize(@RequestParam("photo") MultipartFile photo) {
-        if (photo == null || photo.isEmpty()) {
-            return Result.error("照片不能为空");
-        }
-        // AI 识别服务（stray-cat-recognizer）尚未接入生产，先保证功能闭环：
-        // 返回 success=false，小程序端会显示猫咪选择器让志愿者手动选任务关联的猫，
-        // 打卡本身走人工审核，不会因为跳过 AI 识别产生错误归属
-        Map<String, Object> data = new HashMap<>();
-        data.put("success", false);
-        data.put("message", "自动识别暂不可用，请手动选择猫咪");
-        return Result.success(data);
+    @Operation(summary = "拍照识别灰度配置（打卡页 onLoad 取一次，GET 匿名放行）")
+    @GetMapping("/recognize/config")
+    public Result<RecognizeConfigVO> recognizeConfig() {
+        RecognizeConfigVO vo = new RecognizeConfigVO();
+        vo.setEnabled(recognizerProperties.isEnabled());
+        vo.setMatchThreshold(recognizerProperties.getMatchThreshold());
+        vo.setManualThreshold(recognizerProperties.getManualThreshold());
+        vo.setTopK(recognizerProperties.getTopK());
+        return Result.success(vo);
     }
 
-    @Operation(summary = "带识别照片的打卡（照片随打卡一起上传）")
+    @Operation(summary = "拍照识别猫咪（转发识别服务，异常/降级一律 HTTP 200 返回降级结果）")
+    @PostMapping("/recognize")
+    public Result<RecognizeResultVO> recognize(
+            @RequestParam("photo") MultipartFile photo,
+            @RequestParam(required = false) Long catId,
+            @RequestParam(required = false) Integer topK) {
+        String invalid = validatePhoto(photo);
+        if (invalid != null) {
+            return Result.error(invalid);
+        }
+        try {
+            // catId 是前端「用户确认的候选」，识别阶段不参与比对，仅保留入参兼容小程序契约
+            return Result.success(recognitionService.recognize(photo, topK));
+        } catch (Exception e) {
+            log.warn("拍照识别异常，返回降级结果: {}", e.getMessage());
+            return Result.success(RecognizeResultVO.degraded());
+        }
+    }
+
+    @Operation(summary = "带识别照片的打卡（复用同一张照片取识别分数，归属仍由任务决定）")
     @PostMapping("/checkin-with-recognize")
-    public Result<?> checkInWithRecognize(
+    public Result<Map<String, Object>> checkInWithRecognize(
             @RequestParam("photo") MultipartFile photo,
             @RequestParam Long taskId,
             @RequestParam(required = false) Long catId,
@@ -117,10 +144,40 @@ public class FeedingController {
         if (photo == null || photo.isEmpty()) {
             return Result.error("打卡照片不能为空");
         }
-        // catId 由任务关联决定（前端选的识别结果仅作参考），保证打卡归属不被错挂
+        String invalid = validatePhoto(photo);
+        if (invalid != null) {
+            return Result.error(invalid);
+        }
+
+        // 先缓存本次上传的字节：savePhoto 的 transferTo 会移动容器临时文件，
+        // 请求结束后 MultipartFile 临时文件不可用，异步识别只能依赖这份字节。
+        byte[] photoBytes = null;
+        try {
+            photoBytes = photo.getBytes();
+        } catch (IOException e) {
+            log.warn("读取打卡照片字节失败（异步识别按降级处理，不影响打卡）: {}", e.getMessage());
+        }
+
+        // 1) 落盘（存量 savePhoto 零改动）
         String imageUrl = savePhoto(photo);
+
+        // 2) 存量打卡逻辑零改动：cat_id 由 checkIn 内部按任务关联写入，识别结果永不自动定归属
         feedingTaskService.checkIn(taskId, volunteerId, latitude, longitude, imageUrl);
-        return Result.success();
+
+        // 3) 识别是纯辅助动作，改为后台异步执行，打卡立即返回；
+        //    完成后由 RecognitionAsyncService 复用 attachResult 事后补写 4 个识别字段。
+        recognitionAsyncService.submit(photoBytes, photo.getOriginalFilename(),
+                taskId, volunteerId, catId);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("recognizeStatus", 0); // 0=处理中/未识别，异步完成后补写真实状态
+        data.put("matchedCatId", catId);
+        return Result.success(data);
+    }
+
+    /** 图片真实性校验统一走 PhotoValidator（与管理端 register 共用同一口径） */
+    private String validatePhoto(MultipartFile photo) {
+        return PhotoValidator.validate(photo);
     }
 
     /** 打卡照片落盘，返回 /uploads/ 相对路径（与 /common/upload 同一存储目录） */
@@ -150,10 +207,15 @@ public class FeedingController {
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) Boolean mine,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String provinceCode,
+            @RequestParam(required = false) String cityCode,
+            @RequestParam(required = false) String districtCode,
             HttpServletRequest request) {
         Long sponsorId = (Boolean.TRUE.equals(mine))
                 ? (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR) : null;
-        Page<FeedingTask> result = feedingTaskService.listTasks(pageNum, pageSize, status, sponsorId, keyword);
+        // 区域过滤（区域划分需求 D7：按猫的归属区域）；不带参数 = 全部口径
+        Page<FeedingTask> result = feedingTaskService.listTasks(pageNum, pageSize, status, sponsorId, keyword,
+                provinceCode, cityCode, districtCode);
         feedingTaskService.fillDisplayInfo(result.getRecords());
         return Result.success(result);
     }

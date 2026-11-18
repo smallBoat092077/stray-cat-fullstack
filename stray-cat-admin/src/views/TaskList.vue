@@ -30,14 +30,16 @@
           <el-tag :type="dictType(TASK_STATUS_MAP, row.status)">{{ row.statusText }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="来源" width="100">
+      <el-table-column label="来源" width="112">
         <template #default="{ row }">
           <el-tag v-if="row.tipId" type="warning" size="small">打赏委托</el-tag>
           <span v-else class="muted">后台派单</span>
         </template>
       </el-table-column>
-      <el-table-column label="接单人" min-width="220">
-        <template #default="{ row }">{{ volunteerText(row) }}</template>
+      <el-table-column label="接单人" min-width="200">
+        <template #default="{ row }">
+          <span class="cell-ellipsis" :title="volunteerText(row)">{{ volunteerText(row) }}</span>
+        </template>
       </el-table-column>
       <el-table-column label="猫粮" width="90">
         <template #default="{ row }">{{ row.amount ? row.amount + ' 份' : (row.foodQuantity ? row.foodQuantity + ' 份' : '—') }}</template>

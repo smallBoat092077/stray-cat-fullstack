@@ -34,6 +34,10 @@ public class WebConfig implements WebMvcConfigurer {
                         "/user/login",
                         "/user/login/password",
                         "/user/register",
+                        "/share/link",
+                        "/campaign/detail",
+                        // 首页热点点击记数：POST 但免登（GET 本就由 AuthInterceptor 匿名放行，无需重复加）
+                        "/home/content/*/click",
                         "/xpay/notify",
                         "/uploads/**",
                         "/v3/api-docs/**",

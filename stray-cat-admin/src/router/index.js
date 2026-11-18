@@ -17,7 +17,13 @@ const routes = [
       { path: 'ledger', name: 'ledger', component: () => import('../views/LedgerList.vue'), meta: { title: '猫粮流水' } },
       { path: 'tips', name: 'tips', component: () => import('../views/TipList.vue'), meta: { title: '打赏记录' } },
       { path: 'posters', name: 'posters', component: () => import('../views/PosterList.vue'), meta: { title: '海报管理' } },
-      { path: 'feedback', name: 'feedback', component: () => import('../views/FeedbackList.vue'), meta: { title: '用户反馈' } }
+      { path: 'campaigns', name: 'campaigns', component: () => import('../views/CampaignList.vue'), meta: { title: '活动管理' } },
+      { path: 'feedback', name: 'feedback', component: () => import('../views/FeedbackList.vue'), meta: { title: '用户反馈' } },
+      { path: 'home-content', name: 'home-content', component: () => import('../views/HomeContentList.vue'), meta: { title: '首页内容' } },
+      { path: 'lost-cat-review', name: 'lost-cat-review', component: () => import('../views/LostCatReview.vue'), meta: { title: '寻猫审核' } },
+      { path: 'lost-cat-clue-review', name: 'lost-cat-clue-review', component: () => import('../views/LostCatClueReview.vue'), meta: { title: '线索审核' } },
+      { path: 'recognizer-sample', name: 'recognizer-sample', component: () => import('../views/RecognizerSample.vue'), meta: { title: '花纹样本' } },
+      { path: 'region-data', name: 'region-data', component: () => import('../views/RegionData.vue'), meta: { title: '区域数据' } }
     ]
   },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' }

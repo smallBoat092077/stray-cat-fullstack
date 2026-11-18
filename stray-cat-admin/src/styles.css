@@ -1,10 +1,57 @@
 /* ─── 猫遇猫舍后台 · 全局样式 ─── */
 @import './assets/themes.css';
 
-/* Element Plus 基础覆盖：让组件融入主题变量 */
+/* ─────────────────────────────────────────────────────────────
+   Element Plus 主题变量映射
+   核心：--accent / --fg / --border / --glass-* 本身随 [data-theme] 级联，
+   这里把它们映射给 EP 变量，切换主题时所有组件自动换色，无需逐主题重写。
+   ───────────────────────────────────────────────────────────── */
 :root {
-  --el-bg-color: transparent;
   --el-border-radius-base: 10px;
+
+  /* 文本 / 边框 / 填充：跟随主题 */
+  --el-text-color-primary:     var(--fg);
+  --el-text-color-regular:     var(--fg);
+  --el-text-color-secondary:   var(--fg-muted);
+  --el-text-color-placeholder: var(--fg-muted);
+  --el-border-color:           var(--border);
+  --el-border-color-light:     var(--border);
+  --el-border-color-lighter:   var(--border);
+  --el-border-color-extra-light: var(--border);
+  --el-fill-color:             var(--input-bg);
+  --el-fill-color-light:       var(--input-bg);
+  --el-fill-color-lighter:     var(--input-bg);
+  --el-fill-color-extra-light: var(--input-bg);
+  --el-fill-color-blank:       transparent;
+  --el-bg-color:               transparent;
+  --el-bg-color-page:          transparent;
+  --el-bg-color-overlay:       var(--glass-hi);
+
+  /* 主色：以主题色为源，生成整套 light/dark 变体（按钮/选中/tag 统一换色） */
+  --el-color-primary:            var(--accent);
+  --el-color-primary-light-3:    color-mix(in srgb, var(--accent) 70%, var(--bg));
+  --el-color-primary-light-5:    color-mix(in srgb, var(--accent) 50%, var(--bg));
+  --el-color-primary-light-7:    color-mix(in srgb, var(--accent) 30%, var(--bg));
+  --el-color-primary-light-8:    color-mix(in srgb, var(--accent) 20%, var(--bg));
+  --el-color-primary-light-9:    color-mix(in srgb, var(--accent) 10%, var(--bg));
+  --el-color-primary-dark-2:     color-mix(in srgb, var(--accent) 80%, #000);
+
+  /* 表格：玻璃质感、主题边框、主题悬停 */
+  --el-table-bg-color:          transparent;
+  --el-table-tr-bg-color:       transparent;
+  --el-table-header-bg-color:   var(--input-bg);
+  --el-table-header-text-color: var(--fg-muted);
+  --el-table-text-color:        var(--fg);
+  --el-table-row-hover-bg-color: var(--glass-hi);
+  --el-table-current-row-bg-color: var(--glass-hi);
+  --el-table-border-color:      var(--border);
+  --el-table-fixed-box-shadow:  var(--shadow);
+
+  /* 菜单：透明融入侧栏，选中色随主题 */
+  --el-menu-bg-color:           transparent;
+  --el-menu-text-color:         var(--fg-muted);
+  --el-menu-hover-bg-color:     var(--glass-hi);
+  --el-menu-active-color:       var(--accent);
 }
 
 html, body, #app {
@@ -57,7 +104,7 @@ html, body, #app {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #ff6eb4);
+  background: linear-gradient(135deg, var(--accent), var(--accent2, #ff6eb4));
   color: white;
   font-weight: 700;
   font-size: 14px;
@@ -72,14 +119,14 @@ html, body, #app {
   color: var(--fg-muted);
 }
 
-.account :deep(.el-button) {
-  color: var(--fg-muted);
+.account .el-button {
+  color: var(--fg-muted) !important;
   padding: 4px 8px;
 }
 
-.account :deep(.el-button:hover) {
-  color: var(--fg);
-  background: var(--glass-hi);
+.account .el-button:hover {
+  color: var(--fg) !important;
+  background: var(--glass-hi) !important;
 }
 
 /* 侧边栏：毛玻璃 */
@@ -99,62 +146,312 @@ html, body, #app {
   overflow: auto;
 }
 
-/* Element Plus 菜单在暗色主题下的适配 */
-[data-theme='midnight'] .shell-aside :deep(.el-menu),
-[data-theme='vibrant']  .shell-aside :deep(.el-menu),
-[data-theme='graphite'] .shell-aside :deep(.el-menu) {
+/* ── 左侧导航菜单：统一主题化（全局样式，直接后代选择器，无需 :deep）──
+   选中项：主题色文字 + 加粗 + 左侧 3px 主题色指示条，替代默认整块蓝底。 */
+.shell-aside .el-menu {
   background: transparent;
   border-right: none;
 }
 
-[data-theme='midnight'] .shell-aside :deep(.el-menu-item),
-[data-theme='vibrant']  .shell-aside :deep(.el-menu-item),
-[data-theme='graphite'] .shell-aside :deep(.el-menu-item) {
-  color: var(--fg-muted);
+.shell-aside .el-menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-muted) !important;
   border-radius: 8px;
   margin: 2px 8px;
+  transition: background .25s ease, color .25s ease;
 }
 
-[data-theme='midnight'] .shell-aside :deep(.el-menu-item:hover),
-[data-theme='vibrant']  .shell-aside :deep(.el-menu-item:hover),
-[data-theme='graphite'] .shell-aside :deep(.el-menu-item:hover) {
-  background: var(--glass-hi);
-  color: var(--fg);
+/* 每项前的小圆点（对齐设计稿）：未选中半透明灰，选中随主题色 */
+.shell-aside .el-menu-item::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .5;
+  flex-shrink: 0;
+  transition: opacity .25s ease;
 }
 
-[data-theme='midnight'] .shell-aside :deep(.el-menu-item.is-active),
-[data-theme='vibrant']  .shell-aside :deep(.el-menu-item.is-active),
-[data-theme='graphite'] .shell-aside :deep(.el-menu-item.is-active) {
-  background: var(--glass-hi);
-  color: var(--accent);
+.shell-aside .el-menu-item:hover {
+  background: var(--glass-hi) !important;
+  color: var(--fg) !important;
+}
+
+.shell-aside .el-menu-item.is-active {
+  background: var(--glass-hi) !important;
+  color: var(--accent) !important;
   font-weight: 600;
 }
 
-/* 亮色主题的菜单保持默认风格，稍微调整 */
-[data-theme='sun'] .shell-aside :deep(.el-menu),
-[data-theme='dawn'] .shell-aside :deep(.el-menu) {
-  background: var(--glass);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-right: 0.5px solid var(--border);
+.shell-aside .el-menu-item.is-active::before {
+  opacity: 1;
 }
 
-[data-theme='sun'] .shell-aside :deep(.el-menu-item),
-[data-theme='dawn'] .shell-aside :deep(.el-menu-item) {
+/* 选中项左侧主题色指示条（改用 ::after，避免与圆点 ::before 冲突） */
+.shell-aside .el-menu-item.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+
+/* ── 数据表格：独立圆角玻璃卡片（对齐设计稿）──
+   表格自身是一张带圆角/描边/阴影的卡片，与页面背景分离；去掉竖向分隔线，
+   仅保留淡横向分隔线 + 斑马纹；整体字号/行高收紧，贴近原型。 */
+.shell-main .el-table {
+  background: var(--table-fixed-bg) !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  border: 0.5px solid var(--border) !important;
+  font-size: 12px;
+}
+
+/* 隐藏表格自身顶部/底部的默认横线（改用卡片描边） */
+.shell-main .el-table::before,
+.shell-main .el-table--border::after,
+.shell-main .el-table__inner-wrapper::before {
+  display: none !important;
+}
+
+/* 去掉竖线：清空所有单元格左右边框 */
+.shell-main .el-table--border th.el-table__cell,
+.shell-main .el-table--border td.el-table__cell,
+.shell-main .el-table th.el-table__cell,
+.shell-main .el-table td.el-table__cell {
+  border-right: none !important;
+  border-left: none !important;
+  border-color: var(--border) !important;
+}
+
+/* 仅保留淡横向分隔线 */
+.shell-main .el-table th.el-table__cell.is-leaf,
+.shell-main .el-table td.el-table__cell {
+  border-bottom: 0.5px solid var(--border) !important;
+}
+
+.shell-main .el-table th.el-table__cell {
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .03em;
+  background: var(--input-bg) !important;
+  color: var(--fg-muted) !important;
+  height: 38px;
+  padding: 0;
+}
+
+/* 紧凑行高：单元格内边距收紧 */
+.shell-main .el-table td.el-table__cell {
+  height: 40px;
+  padding: 6px 0;
+}
+
+.shell-main .el-table .cell {
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 0 14px;
+}
+
+/* 长文本单元格：单行省略号（接单人等），hover 由原生 title 提示全文 */
+.shell-main .el-table .cell-ellipsis {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 行底色：整表统一用不透明底色，固定列与普通列同色，避免补丁感/透视 ──
+   所有底色都基于 --table-fixed-bg（不透明）用 color-mix 派生，保证绝不透明，
+   这样固定列滚到左侧内容之上时不会透出下层文字，且与普通行观感一致。 */
+/* 基础：普通单元格沿用卡片底色（表格容器已设为不透明） */
+.shell-main .el-table td.el-table__cell {
+  background: var(--table-fixed-bg) !important;
+}
+
+/* 斑马纹：偶数行在底色上叠极淡前景色（仍完全不透明） */
+.shell-main .el-table__body tr:nth-child(even) > td.el-table__cell {
+  background: color-mix(in srgb, var(--fg) 2.5%, var(--table-fixed-bg)) !important;
+}
+
+/* hover：主题色淡染，同样不透明 */
+.shell-main .el-table__body tr:hover > td.el-table__cell {
+  background: color-mix(in srgb, var(--accent) 9%, var(--table-fixed-bg)) !important;
+}
+
+/* 固定列必须跟随所在行的斑马纹/hover，且保持不透明，否则与相邻单元格色差形成补丁 */
+.shell-main .el-table th.el-table-fixed-column--left,
+.shell-main .el-table th.el-table-fixed-column--right,
+.shell-main .el-table td.el-table-fixed-column--left,
+.shell-main .el-table td.el-table-fixed-column--right {
+  background: var(--table-fixed-bg) !important;
+}
+.shell-main .el-table__body tr:nth-child(even) > td.el-table-fixed-column--left,
+.shell-main .el-table__body tr:nth-child(even) > td.el-table-fixed-column--right {
+  background: color-mix(in srgb, var(--fg) 2.5%, var(--table-fixed-bg)) !important;
+}
+.shell-main .el-table__body tr:hover > td.el-table-fixed-column--left,
+.shell-main .el-table__body tr:hover > td.el-table-fixed-column--right {
+  background: color-mix(in srgb, var(--accent) 9%, var(--table-fixed-bg)) !important;
+}
+
+/* ── 状态标签：带小圆点的主题色胶囊（对齐设计稿）── */
+.shell-main .el-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 20px !important;
+  background: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+  color: var(--accent) !important;
+  font-size: 11px;
+}
+
+/* 圆点：跟随文字颜色，暗色主题下略微提亮保证可见 */
+.shell-main .el-tag::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.shell-main .el-tag--danger {
+  background: color-mix(in srgb, #f56c6c 14%, transparent) !important;
+  border-color: color-mix(in srgb, #f56c6c 30%, transparent) !important;
+  color: #f56c6c !important;
+}
+
+.shell-main .el-tag--success {
+  background: color-mix(in srgb, #34c77b 14%, transparent) !important;
+  border-color: color-mix(in srgb, #34c77b 30%, transparent) !important;
+  color: #34c77b !important;
+}
+
+.shell-main .el-tag--warning {
+  background: color-mix(in srgb, #d4783a 14%, transparent) !important;
+  border-color: color-mix(in srgb, #d4783a 30%, transparent) !important;
+  color: #e08a4a !important;
+}
+
+.shell-main .el-tag--info {
+  background: var(--input-bg) !important;
+  border-color: var(--border) !important;
+  color: var(--fg-muted) !important;
+}
+
+/* ── 状态筛选：segmented 胶囊容器（对齐设计稿）──
+   整组是一个浅底圆角容器，选中项是浮起的浅色胶囊，无联动分隔线。 */
+.shell-main .filter-row .el-radio-group {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--input-bg);
+  border: 0.5px solid var(--border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.shell-main .el-radio-button__inner {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+  color: var(--fg-muted) !important;
+  padding: 7px 15px;
+  font-size: 12px;
+}
+
+.shell-main .el-radio-button__inner:hover {
+  color: var(--fg) !important;
+  background: transparent !important;
+}
+
+.shell-main .el-radio-button.is-active .el-radio-button__inner {
+  background: var(--glass-hi) !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+  box-shadow: var(--card-shadow) !important;
+}
+
+/* ── 分页：统一圆角胶囊，融入主题 ── */
+.shell-main .el-pagination {
   color: var(--fg-muted);
-  border-radius: 8px;
-  margin: 2px 8px;
+  --el-pagination-button-bg-color: transparent;
 }
 
-[data-theme='sun'] .shell-aside :deep(.el-menu-item:hover),
-[data-theme='dawn'] .shell-aside :deep(.el-menu-item:hover) {
-  background: var(--glass-hi);
+/* 页码、上一页、下一页统一圆角与底色，保持视觉一致 */
+.shell-main .el-pager li,
+.shell-main .el-pagination .btn-prev,
+.shell-main .el-pagination .btn-next {
+  background: var(--input-bg) !important;
+  color: var(--fg-muted) !important;
+  border-radius: 8px !important;
+  margin: 0 2px;
+  min-width: 28px;
+  transition: background .2s ease, color .2s ease;
+}
+
+.shell-main .el-pager li:hover,
+.shell-main .el-pagination .btn-prev:hover,
+.shell-main .el-pagination .btn-next:hover {
+  background: var(--glass-hi) !important;
+  color: var(--fg) !important;
+}
+
+/* 选中页：主题色实底，同样 8px 圆角 */
+.shell-main .el-pager li.is-active {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+}
+
+/* ── 弹窗全局：减少透明，提升可读性 ── */
+.el-overlay {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.el-dialog {
+  background: var(--glass-hi, rgba(255, 255, 255, 0.88));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 0.5px solid var(--border, rgba(0, 0, 0, 0.12));
+  box-shadow: var(--shadow, 0 8px 32px rgba(0, 0, 0, 0.3));
+  border-radius: 16px;
+  color: var(--fg, #1d1d1f);
+}
+
+.el-dialog__header {
+  padding: 18px 20px 12px;
+  border-bottom: 0.5px solid var(--border, rgba(0, 0, 0, 0.07));
+  margin-right: 0;
+}
+
+.el-dialog__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+
+.el-dialog__body {
+  padding: 20px;
   color: var(--fg);
 }
 
-[data-theme='sun'] .shell-aside :deep(.el-menu-item.is-active),
-[data-theme='dawn'] .shell-aside :deep(.el-menu-item.is-active) {
-  background: var(--glass-hi);
-  color: var(--accent);
-  font-weight: 600;
+.el-dialog__footer {
+  padding: 12px 20px 18px;
+  border-top: 0.5px solid var(--border, rgba(0, 0, 0, 0.07));
 }

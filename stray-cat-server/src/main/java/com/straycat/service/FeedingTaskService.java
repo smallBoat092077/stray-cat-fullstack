@@ -59,7 +59,8 @@ public interface FeedingTaskService extends IService<FeedingTask> {
     /**
      * 任务列表（支持关键词搜索猫名/地点）
      */
-    Page<FeedingTask> listTasks(Integer pageNum, Integer pageSize, Integer status, Long sponsorId, String keyword);
+    Page<FeedingTask> listTasks(Integer pageNum, Integer pageSize, Integer status, Long sponsorId, String keyword,
+                                String provinceCode, String cityCode, String districtCode);
 
     /**
      * 审核投喂打卡记录：通过则任务转「已完成」并给志愿者加 1 信用积分，

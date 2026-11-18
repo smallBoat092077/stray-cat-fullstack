@@ -48,5 +48,25 @@ public class FeedingRecord {
 
     private LocalDateTime reviewedAt;
 
+    /**
+     * 识别候选猫ID（人工确认后，仅作参考，不决定归属）
+     */
+    private Long matchedCatId;
+
+    /**
+     * 最高候选相似度
+     */
+    private BigDecimal similarity;
+
+    /**
+     * 0未识别 1高置信确认 2人工确认 3低置信 4服务降级
+     */
+    private Integer recognizeStatus;
+
+    /**
+     * 识别时间
+     */
+    private LocalDateTime recognizedAt;
+
     private LocalDateTime createdAt;
 }

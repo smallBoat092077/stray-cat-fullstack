@@ -38,6 +38,12 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="归属区域" width="170" show-overflow-tooltip>
+        <template #default="{ row }">
+          <span v-if="row.provinceCode || row.cityCode || row.districtCode">{{ regionNames(row) }}</span>
+          <span v-else class="muted">未归属</span>
+        </template>
+      </el-table-column>
       <el-table-column label="地点" min-width="180">
         <template #default="{ row }">
           {{ row.locationDesc || '未填写' }}
@@ -49,9 +55,10 @@
       <el-table-column label="累计猫粮" width="100">
         <template #default="{ row }">{{ row.coinTotal || 0 }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="190" fixed="right">
+      <el-table-column label="操作" width="240" fixed="right">
         <template #default="{ row }">
           <el-button size="small" @click="openEdit(row)">编辑</el-button>
+          <el-button size="small" @click="openRegion(row)">改区域</el-button>
           <el-button size="small" type="primary" @click="openStatus(row)">改状态</el-button>
         </template>
       </el-table-column>
@@ -69,6 +76,38 @@
 
     <el-dialog v-model="editVisible" title="编辑猫咪信息" width="560px">
       <el-form :model="form" label-width="90px">
+        <el-form-item label="猫咪头像">
+          <div class="avatar-editor">
+            <div class="avatar-row">
+              <img v-if="current && current.coverImage" :src="imageUrl(current.coverImage)" class="avatar-preview" alt="头像" />
+              <div v-else class="avatar-preview avatar-empty">无头像</div>
+              <div class="avatar-actions">
+                <el-button size="small" :disabled="coverBusy" @click="coverInput && coverInput.click()">上传新头像</el-button>
+                <input
+                  ref="coverInput"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  style="display: none"
+                  @change="onCoverUpload"
+                />
+                <div class="muted avatar-tip">默认取上报图片第一张；上传或点选下方图片即可更换</div>
+              </div>
+            </div>
+            <div v-if="pickableImages.length" class="pick-grid">
+              <div
+                v-for="p in pickableImages"
+                :key="p.path"
+                class="pick-item"
+                :class="{ picked: p.path === (current && current.coverImage) }"
+                @click="pickCover(p.path)"
+              >
+                <img :src="p.url" alt="上报图片" />
+                <span class="pick-badge" v-if="p.path === (current && current.coverImage)">当前</span>
+              </div>
+            </div>
+            <div v-else class="muted">该猫暂无上报本体图，可直接上传头像</div>
+          </div>
+        </el-form-item>
         <el-form-item label="名字"><el-input v-model="form.name" /></el-form-item>
         <el-form-item label="性别">
           <el-select v-model="form.gender" style="width: 100%">
@@ -99,6 +138,28 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="regionVisible" title="修正归属区域" width="460px">
+      <el-alert
+        type="info"
+        :closable="false"
+        show-icon
+        class="status-tip"
+        title="归属区域决定小程序三个页面的区域过滤范围；清空归属后该猫只在「全部」口径可见。"
+      />
+      <el-cascader
+        v-model="regionPath"
+        :options="regionOptions"
+        :props="{ value: 'code', label: 'name', children: 'children', emitPath: true }"
+        placeholder="选择省 / 市 / 区（可只选到市）"
+        clearable
+        style="width: 100%"
+      />
+      <template #footer>
+        <el-button @click="regionVisible = false">取消</el-button>
+        <el-button type="primary" :loading="regionBusy" @click="submitRegion">保存</el-button>
+      </template>
+    </el-dialog>
+
     <el-dialog v-model="statusVisible" title="纠正生活状态" width="420px">
       <el-alert type="info" :closable="false" show-icon class="status-tip">
         状态流转有约束（例如「已领养」只能转「领养回访中」），不在允许范围内服务端会直接拒绝。
@@ -115,10 +176,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, ref, computed, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import { catApi } from '../api';
 import { invalidateLookups } from '../utils/lookups';
+import { loadRegionTree, regionNames } from '../utils/region';
 import {
   GENDER_MAP,
   HEALTH_STATUS_MAP,
@@ -164,6 +226,67 @@ const filteredRows = computed(() => {
     (cat) => (cat.name || '').includes(text) || (cat.locationDesc || '').includes(text)
   );
 });
+
+// ---------- 猫咪头像（猫咪头像功能设计方案 §3.3） ----------
+const coverInput = ref(null);
+const coverBusy = ref(false);
+
+/** 可挑选的候选头像：cover_image + 上报本体图 images（D2：环境图不参与） */
+const pickableImages = computed(() => {
+  const row = current.value;
+  if (!row) {
+    return [];
+  }
+  const list = [];
+  if (row.coverImage) {
+    list.push({ path: row.coverImage, url: imageUrl(row.coverImage) });
+  }
+  (row.images || '')
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .forEach((p) => {
+      if (!list.some((x) => x.path === p)) {
+        list.push({ path: p, url: imageUrl(p) });
+      }
+    });
+  return list;
+});
+
+async function pickCover(path) {
+  if (coverBusy.value || !current.value) return;
+  if (path === current.value.coverImage) return;
+  coverBusy.value = true;
+  try {
+    const res = await catApi.updateCover(current.value.id, path);
+    current.value.coverImage = (res && res.coverImage) || path;
+    ElMessage.success('头像已更新');
+    invalidateLookups();
+    load();
+  } catch (err) {
+    // 提示由 http 拦截器统一给
+  } finally {
+    coverBusy.value = false;
+  }
+}
+
+async function onCoverUpload(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file || !current.value) return;
+  coverBusy.value = true;
+  try {
+    const res = await catApi.uploadCover(current.value.id, file);
+    current.value.coverImage = (res && res.coverImage) || current.value.coverImage;
+    ElMessage.success('头像已更新');
+    invalidateLookups();
+    load();
+  } catch (err) {
+    // 提示由 http 拦截器统一给
+  } finally {
+    coverBusy.value = false;
+    e.target.value = '';
+  }
+}
 
 async function load() {
   loading.value = true;
@@ -241,6 +364,46 @@ async function submitStatus() {
   }
 }
 
+// ---------- 归属区域修正（区域划分需求 R5/D4） ----------
+const regionVisible = ref(false);
+const regionBusy = ref(false);
+const regionOptions = ref([]);
+const regionPath = ref([]);
+
+async function openRegion(row) {
+  current.value = row;
+  regionPath.value = [row.provinceCode, row.cityCode, row.districtCode].filter(Boolean);
+  if (!regionOptions.value.length) {
+    try {
+      regionOptions.value = await loadRegionTree();
+    } catch (err) {
+      // 提示由 http 拦截器统一给
+    }
+  }
+  regionVisible.value = true;
+}
+
+async function submitRegion() {
+  if (!current.value) return;
+  const [p = '', c = '', d = ''] = regionPath.value;
+  regionBusy.value = true;
+  try {
+    await catApi.updateRegion(current.value.id, {
+      provinceCode: p || '',
+      cityCode: c || '',
+      districtCode: d || ''
+    });
+    ElMessage.success('归属区域已更新');
+    regionVisible.value = false;
+    invalidateLookups();
+    load();
+  } catch (err) {
+    // 提示由 http 拦截器统一给
+  } finally {
+    regionBusy.value = false;
+  }
+}
+
 onMounted(load);
 </script>
 
@@ -250,6 +413,84 @@ onMounted(load);
   height: 56px;
   object-fit: cover;
   border-radius: 4px;
+}
+
+.avatar-editor {
+  width: 100%;
+}
+
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-preview {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid #e4e7ed;
+}
+
+.avatar-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #909399;
+  background: #f5f7fa;
+}
+
+.avatar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-tip {
+  font-size: 12px;
+}
+
+.pick-grid {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pick-item {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.pick-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pick-item.picked {
+  border-color: var(--el-color-primary, #409eff);
+}
+
+.pick-badge {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  line-height: 18px;
+  color: #fff;
+  background: rgba(64, 158, 255, 0.85);
 }
 
 .status-tip {

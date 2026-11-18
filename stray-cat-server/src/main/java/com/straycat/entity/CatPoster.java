@@ -16,6 +16,9 @@ public class CatPoster {
 
     private String imageUrl;
 
+    /** 点击海报跳转的站内页面路径，如 pages/cat/detail?id=1；只允许站内路径，禁止外链 */
+    private String linkUrl;
+
     private Integer sortOrder;
 
     private LocalDateTime createdAt;

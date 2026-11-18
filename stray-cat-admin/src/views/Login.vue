@@ -5,7 +5,7 @@
       <ThemeSwitcher />
     </div>
 
-    <el-card class="login-card fade-up">
+    <div class="login-card fade-up">
       <h2 class="login-title">猫遇猫舍后台</h2>
       <p class="login-sub">管理员账号登录（role=3）</p>
       <el-form :model="form" label-position="top" @submit.prevent>
@@ -21,9 +21,9 @@
             @keyup.enter="onSubmit"
           />
         </el-form-item>
-        <el-button type="primary" class="login-btn" :loading="loading" @click="onSubmit">登录</el-button>
+        <el-button class="login-btn" :loading="loading" @click="onSubmit">登 录</el-button>
       </el-form>
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -80,8 +80,8 @@ async function onSubmit() {
 }
 
 .login-card {
-  width: 360px;
-  padding: 8px 12px 16px;
+  width: 380px;
+  padding: 32px 28px 28px;
   background: var(--glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -90,28 +90,11 @@ async function onSubmit() {
   color: var(--fg);
 }
 
-.login-card :deep(.el-card__body) {
-  padding: 16px 8px 8px;
-}
-
-.login-card :deep(.el-form-item__label) {
-  color: var(--fg-muted);
-}
-
-.login-card :deep(.el-input__wrapper) {
-  background: var(--input-bg);
-  box-shadow: 0 0 0 0.5px var(--border) !important;
-}
-
-.login-card :deep(.el-input__inner) {
-  color: var(--fg);
-}
-
 .login-title {
-  margin: 4px 0 4px;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  margin-bottom: 4px;
   background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -119,19 +102,26 @@ async function onSubmit() {
 }
 
 .login-sub {
-  margin: 0 0 18px;
   font-size: 13px;
   color: var(--fg-muted);
+  margin-bottom: 28px;
 }
 
 .login-btn {
   width: 100%;
   margin-top: 8px;
+  height: 42px;
   background: var(--accent);
   border-color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: all 0.2s;
 }
 
 .login-btn:hover {
   opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139,156,247,0.3);
 }
 </style>

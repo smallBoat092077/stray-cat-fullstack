@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.straycat.common.CatAvatarUtil;
 import com.straycat.common.MessageType;
 import com.straycat.common.ResultCode;
 import com.straycat.entity.CatProfile;
@@ -436,19 +437,31 @@ public class FeedingTaskServiceImpl extends ServiceImpl<FeedingTaskMapper, Feedi
             if (cat != null) {
                 task.setCatName(cat.getName());
                 task.setLocationDesc(cat.getLocationDesc());
+                task.setLocationName(cat.getLocationName());
+                // 头像统一口径：cover_image 优先，否则上报图片第一张（CatAvatarUtil）
+                task.setCatCoverImage(CatAvatarUtil.resolveCatAvatar(cat));
             }
         }
         fillVolunteerInfo(tasks);
     }
 
     @Override
-    public Page<FeedingTask> listTasks(Integer pageNum, Integer pageSize, Integer status, Long sponsorId, String keyword) {
+    public Page<FeedingTask> listTasks(Integer pageNum, Integer pageSize, Integer status, Long sponsorId, String keyword,
+                                       String provinceCode, String cityCode, String districtCode) {
         return this.baseMapper.selectTaskPage(
                 new Page<>(pageNum, pageSize),
                 keyword == null || keyword.isBlank() ? null : keyword.trim(),
                 status,
-                sponsorId
+                sponsorId,
+                blankToNull(provinceCode),
+                blankToNull(cityCode),
+                blankToNull(districtCode)
         );
+    }
+
+    /** 空串转 null：mapper 的区域过滤条件用 null 判「不过滤」 */
+    private String blankToNull(String s) {
+        return s == null || s.isBlank() ? null : s.trim();
     }
 
     /**

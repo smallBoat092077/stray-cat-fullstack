@@ -1,14 +1,17 @@
 package com.straycat.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.straycat.dto.AttributionParam;
 import com.straycat.entity.SysUser;
 
 public interface SysUserService extends IService<SysUser> {
 
     /**
-     * 微信登录
+     * 微信登录。保留无参版本给已有调用方；带归因的版本供 /user/login 使用。
      */
     SysUser wxLogin(String code);
+
+    SysUser wxLogin(String code, AttributionParam attribution);
 
     /**
      * 根据openid查询用户
@@ -16,9 +19,11 @@ public interface SysUserService extends IService<SysUser> {
     SysUser getByOpenid(String openid);
 
     /**
-     * 账号密码注册
+     * 账号密码注册。同样保留无参版本。
      */
     SysUser register(String username, String rawPassword);
+
+    SysUser register(String username, String rawPassword, AttributionParam attribution);
 
     /**
      * 账号密码登录

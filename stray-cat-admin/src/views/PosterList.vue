@@ -29,6 +29,33 @@
       <el-empty v-if="!loading && posters.length === 0" description="暂无海报" />
       <div v-for="poster in sortedPosters" :key="poster.id" class="poster-card">
         <img :src="POSTERS_BASE_URL + poster.imageUrl" class="poster-img" alt="海报" />
+        <div class="poster-link">
+          <el-input
+            v-model="linkDraft[poster.id]"
+            size="small"
+            placeholder="pages/cat/detail?id=1（留空不跳转）"
+            @change="markDirty(poster.id)"
+          />
+          <el-select
+            v-model="catPick[poster.id]"
+            size="small"
+            filterable
+            clearable
+            placeholder="快速关联猫咪"
+            class="cat-pick"
+            @change="onCatPicked(poster.id)"
+          >
+            <el-option
+              v-for="cat in catOptions"
+              :key="cat.id"
+              :value="cat.id"
+              :label="`#${cat.id} ${cat.name}`"
+            />
+          </el-select>
+          <el-button size="small" type="primary" :disabled="!dirty[poster.id]" @click="saveLink(poster)">
+            保存链接
+          </el-button>
+        </div>
         <div class="poster-actions">
           <span class="muted">#{{ poster.sortOrder }}</span>
           <el-button size="small" type="danger" @click="onDelete(poster)">删除</el-button>
@@ -39,9 +66,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import { posterApi } from '../api';
+import { posterApi, catApi } from '../api';
 
 const POSTERS_BASE_URL = '';
 
@@ -52,6 +79,12 @@ const uploadPercent = ref(0);
 const fileName = ref('');
 const fileInput = ref(null);
 
+// 每张海报的链接草稿 / 脏标记 / 快速选猫
+const linkDraft = reactive({});
+const dirty = reactive({});
+const catPick = reactive({});
+const catOptions = ref([]);
+
 const sortedPosters = computed(() => {
   return [...posters.value].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 });
@@ -60,10 +93,46 @@ async function load() {
   loading.value = true;
   try {
     posters.value = await posterApi.getList();
+    posters.value.forEach((p) => {
+      linkDraft[p.id] = p.linkUrl || '';
+      dirty[p.id] = false;
+    });
   } catch (err) {
     // http interceptor handles message
   } finally {
     loading.value = false;
+  }
+}
+
+async function loadCats() {
+  try {
+    const page = await catApi.list({ pageNum: 1, pageSize: 200 });
+    catOptions.value = page.records || [];
+  } catch (err) {
+    // 拉不到猫咪就不给快捷选择，手填路径不受影响
+  }
+}
+
+function markDirty(id) {
+  dirty[id] = true;
+}
+
+function onCatPicked(id) {
+  const catId = catPick[id];
+  if (catId) {
+    linkDraft[id] = `pages/cat/detail?id=${catId}`;
+  }
+  dirty[id] = true;
+}
+
+async function saveLink(poster) {
+  try {
+    const updated = await posterApi.setLink(poster.id, (linkDraft[poster.id] || '').trim());
+    poster.linkUrl = updated.linkUrl;
+    dirty[poster.id] = false;
+    ElMessage.success(updated.linkUrl ? '跳转链接已保存' : '已清除跳转链接');
+  } catch (err) {
+    // 提示由 http 拦截器统一给
   }
 }
 
@@ -134,7 +203,10 @@ async function onDelete(poster) {
   }
 }
 
-onMounted(load);
+onMounted(() => {
+  load();
+  loadCats();
+});
 </script>
 
 <style scoped>
@@ -181,6 +253,18 @@ onMounted(load);
   width: 100%;
   height: auto;
   display: block;
+}
+
+.poster-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+
+.cat-pick {
+  width: 150px;
+  flex: none;
 }
 
 .poster-actions {

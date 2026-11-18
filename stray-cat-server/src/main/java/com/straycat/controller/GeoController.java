@@ -5,6 +5,8 @@ import com.straycat.common.ResultCode;
 import com.straycat.exception.BusinessException;
 import com.straycat.interceptor.AuthInterceptor;
 import com.straycat.service.GeoRouteService;
+import com.straycat.service.GeoService;
+import com.straycat.vo.GeoResultVO;
 import com.straycat.vo.GeoRouteVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +25,8 @@ public class GeoController {
 
     private final GeoRouteService geoRouteService;
 
+    private final GeoService geoService;
+
     @Operation(summary = "从当前位置到某只猫的步行路线")
     @GetMapping("/route")
     public Result<GeoRouteVO> route(@RequestParam Long catId,
@@ -34,5 +38,20 @@ public class GeoController {
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
         return Result.success(geoRouteService.routeToCat(catId, fromLatitude, fromLongitude));
+    }
+
+    /**
+     * 坐标 -> 行政区（区域划分需求 R3/D2/D5）。与 /route 同策略：花腾讯配额，要求登录。
+     * 未配置 key 时返回 geoConfigured=false（端侧降级为不过滤）；解析失败 success=false。
+     */
+    @Operation(summary = "坐标解析行政区（逆地理编码代理）")
+    @GetMapping("/reverse")
+    public Result<GeoResultVO> reverse(@RequestParam Double latitude,
+                                       @RequestParam Double longitude,
+                                       HttpServletRequest request) {
+        if (request.getAttribute(AuthInterceptor.USER_ID_ATTR) == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        return Result.success(geoService.reverse(latitude, longitude));
     }
 }

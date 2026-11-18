@@ -33,7 +33,16 @@ public enum MessageType {
     /** 用户提交了新反馈（发给管理员），跳小程序端反馈处理页，?id 直达对应那条 */
     FEEDBACK_NEW("feedbackNew", "收到新的用户反馈", "/pages/admin/feedback?id=%d"),
     /** 管理员回复了用户的反馈（发给反馈人） */
-    FEEDBACK_REPLIED("feedbackReplied", "你的反馈有回复了", "/pages/feedback/index");
+    FEEDBACK_REPLIED("feedbackReplied", "你的反馈有回复了", "/pages/feedback/index"),
+
+    /** 活动提醒：给访问过某活动的用户发的运营触达，bizId 是活动 id，点消息回活动页 */
+    CAMPAIGN_REMINDER("campaignReminder", "活动提醒", "/pages/campaign/index?id=%d"),
+
+    /** 渠道日报：每天凌晨汇总昨日分享/新增数据发给管理员，只落站内不接微信模板 */
+    DAILY_REPORT("dailyReport", "渠道日报", "/pages/profile/index"),
+
+    /** 寻猫线索审核通过（发给启事发布者）：bizId 是线索 id，点消息跳线索详情页 */
+    LOST_CAT_CLUE_NEW("lostCatClueNew", "有人见过你的猫，快来看线索", "/pages/lost-cat/clue-detail?id=%d");
 
     private final String templateKey;
     private final String title;

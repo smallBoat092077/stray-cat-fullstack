@@ -35,6 +35,7 @@
           <el-menu-item index="/lost-cat-review">寻猫审核</el-menu-item>
           <el-menu-item index="/lost-cat-clue-review">线索审核</el-menu-item>
           <el-menu-item index="/recognizer-sample">花纹样本</el-menu-item>
+          <el-menu-item index="/region-data">区域数据</el-menu-item>
         </el-menu>
       </el-aside>
 

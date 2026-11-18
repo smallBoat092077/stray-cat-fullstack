@@ -105,6 +105,10 @@ wechat:
       # 共同领养：邀请与回应。没申请模板时留空即可，只落站内消息
       co-adoption-invite: ${WX_TPL_CO_ADOPTION_INVITE:}
       co-adoption-result: ${WX_TPL_CO_ADOPTION_RESULT:}
+      # 活动提醒（P2-1）：小程序后台申请到「活动/预约提醒」类模板后填入即激活，留空时整项隐藏
+      campaign-reminder: ${WX_TPL_CAMPAIGN_REMINDER:}
+      # 寻猫线索（二期 B）：留空即退化为纯站内消息，UAT 不配模板也能完整验收
+      lost-cat-clue-new: ${WX_TPL_LOST_CAT_CLUE_NEW:}
     # 每个模板 content 里的字段名，逗号分隔，按位置对应三个槽位。
     # 默认值已按 2026-11-09 线上实际选用的模板填好（用 wxaapi/newtmpl/gettemplate 拉出来的真字段），
     # 换模板时只改这里或对应的 WX_TPL_FIELD_* 环境变量，不要改代码。
@@ -128,6 +132,10 @@ wechat:
       co-adoption-invite: ${WX_TPL_FIELD_CO_ADOPTION_INVITE:thing1,thing2,thing3,time4}
       # 审核结果通知（2026-11-13 复用领养审核同款：任务名称/申请人/审核结果 → thing20/thing11/phrase1）
       co-adoption-result: ${WX_TPL_FIELD_CO_ADOPTION_RESULT:thing20,thing11,phrase1}
+      # 活动提醒：默认按 thing1/thing2/thing3 预留，模板下来后按真实字段名改环境变量
+      campaign-reminder: ${WX_TPL_FIELD_CAMPAIGN_REMINDER:thing1,thing2,thing3}
+      # 寻猫线索：模板申请下来后按真实字段名改环境变量
+      lost-cat-clue-new: ${WX_TPL_FIELD_LOST_CAT_CLUE_NEW:thing1,thing2,thing3}
 
 notify:
   follow-up-reminder:
@@ -139,11 +147,22 @@ notify:
 # 腾讯位置服务 WebAPI（lbs.qq.com 申请）。key 只在服务端，由 /geo/route 代理调用，
 # 不下发进小程序包，也不用把 apis.map.qq.com 加进 request 合法域名。
 # 留空时 /geo/route 退化为两点直线（source=straight），导航页照常显示直线距离。
+# 区域划分功能复用同一把 key：/geo/reverse（逆地理编码）与 /admin/region/sync（区域同步）；
+# key 需在腾讯控制台勾选 WebServiceAPI 并授权服务器。留空时区域功能降级为「全部口径不过滤」。
 tencent:
   map:
     key: ${TENCENT_MAP_KEY:}
     # walking / driving / bicycling
     mode: walking
+
+# 和风天气（QWeather，2026 新版 v1 API）。公共 API 地址已停用，必须用开发者独立 Host。
+# host/key 只从环境变量注入，不写进仓库、不下发小程序包。留空时天气卡片静默隐藏。
+# 免费额度：每月前 5 万次请求免费；本项目 30 分钟缓存一次，一天仅几十次。
+qweather:
+  # 控制台「设置」页分配的独立 API Host，如 h2a9cf3mhs.xy.qweatherapi.com（不带 https://）
+  host: ${QWEATHER_HOST:}
+  # 控制台「项目管理-凭据」创建的 API Key
+  key: ${QWEATHER_KEY:}
 
 # 虚拟支付（道具直购）。app-key / push-token 只存在于服务端，用环境变量注入，不要写死进仓库。
 # product-id 与 price-fen 必须和小程序后台「虚拟支付 - 道具管理」里已发布的道具完全一致。
@@ -176,3 +195,36 @@ xpay:
       coin-amount: 680
       price-fen: 980
       title: 680 份猫粮
+
+# 渠道日报（P1-5）：每天 00:05 汇总昨日分享/新用户发给管理员站内消息
+report:
+  daily:
+    enabled: ${REPORT_DAILY_ENABLED:true}
+    cron: ${REPORT_DAILY_CRON:0 5 0 * * *}
+
+# 首页改造（方案 2 / 7）：公共内容缓存 TTL 与内容条数上限
+home:
+  bootstrap-cache-seconds: 60
+  leaderboard-cache-seconds: 300
+  hotspot-limit: 3
+  board-limit: 5
+
+# 花纹识别一期（方案 5.2.5）：阈值以本服务 app.env 为唯一口径，
+# Python 侧 MATCH_THRESHOLD 硬编码且读不到 app.env，Java 忽略其 success/message 自行分级。
+# 生产 env 不设 RECOGNIZER_ENABLED 即为 false，灰度安全。
+recognizer:
+  base-url: ${RECOGNIZER_BASE_URL:http://recognizer:8000}
+  enabled: ${RECOGNIZER_ENABLED:false}
+  connect-timeout-ms: 2000
+  # stats 首次调用需建立 Python->MySQL 连接，5s 偶发误判降级，二期放宽到 8000ms
+  read-timeout-ms: 8000
+  # match 是用户交互链路：二期实测 Python 冷启动首次 4.8s，2500ms 会误判降级，放宽到 8000ms
+  match-timeout-ms: ${RECOGNIZER_MATCH_TIMEOUT_MS:8000}
+  # register 是写操作：UAT 实测经 Java 转发约 9.6s，5s 会超时但 Python 仍完成写库，故单独放宽
+  register-timeout-ms: ${RECOGNIZER_REGISTER_TIMEOUT_MS:15000}
+  match-threshold: ${RECOGNIZER_MATCH_THRESHOLD:0.85}
+  manual-threshold: ${RECOGNIZER_MANUAL_THRESHOLD:0.70}
+  # 二期：高置信还要求 top1-top2 达到该差值，否则降 medium
+  margin-threshold: ${RECOGNIZER_MARGIN_THRESHOLD:0.05}
+  top-k: 3
+  failure-cooldown-seconds: 30

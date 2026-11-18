@@ -47,6 +47,23 @@ public class CatProfile {
 
     private String locationDesc;
 
+    /**
+     * 上报选点的真实地址（地图 chooseLocation 返回的 POI 名称/地址）。
+     * 与 locationDesc（手填描述，如「路上」）分离：详情/导航优先展示本字段，
+     * 避免把自由文本当作地图地点名（地点名错位修复）。
+     */
+    private String locationName;
+
+    /**
+     * 上报时归属省/市/区（国标行政区码，region 字典同源；区域划分需求 R2）。
+     * 三列全 null = 存量未归属，仅在「全部」口径可见（D4）
+     */
+    private String provinceCode;
+
+    private String cityCode;
+
+    private String districtCode;
+
     private Long discovererId;
 
     private Long caregiverId;
