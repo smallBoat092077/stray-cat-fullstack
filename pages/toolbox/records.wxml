@@ -1,0 +1,48 @@
+<brand-nav back="{{true}}" />
+<view class="container records-page">
+
+  <view class="cat-entry" bindtap="onManageCats">
+    <text>当前猫咪：{{cat ? cat.name : '临时小猫'}}</text>
+    <text class="cat-entry-link">我的猫咪 ›</text>
+  </view>
+
+  <view class="filter-bar">
+    <view wx:for="{{types}}" wx:key="key"
+          class="filter-item {{activeType === item.key ? 'active' : ''}}"
+          data-type="{{item.key}}" bindtap="onFilter">{{item.label}}</view>
+  </view>
+
+  <view class="week">
+    <view class="week-day" wx:for="{{week}}" wx:key="key">
+      <view class="week-dot {{item.has ? 'has' : ''}}">{{item.day}}</view>
+      <view class="week-label">{{item.label}}</view>
+    </view>
+  </view>
+
+  <view class="between group-head" wx:if="{{groups.length > 0}}">
+    <text class="muted">共 {{allCount}} 条记录</text>
+  </view>
+
+  <block wx:for="{{groups}}" wx:key="key" wx:for-item="group">
+    <view class="group-title">
+      <text class="section-title">{{group.dateText}}</text>
+      <text class="group-count">{{group.count}} 条</text>
+    </view>
+    <view class="record" wx:for="{{group.list}}" wx:key="id" wx:for-item="r">
+      <view class="record-icon">{{r.short}}</view>
+      <view class="record-info">
+        <view class="record-title">{{r.desc}}</view>
+        <view class="record-time">{{r.timeText}}</view>
+      </view>
+      <view class="record-del" data-id="{{r.id}}" bindtap="onDelete">×</view>
+    </view>
+  </block>
+
+  <view class="empty" wx:if="{{loading === false && groups.length === 0}}">
+    <text class="empty-icon">记</text>
+    <text>暂无记录，点下方按钮记一笔</text>
+  </view>
+
+  <button class="btn-primary add-btn" bindtap="onAdd">＋ 新增记录</button>
+  <view class="tip-box">新增记录字段：类型 / 时间 / 量 / 用药名（仅吃药）/ 照片（选填）/ 备注。数据一期存本机。</view>
+</view>

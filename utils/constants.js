@@ -60,6 +60,22 @@ const CO_ADOPTION_STATUS_MAP = {
   2: { text: '已拒绝', class: 'danger' }
 };
 
+// 爱猫搬家：转让信息状态 0待审 1在架 2已转让 3下架 4驳回
+const TRANSFER_STATUS_MAP = {
+  0: { text: '待审', class: 'warning' },
+  1: { text: '在架', class: 'success' },
+  2: { text: '已转让', class: 'info' },
+  3: { text: '已下架', class: 'info' },
+  4: { text: '已驳回', class: 'danger' }
+};
+
+// 爱猫搬家：接猫申请状态 0待处理 1已联系 2不合适
+const TRANSFER_APPLY_STATUS_MAP = {
+  0: { text: '待处理', class: 'warning' },
+  1: { text: '已联系', class: 'success' },
+  2: { text: '不合适', class: 'info' }
+};
+
 // tabBar 页白名单：唯一口径，统一带前导斜杠。
 // tab 页只能用 switchTab 打开，且不接受 query；改动 tabBar 时只需改这里。
 const TAB_PAGES = [
@@ -81,5 +97,7 @@ module.exports = {
   RECORD_STATUS_MAP,
   COIN_BIZ_MAP,
   CO_ADOPTION_STATUS_MAP,
+  TRANSFER_STATUS_MAP,
+  TRANSFER_APPLY_STATUS_MAP,
   TAB_PAGES
 };

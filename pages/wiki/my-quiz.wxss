@@ -1,0 +1,79 @@
+.quiz-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx;
+}
+
+.quiz-score {
+  width: 120rpx;
+  height: 120rpx;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--gold) 0 78%, #EFEBDD 78% 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-score .score-num {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.score-unit {
+  margin-top: 6rpx;
+  font-size: 18rpx;
+  color: var(--ink-mute);
+}
+
+.quiz-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.quiz-portrait {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.quiz-time {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.quiz-hint {
+  margin-top: 12rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--gold-deep);
+}
+
+.need-login {
+  text-align: center;
+  padding: 120rpx 0;
+}
+
+.login-text {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  margin-bottom: 28rpx;
+}
+
+.quiz-btn {
+  margin-top: 16rpx;
+}
+
+.error-tip {
+  text-align: center;
+  padding: 120rpx 0;
+  font-size: 26rpx;
+  color: var(--brick);
+}

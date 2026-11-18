@@ -1,0 +1,57 @@
+<brand-nav back="{{true}}" />
+<view class="container list-page">
+
+  <!-- 区域筛选 -->
+  <region-picker id="regionPicker" bind:change="onRegionChange" />
+
+  <!-- 品种 pill -->
+  <view class="filter-bar">
+    <view wx:for="{{breeds}}" wx:key="index"
+          class="filter-item {{breedIndex === index ? 'active' : ''}}"
+          data-index="{{index}}" bindtap="onBreedTap">{{item || '全部'}}</view>
+  </view>
+
+  <!-- 关键词搜索 + 我要转让 -->
+  <view class="list-actions">
+    <view class="search-box">
+      <input class="search-input" placeholder="搜索猫咪名字 / 品种" confirm-type="search"
+             value="{{keyword}}" bindinput="onKeywordInput" bindconfirm="onSearch" />
+      <text class="search-btn" bindtap="onSearch">搜索</text>
+    </view>
+    <view class="publish-btn" bindtap="goPublish">＋ 我要转让</view>
+  </view>
+
+  <view class="result-line" wx:if="{{!loading && !error && list.length > 0}}">为你找到 {{list.length}}+ 只等待新家的猫</view>
+
+  <!-- 列表 -->
+  <view class="post-card card" wx:for="{{list}}" wx:key="id"
+        data-id="{{item.id}}" bindtap="goDetail">
+    <image class="post-cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+    <view class="post-cover post-cover-empty" wx:else><text>⌂</text></view>
+    <view class="post-body">
+      <view class="post-head">
+        <text class="post-name">{{item.catName}}</text>
+        <text class="tag tag-success">免费领养</text>
+      </view>
+      <text class="post-meta">{{item.breed || '中华田园猫'}} · {{item.ageText}} · {{item.genderText}}</text>
+      <text class="post-meta" wx:if="{{item.traitText}}">{{item.traitText}}</text>
+      <text class="post-meta">📍 {{item.regionText}}</text>
+      <view class="post-foot">
+        <text class="post-reason">{{item.reason || '期待遇见新主人'}}</text>
+        <text class="post-apply">{{item.applyCount || 0}} 人想接 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+  <view class="empty" wx:if="{{!loading && !error && list.length === 0}}">
+    <text class="empty-icon">⌂</text>
+    <text>这里还没有等待新家的猫，去发布一只吧</text>
+    <view class="empty-link" bindtap="goPublish">我要转让 ›</view>
+  </view>
+  <view class="loading" wx:if="{{!loading && !hasMore && list.length > 0}}">没有更多了</view>
+</view>
+
+<!-- 底部固定安全提示 -->
+<view class="bottom-tip">请勿提前转账，见面请确认对方身份；本平台不提供交易担保</view>

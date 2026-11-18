@@ -1,0 +1,46 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+
+  <block wx:else>
+    <view class="sec-head card">
+      <view class="acc">{{accountMasked}}</view>
+      <view class="sub">账号安全中心</view>
+      <view class="state state-ok" wx:if="{{lockStage === 0}}">账号状态正常</view>
+      <view class="state state-warn" wx:elif="{{lockStage === 1}}">临时锁定 · 剩余 {{remain}}</view>
+      <view class="state state-bad" wx:elif="{{lockStage === 2}}">永久锁定</view>
+    </view>
+
+    <view class="notice notice-warn" wx:if="{{lockStage === 1}}">
+      账号处于 24 小时保护期，密码登录暂不可用，微信登录不受影响。解锁后请谨慎输入密码。
+    </view>
+    <view class="notice notice-bad" wx:if="{{lockStage === 2}}">
+      账号已被锁定，密码登录与微信登录均暂不可用。请联系管理员处理，或提交找回申请。
+    </view>
+    <view class="notice" wx:if="{{!hasPassword}}">当前账号未设置密码，暂不支持此功能。</view>
+
+    <view class="card info-card">
+      <view class="info-row">
+        <text class="info-label">登录密码</text>
+        <text class="info-value">{{hasPassword ? '已设置' : '未设置'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">微信绑定</text>
+        <text class="info-value">{{wechatBound ? '已绑定' : '未绑定'}}</text>
+      </view>
+      <view class="info-row last">
+        <text class="info-label">安全邮箱</text>
+        <text class="info-value {{emailVerified ? '' : 'muted'}}">{{emailVerified ? emailMasked : '未绑定 · 建议绑定'}}</text>
+      </view>
+    </view>
+
+    <view class="action-list">
+      <button class="btn-primary act-btn" wx:if="{{hasPassword}}" bindtap="goChangePassword">修改密码</button>
+      <button class="btn-ghost act-btn" bindtap="goBindEmail">{{emailVerified ? '更换邮箱' : '绑定安全邮箱'}}</button>
+      <button class="btn-ghost act-btn danger-line" wx:if="{{hasPassword && emailVerified}}" data-mode="unbind" bindtap="goBindEmail">解绑邮箱</button>
+      <button class="btn-ghost act-btn" bindtap="goForgotPassword">忘记密码</button>
+    </view>
+
+    <view class="foot-note">安全邮箱用于接收密码修改、账号锁定等重要通知，不作为登录凭证，也不会收到密码明文。</view>
+  </block>
+</view>

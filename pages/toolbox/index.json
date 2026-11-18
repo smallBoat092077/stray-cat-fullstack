@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "猫咪工具箱",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

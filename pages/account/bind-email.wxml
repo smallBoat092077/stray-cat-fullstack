@@ -1,0 +1,76 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="section-title">安全邮箱</view>
+
+  <!-- 已绑定：展示状态与更换 / 解绑入口 -->
+  <block wx:if="{{bound && formMode !== 'change' && formMode !== 'unbind'}}">
+    <view class="card info-card">
+      <view class="info-row">
+        <text class="info-label">已绑定邮箱</text>
+        <text class="info-value">{{emailMasked}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">验证状态</text>
+        <text class="info-value ok">已验证</text>
+      </view>
+      <view class="info-row last">
+        <text class="info-label">安全通知</text>
+        <text class="info-value">已开启</text>
+      </view>
+    </view>
+
+    <button class="btn-ghost act-btn" bindtap="startChange">更换邮箱</button>
+    <button class="btn-ghost act-btn danger-line" bindtap="startUnbind">解绑邮箱</button>
+
+    <view class="notice notice-bad">
+      解绑需要验证当前密码；输错会计入失败次数。解绑后将无法接收安全邮件。
+    </view>
+  </block>
+
+  <!-- 解绑：验证当前密码 -->
+  <block wx:elif="{{formMode === 'unbind'}}">
+    <view class="notice">请输入当前密码完成解绑。输错密码会计入失败次数，连续输错可能触发账号保护。</view>
+    <view class="card form-card">
+      <view class="form-item last">
+        <text class="form-label">当前密码</text>
+        <input class="form-input" password placeholder="请输入当前密码"
+               value="{{password}}" data-field="password" bindinput="onInput" />
+      </view>
+    </view>
+    <button class="btn-primary act-btn" bindtap="confirmUnbind" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '确认解绑'}}
+    </button>
+    <button class="btn-ghost act-btn" bindtap="cancelForm">取消</button>
+  </block>
+
+  <!-- 未绑定 / 更换邮箱：邮箱 + 验证码 -->
+  <block wx:else>
+    <view class="notice">
+      绑定后可接收密码修改、账号锁定等重要安全通知。邮箱仅用于通知，不作为登录凭证。
+    </view>
+    <view class="card form-card">
+      <view class="form-item">
+        <text class="form-label">邮箱地址</text>
+        <input class="form-input" placeholder="请输入常用邮箱"
+               value="{{email}}" data-field="email" bindinput="onInput" />
+      </view>
+      <view class="form-item last">
+        <text class="form-label">验证码</text>
+        <view class="code-row">
+          <input class="code-input" placeholder="6 位验证码"
+                 value="{{code}}" data-field="code" bindinput="onInput" />
+          <view class="code-btn {{countdown > 0 ? 'disabled' : ''}}" bindtap="sendCode">
+            {{countdown > 0 ? countdown + ' 秒后重发' : '获取验证码'}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-primary act-btn" bindtap="confirmBind" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '确认绑定'}}
+    </button>
+    <button class="btn-ghost act-btn" wx:if="{{formMode === 'change'}}" bindtap="cancelForm">取消更换</button>
+
+    <view class="foot-note">验证码 10 分钟内有效；如果在收件箱找不到，请检查垃圾邮件文件夹。</view>
+  </block>
+</view>

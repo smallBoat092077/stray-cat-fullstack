@@ -1,0 +1,151 @@
+.records-page {
+  padding-bottom: 60rpx;
+}
+
+.week {
+  display: flex;
+  justify-content: space-between;
+  gap: 8rpx;
+  margin: 8rpx 0 24rpx;
+}
+
+.week-day {
+  flex: 1;
+  text-align: center;
+}
+
+.week-dot {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  margin: 0 auto 8rpx;
+  border-radius: 50%;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+  background: #F1EEE4;
+  border: 1rpx solid transparent;
+}
+
+.week-dot.has {
+  color: var(--brand);
+  background: var(--mist);
+  border-color: var(--gold);
+}
+
+.week-label {
+  font-size: 20rpx;
+  color: var(--ink-mute);
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-head {
+  margin-bottom: 4rpx;
+}
+
+.muted {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.group-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.group-title .section-title {
+  margin-bottom: 14rpx;
+}
+
+.group-count {
+  font-size: 21rpx;
+  color: var(--ink-mute);
+}
+
+.record {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 18rpx 4rpx;
+  border-bottom: 1rpx dashed var(--gold-mist);
+}
+
+.record-icon {
+  width: 60rpx;
+  height: 60rpx;
+  flex-shrink: 0;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 28rpx;
+  color: var(--brand);
+  background: var(--mist);
+  border: 1rpx solid var(--gold-mist);
+}
+
+.record-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-title {
+  font-size: 25rpx;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.record-time {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  color: var(--ink-mute);
+}
+
+.record-del {
+  flex-shrink: 0;
+  width: 50rpx;
+  height: 50rpx;
+  line-height: 46rpx;
+  text-align: center;
+  font-size: 36rpx;
+  color: var(--ink-mute);
+}
+
+.add-btn {
+  width: 100%;
+  margin-top: 32rpx;
+}
+
+.tip-box {
+  margin-top: 24rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.cat-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding: 18rpx 24rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.cat-entry-link {
+  color: var(--brand);
+}

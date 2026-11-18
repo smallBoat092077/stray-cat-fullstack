@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "我的申请",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

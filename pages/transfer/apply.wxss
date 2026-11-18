@@ -1,0 +1,127 @@
+.apply-page {
+  padding-bottom: 60rpx;
+}
+
+.cat-summary {
+  display: flex;
+  align-items: center;
+  padding: 18rpx;
+}
+
+.summary-cover {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background: var(--cream);
+}
+
+.summary-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: var(--brand-soft);
+  border: 1rpx solid var(--gold-mist);
+}
+
+.summary-body {
+  margin-left: 20rpx;
+  min-width: 0;
+}
+
+.summary-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.summary-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.phone-notice {
+  padding: 16rpx 20rpx;
+  margin-bottom: 28rpx;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: var(--brand);
+  background: var(--mist);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.choice-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.choice-item {
+  padding: 12rpx 40rpx;
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  background: var(--pill-mint);
+  border-radius: 999rpx;
+}
+
+.choice-item.active {
+  color: #FFFDF7;
+  background: var(--brand);
+}
+
+.promise {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  margin: 12rpx 0 28rpx;
+}
+
+.promise-box {
+  flex-shrink: 0;
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid var(--gold);
+  border-radius: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: #FFF;
+}
+
+.promise-box.checked {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.promise-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.submit-btn {
+  width: 100%;
+}
+
+.tip-box {
+  margin-top: 24rpx;
+  padding: 18rpx 20rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.error-tip {
+  text-align: center;
+  padding: 120rpx 0;
+  font-size: 26rpx;
+  color: var(--brick);
+}

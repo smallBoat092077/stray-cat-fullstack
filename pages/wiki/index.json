@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "猫咪百科",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

@@ -290,11 +290,7 @@ Page({
   },
 
   onAbout() {
-    wx.showModal({
-      title: '关于我们',
-      content: '猫遇猫舍 v1.0.9\n遇一只猫，安一个家',
-      showCancel: false
-    });
+    wx.navigateTo({ url: '/pages/about/index' });
   },
 
   onClearCache() {

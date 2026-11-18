@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "百科文章",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

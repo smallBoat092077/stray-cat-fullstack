@@ -186,6 +186,17 @@
   text-align: center;
 }
 
+/* 忘记密码入口旁的柔和标记（自助找回，不抢主菜单视觉） */
+.menu-soft-tag {
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  color: var(--brand-soft);
+  background: var(--mist);
+  border: 1rpx solid var(--gold-mist);
+  letter-spacing: 1rpx;
+}
+
 .menu-arrow {
   font-size: 28rpx;
   color: var(--gold);

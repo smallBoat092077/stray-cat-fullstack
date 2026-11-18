@@ -1,0 +1,184 @@
+.result-page {
+  padding-bottom: 60rpx;
+}
+
+.score-ring {
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  margin: 16rpx auto 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-inner {
+  width: 186rpx;
+  height: 186rpx;
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-num {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 72rpx;
+  font-weight: 700;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.score-label {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.correct-line {
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--ink-mute);
+  margin-bottom: 24rpx;
+}
+
+.portrait {
+  text-align: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  color: var(--brand);
+  margin-bottom: 16rpx;
+}
+
+.tags {
+  text-align: center;
+  margin-bottom: 28rpx;
+}
+
+.bars-card {
+  padding: 28rpx;
+}
+
+.bars-title {
+  font-size: 24rpx;
+  color: var(--ink-mute);
+  margin-bottom: 20rpx;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 16rpx;
+}
+
+.bar-name {
+  width: 120rpx;
+  flex-shrink: 0;
+  font-size: 23rpx;
+  color: var(--ink-soft);
+}
+
+.bar-track {
+  flex: 1;
+  height: 12rpx;
+  background: #EFEBDD;
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 999rpx;
+}
+
+.bar.weak .bar-fill {
+  background: var(--brick);
+}
+
+.bar-val {
+  width: 70rpx;
+  text-align: right;
+  flex-shrink: 0;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+}
+
+.bar.weak .bar-val {
+  color: var(--brick);
+}
+
+.art-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 18rpx;
+  margin-bottom: 16rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 14rpx;
+}
+
+.art-img {
+  width: 104rpx;
+  height: 104rpx;
+  flex-shrink: 0;
+  border-radius: 10rpx;
+  background: var(--sand);
+}
+
+.art-img-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 42rpx;
+  color: var(--gold-deep);
+}
+
+.art-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.art-title {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.art-meta {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: var(--ink-mute);
+}
+
+.share-btn,
+.again-btn {
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.again-btn {
+  margin-top: 16rpx;
+}
+
+.tip-box {
+  margin-top: 28rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.muted {
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}

@@ -32,6 +32,7 @@ const catApi = {
   getList: (params) => request({ url: '/cat/list', data: params }),
   getStats: () => request({ url: '/cat/stats' }),
   getDetail: (id) => request({ url: `/cat/${id}` }),
+  getMine: () => request({ url: '/cat/mine' }),
   report: (data) => request({ url: '/cat/report', method: 'POST', data }),
   getNearby: (latitude, longitude, radius = 5) =>
     request({ url: '/cat/nearby', data: { latitude, longitude, radius } }),
@@ -215,6 +216,26 @@ const feedbackApi = {
   mine: (pageNum = 1, pageSize = 20) => request({ url: '/feedback/my', data: { pageNum, pageSize } })
 };
 
+// 密码找回申请（免登提交，后端白名单放行；账号+昵称+手机号+说明，管理员线下核实重置）
+const forgotPasswordApi = {
+  apply: (data) => request({ url: '/user/forgot-password/apply', method: 'POST', data })
+};
+
+// 账号安全：自主改密 / 安全状态 / 邮箱绑定管理（均需登录）
+const accountApi = {
+  changePassword: (data) => request({ url: '/user/change-password', method: 'POST', data }),
+  securityStatus: () => request({ url: '/user/security-status' }),
+  sendEmailCode: (data) => request({ url: '/user/email/send-code', method: 'POST', data }),
+  bindEmail: (data) => request({ url: '/user/email/bind', method: 'POST', data }),
+  unbindEmail: (data) => request({ url: '/user/email/unbind', method: 'POST', data }),
+  resetPasswordByCode: (data) => request({ url: '/user/reset-password-by-code', method: 'POST', data })
+};
+
+// 「关于我们」页面配置（公开接口，无需登录）
+const aboutApi = {
+  getAbout: () => request({ url: '/about' })
+};
+
 // 反馈处理（管理员专用，后端 @RequireRole(3)，消息中心「收到新的用户反馈」直达这里）
 const feedbackAdminApi = {
   page: (params) => request({ url: '/admin/feedback', data: params }),
@@ -257,8 +278,53 @@ const lostCatApi = {
   clueMine: () => request({ url: '/lost-cat/clue/mine' })
 };
 
+// 爱猫搬家：列表 / 详情免登，发布 / 我的 / 申请 / 管理需登录。
+// 手机号只出现在受控接口；公开列表与详情由服务端过滤，不在前端处理。
+const transferApi = {
+  // 列表（在架）：省 / 市 / 区 + 品种 + 关键词
+  list: (params) => request({ url: '/transfer/posts', data: params }),
+  // 详情：浏览量 +1，不含手机号
+  detail: (id) => request({ url: `/transfer/post/${id}` }),
+  // 发布转让
+  create: (data) => request({ url: '/transfer/post', method: 'POST', data }),
+  // 我发布的（全部状态）
+  mine: () => request({ url: '/transfer/mine' }),
+  // 下架 / 标记已转让
+  offline: (id) => request({ url: `/transfer/post/${id}/offline`, method: 'POST' }),
+  complete: (id) => request({ url: `/transfer/post/${id}/complete`, method: 'POST' }),
+  // 提交接猫申请
+  apply: (data) => request({ url: '/transfer/apply', method: 'POST', data }),
+  // 我的申请
+  myApplies: () => request({ url: '/transfer/my-applies' }),
+  // 某条发布的接猫申请（仅发布人，含手机号）
+  applies: (postId) => request({ url: `/transfer/applies/${postId}` }),
+  // 更新申请处理状态：后端 @RequestParam，必须走查询串
+  applyStatus: (id, status) =>
+    request({ url: `/transfer/apply/${id}/status?status=${status}`, method: 'POST' }),
+  // 举报：后端 @RequestParam，必须走查询串
+  report: (postId, reason) =>
+    request({
+      url: `/transfer/report?postId=${postId}&reason=${encodeURIComponent(reason || '')}`,
+      method: 'POST'
+    })
+};
+
+// 猫咪百科：分类 / 题目 / 文章 / 提交测评免登；我的测评需登录。
+// 题目选项由服务端打乱，不返回正确答案，前端只提交 {questionId, optionIndex}。
+const wikiApi = {
+  categories: () => request({ url: '/wiki/categories' }),
+  questions: (limit = 10) => request({ url: '/wiki/questions', data: { limit } }),
+  submitQuiz: (answers) => request({ url: '/wiki/quiz/submit', method: 'POST', data: { answers } }),
+  articles: (params) => request({ url: '/wiki/articles', data: params }),
+  article: (id) => request({ url: `/wiki/article/${id}` }),
+  myQuiz: () => request({ url: '/wiki/my-quiz' })
+};
+
 module.exports = {
   resolveImageUrl,
+  transferApi,
+  wikiApi,
+  aboutApi,
   userApi,
   shareApi,
   campaignApi,
@@ -276,6 +342,8 @@ module.exports = {
   messageApi,
   feedbackApi,
   feedbackAdminApi,
+  forgotPasswordApi,
+  accountApi,
   posterApi,
   uploadFile: (filePath) => {
     return new Promise((resolve, reject) => {

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "知识测评",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

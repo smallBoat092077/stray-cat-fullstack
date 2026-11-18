@@ -1,0 +1,57 @@
+<brand-nav back="{{true}}" />
+<view class="container wiki-page">
+
+  <!-- 测评大卡 -->
+  <view class="wiki-hero">
+    <view class="hero-deco"></view>
+    <view class="hero-title">懂一点猫，少走弯路</view>
+    <view class="hero-sub">10 道题，测出你的养猫知识盲区</view>
+    <button class="hero-btn" bindtap="goQuiz">开始测评 ›</button>
+  </view>
+
+  <!-- 我的测评入口 -->
+  <view class="my-quiz-entry" bindtap="goMyQuiz">
+    <text>我的测评记录</text>
+    <text class="entry-arrow">›</text>
+  </view>
+
+  <!-- 五大分类 -->
+  <view class="between section-head">
+    <text class="section-title">按分类学</text>
+    <text class="muted">共 {{totalArticles}} 篇 ›</text>
+  </view>
+  <view class="cats">
+    <view class="cat-item {{activeCategory === '' ? 'active' : ''}}" data-category="" bindtap="onCategoryTap">全部</view>
+    <view wx:for="{{categories}}" wx:key="category"
+          class="cat-item {{activeCategory === item.category ? 'active' : ''}}"
+          data-category="{{item.category}}" bindtap="onCategoryTap">
+      <text class="cat-initial">{{item.initial}}</text>
+      <text class="cat-name">{{item.name}}</text>
+      <text class="cat-count">{{item.count}} 篇</text>
+    </view>
+  </view>
+
+  <!-- 文章列表 -->
+  <view class="section-title">推荐阅读</view>
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+
+  <view class="art-card" wx:for="{{articles}}" wx:key="id" data-id="{{item.id}}" bindtap="goArticle">
+    <image class="art-img" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+    <view class="art-img art-img-empty" wx:else>{{item.initial}}</view>
+    <view class="art-body">
+      <view class="art-title">{{item.title}}</view>
+      <view class="art-meta">{{item.categoryName}} · {{item.readText}} · {{item.viewsText}} 阅读</view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !error && articles.length === 0}}">
+    <text class="empty-icon">卷</text>
+    <text>这个分类暂时还没有文章</text>
+  </view>
+
+  <view class="tip-box">
+    <text class="disclaimer-title">免责声明</text>
+    内容仅供日常照护参考，不构成医疗建议。猫咪生病请咨询执业兽医。
+  </view>
+</view>

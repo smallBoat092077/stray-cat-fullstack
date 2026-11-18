@@ -1,0 +1,38 @@
+<brand-nav back="{{true}}" />
+<view class="container compress-page">
+
+  <view class="preview" wx:if="{{hasImage}}">
+    <image src="{{compressedPath || originalPath}}" mode="aspectFit" bindtap="preview" />
+    <view class="preview-tip">点击预览大图</view>
+  </view>
+  <view class="preview preview-empty" wx:else bindtap="chooseImage">
+    <view class="empty-icon">缩</view>
+    <view class="empty-text">＋ 选择一张图片</view>
+  </view>
+
+  <view class="quality-bar" wx:if="{{hasImage}}">
+    <view wx:for="{{qualities}}" wx:key="value"
+          class="pill {{quality === item.value ? 'on' : ''}}"
+          data-value="{{item.value}}" bindtap="onQuality">{{item.label}}</view>
+  </view>
+
+  <view class="sizes" wx:if="{{hasImage}}">
+    <view class="size-item">
+      <view class="size-label">原图</view>
+      <view class="size-value">{{originalSizeText}}</view>
+    </view>
+    <view class="size-arrow">→</view>
+    <view class="size-item">
+      <view class="size-label">压缩后</view>
+      <view class="size-value highlight">{{compressing ? '压缩中…' : compressedSizeText}}</view>
+    </view>
+  </view>
+
+  <view class="ratio" wx:if="{{hasImage && ratioText}}">{{ratioText}}</view>
+
+  <button class="btn-primary" wx:if="{{hasImage}}" bindtap="chooseImage">重新选择图片</button>
+  <button class="btn-primary save-btn" wx:if="{{hasImage}}" bindtap="saveToAlbum">保存到相册</button>
+  <button class="btn-outline use-btn" wx:if="{{hasImage}}" bindtap="useForPublish">用于发布（带回上一页）</button>
+
+  <view class="tip-box">压缩完全在手机本地完成，原图不上传服务器。可先看预览效果再决定保存哪一档。</view>
+</view>

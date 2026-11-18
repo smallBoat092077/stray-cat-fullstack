@@ -1,0 +1,38 @@
+<brand-nav back="{{true}}" />
+<view class="container article-page">
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+
+  <block wx:if="{{!loading && !error && article}}">
+    <view class="article-title">{{article.title}}</view>
+    <view class="article-head">
+      <view class="head-meta">{{article.categoryName}} · {{article.readText}} · {{article.viewCount || 0}} 阅读</view>
+      <view class="favorite {{favorited ? 'on' : ''}}" bindtap="onFavorite">{{favorited ? '★ 已收藏' : '☆ 收藏'}}</view>
+    </view>
+
+    <image class="article-cover" src="{{article.cover}}" mode="widthFix" wx:if="{{article.cover}}" />
+
+    <view class="tags" wx:if="{{article.tags.length > 0}}">
+      <text class="tag tag-info" wx:for="{{article.tags}}" wx:key="index">{{item}}</text>
+    </view>
+
+    <view class="summary" wx:if="{{article.summary}}">{{article.summary}}</view>
+
+    <rich-text class="article-body" nodes="{{article.content || ''}}"></rich-text>
+
+    <view class="danger-line">免责声明：本文仅供日常照护参考，不能替代执业兽医的诊断与治疗。猫咪出现不适请及时就医。</view>
+
+    <view class="section-title" wx:if="{{related.length > 0}}">相关阅读</view>
+    <view class="art-card" wx:for="{{related}}" wx:key="id" data-id="{{item.id}}" bindtap="goArticle">
+      <image class="art-img" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+      <view class="art-img art-img-empty" wx:else>卷</view>
+      <view class="art-body">
+        <view class="art-title">{{item.title}}</view>
+        <view class="art-meta">{{item.categoryName}} · {{item.readText}}</view>
+      </view>
+    </view>
+
+    <button class="btn-outline share-btn" open-type="share">分享文章</button>
+  </block>
+</view>

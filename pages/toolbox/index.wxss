@@ -1,0 +1,139 @@
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.head {
+  margin-bottom: 28rpx;
+}
+
+.page-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 38rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.muted {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.switch-cat {
+  flex-shrink: 0;
+  padding: 12rpx 24rpx;
+  font-size: 23rpx;
+  color: var(--brand);
+  background: var(--mist);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 999rpx;
+}
+
+.tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+  margin-bottom: 32rpx;
+}
+
+.tool {
+  min-height: 190rpx;
+  padding: 26rpx 22rpx;
+  background: linear-gradient(160deg, var(--paper), #FBF6E9);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 18rpx;
+  box-shadow: 0 6rpx 20rpx rgba(20, 73, 60, 0.06);
+  box-sizing: border-box;
+}
+
+.tool-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  color: var(--brand);
+  background: var(--mist);
+  border: 1rpx solid var(--gold-mist);
+  margin-bottom: 16rpx;
+}
+
+.tool-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--brand);
+  margin-bottom: 6rpx;
+}
+
+.tool-desc {
+  font-size: 21rpx;
+  color: var(--ink-mute);
+  line-height: 1.5;
+}
+
+.today-card {
+  padding: 12rpx 24rpx;
+}
+
+.today-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx dashed var(--gold-mist);
+}
+
+.today-icon {
+  width: 52rpx;
+  height: 52rpx;
+  flex-shrink: 0;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 26rpx;
+  color: var(--brand);
+  background: var(--mist);
+}
+
+.today-desc {
+  flex: 1;
+  font-size: 25rpx;
+  color: var(--ink);
+}
+
+.today-time {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.today-empty {
+  padding: 30rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.missing-line {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: var(--gold-deep);
+}
+
+.tip-box {
+  margin-top: 32rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}

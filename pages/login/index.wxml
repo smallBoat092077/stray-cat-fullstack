@@ -25,6 +25,12 @@
       <input class="form-input" password placeholder="{{mode === 'register' ? '至少6位密码' : '请输入密码'}}" value="{{password}}" bindinput="onPasswordInput" />
     </view>
 
+    <view class="forgot-row">
+      <text catchtap="onResetByCode">邮箱验证码重置</text>
+      <text class="forgot-sep">·</text>
+      <text catchtap="onForgotPassword">忘记密码？</text>
+    </view>
+
     <view class="privacy-row">
       <view class="checkbox {{agreed ? 'checked' : ''}}" bindtap="onToggleAgree">{{agreed ? '✓' : ''}}</view>
       <text class="privacy-text" bindtap="onToggleAgree">我已阅读并同意</text>

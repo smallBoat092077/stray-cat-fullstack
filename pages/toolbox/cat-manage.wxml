@@ -1,0 +1,88 @@
+<brand-nav back="{{true}}" />
+<view class="container cat-manage-page">
+
+  <view class="between head">
+    <view>
+      <view class="page-title">我的猫咪</view>
+      <view class="muted">添加后，工具箱的记录与健康指数都挂在它名下</view>
+    </view>
+  </view>
+
+  <!-- 我的猫咪列表 -->
+  <block wx:if="{{mode === 'list'}}">
+    <view class="cat-list">
+      <view wx:for="{{cats}}" wx:key="id" class="cat-row" data-id="{{item.id}}" bindtap="onSelectCat">
+        <view class="cat-avatar">{{item.name[0]}}</view>
+        <view class="cat-info">
+          <view class="cat-name">{{item.name}} <text wx:if="{{item.isCurrent}}" class="cur-tag">当前</text></view>
+          <view class="cat-sub">{{item.breed || '品种未填'}} · {{item.sourceLabel}}</view>
+        </view>
+        <view class="cat-del" data-id="{{item.id}}" catchtap="onRemoveCat">移除</view>
+      </view>
+      <view class="empty-box" wx:if="{{cats.length === 0}}">
+        还没有添加猫咪。可以先从平台档案选一只，或手动添加。
+      </view>
+    </view>
+    <button class="btn-outline add-btn" bindtap="onAddTap">＋ 添加猫咪</button>
+    <view class="tip-box">「平台档案」来自猫咪库里你上报过的猫，添加后记录挂在该档案下；「本地添加」适合照顾家猫或还未上报的猫，仅保存在手机本地。</view>
+  </block>
+
+  <!-- 从平台档案选 -->
+  <block wx:if="{{mode === 'pick'}}">
+    <view class="pick-tabs">
+      <view class="pick-tab {{pickTab === 'mine' ? 'active' : ''}}" data-tab="mine" bindtap="onPickTab">我上报的</view>
+      <view class="pick-tab {{pickTab === 'search' ? 'active' : ''}}" data-tab="search" bindtap="onPickTab">搜索档案库</view>
+    </view>
+
+    <block wx:if="{{pickTab === 'mine'}}">
+      <view wx:if="{{!loggedIn}}" class="empty-box">登录后可以看到你上报过的猫咪。<navigator url="/pages/login/index" class="link">去登录</navigator></view>
+      <view class="cat-list">
+        <view wx:for="{{mineCats}}" wx:key="id" class="cat-row" data-id="{{item.id}}" bindtap="onPickCat">
+          <view class="cat-avatar">{{item.name[0]}}</view>
+          <view class="cat-info">
+            <view class="cat-name">{{item.name}}</view>
+            <view class="cat-sub">{{item.breed || '品种未填'}}</view>
+          </view>
+          <view class="pick-state {{item.added ? 'added' : ''}}">{{item.added ? '已添加' : '添加'}}</view>
+        </view>
+        <view class="empty-box" wx:if="{{mineLoaded && mineCats.length === 0}}">
+          你还没有上报过猫咪。也可以切到「搜索档案库」，或
+          <navigator url="/pages/cat/report" class="link">去上报一只</navigator>。
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="search-bar">
+        <input class="search-input" placeholder="名字 / 品种 / 花色" value="{{kw}}" bindinput="onKwInput" confirm-type="search" bindconfirm="onSearch" />
+        <button class="btn-outline search-btn" bindtap="onSearch" disabled="{{searching}}">搜索</button>
+      </view>
+      <view class="cat-list">
+        <view wx:for="{{searchResults}}" wx:key="id" class="cat-row" data-id="{{item.id}}" bindtap="onPickCat">
+          <view class="cat-avatar">{{item.name[0]}}</view>
+          <view class="cat-info">
+            <view class="cat-name">{{item.name}}</view>
+            <view class="cat-sub">{{item.breed || '品种未填'}}</view>
+          </view>
+          <view class="pick-state {{item.added ? 'added' : ''}}">{{item.added ? '已添加' : '添加'}}</view>
+        </view>
+        <view class="empty-box" wx:if="{{searchResults.length === 0 && !searching}}">输入关键词搜索平台猫咪档案。</view>
+      </view>
+    </block>
+
+    <button class="btn-outline add-btn" bindtap="backToList">返回我的猫咪</button>
+  </block>
+
+  <!-- 手动添加 -->
+  <block wx:if="{{mode === 'form'}}">
+    <view class="card form-card">
+      <view class="form-label">猫咪名字 <text class="req">*</text></view>
+      <input class="form-input" placeholder="如：小满、橘橘" value="{{formName}}" bindinput="onFormName" />
+      <view class="form-label">品种（选填）</view>
+      <input class="form-input" placeholder="如：中华田园猫、英短" value="{{formBreed}}" bindinput="onFormBreed" />
+      <view class="form-tip">仅保存在手机本地，不影响平台猫咪档案。</view>
+    </view>
+    <button class="btn-primary save-btn" bindtap="onSaveForm" disabled="{{saving}}">保存</button>
+    <button class="btn-outline add-btn" bindtap="backToList">返回我的猫咪</button>
+  </block>
+</view>

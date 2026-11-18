@@ -45,7 +45,7 @@
     <weather-card />
   </block>
 
-  <!-- ② 三宫格功能区（等宽） -->
+  <!-- ② 六宫格功能区（2 行 3 列，原三卡顺序不变，新增三卡放第二行） -->
   <view class="func-grid">
     <view class="func-card" bindtap="onPublishCat">
       <view class="func-icon func-icon-primary">✚</view>
@@ -61,6 +61,24 @@
       <view class="func-icon func-icon-mint">⌕</view>
       <text class="func-title">寻找爱猫</text>
       <text class="func-desc">发布寻猫启事</text>
+    </view>
+    <view wx:if="{{modules.catTransfer}}" class="func-card" bindtap="onCatTransfer">
+      <view class="func-new">NEW</view>
+      <view class="func-icon func-icon-mint">⌂</view>
+      <text class="func-title">爱猫搬家</text>
+      <text class="func-desc">给它找新家</text>
+    </view>
+    <view wx:if="{{modules.catWiki}}" class="func-card" bindtap="onCatWiki">
+      <view class="func-new">NEW</view>
+      <view class="func-icon func-icon-gold">卷</view>
+      <text class="func-title">猫咪百科</text>
+      <text class="func-desc">科学养猫不踩坑</text>
+    </view>
+    <view wx:if="{{modules.catToolbox}}" class="func-card" bindtap="onCatToolbox">
+      <view class="func-new">NEW</view>
+      <view class="func-icon func-icon-primary">工</view>
+      <text class="func-title">猫咪工具箱</text>
+      <text class="func-desc">记录·健康·娱乐</text>
     </view>
   </view>
 

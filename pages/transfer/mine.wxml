@@ -1,0 +1,64 @@
+<brand-nav back="{{true}}" />
+<view class="container mine-page">
+
+  <view class="filter-bar">
+    <view wx:for="{{segments}}" wx:key="key"
+          class="filter-item {{activeStatus === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}" bindtap="onSegment">{{item.label}} {{counts[item.key]}}</view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+
+  <block wx:if="{{!loading && !error}}">
+    <view class="post-card card" wx:for="{{filtered}}" wx:key="id">
+      <view class="post-head" data-id="{{item.id}}" bindtap="onToggleExpand">
+        <image class="post-cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+        <view class="post-cover post-cover-empty" wx:else>⌂</view>
+        <view class="post-info">
+          <view class="post-title">{{item.catName}} · {{item.breed || '田园猫'}}</view>
+          <view class="post-sub">{{item.statusText}} · {{item.applyCount || 0}} 人想接 · {{item.viewCount || 0}} 次浏览</view>
+        </view>
+        <view class="post-arrow">{{expandedId === item.id ? '▴' : '▾'}}</view>
+      </view>
+
+      <block wx:if="{{expandedId === item.id}}">
+        <view class="divider-gold"></view>
+        <view class="apply-head">
+          <text class="apply-title">接猫申请（{{appliesMap[item.id].list.length}}）</text>
+          <text class="muted">仅你可见</text>
+        </view>
+
+        <view class="loading" wx:if="{{appliesMap[item.id].loading}}">加载申请中...</view>
+        <view class="error-tip" wx:if="{{appliesMap[item.id].error}}" data-id="{{item.id}}" bindtap="onRetryApplies">加载失败，点击重试</view>
+        <view class="apply-empty" wx:if="{{!appliesMap[item.id].loading && !appliesMap[item.id].error && appliesMap[item.id].list.length === 0}}">暂无接猫申请</view>
+
+        <view class="apply-row" wx:for="{{appliesMap[item.id].list}}" wx:key="id" wx:for-item="apply">
+          <view class="apply-avatar">{{apply.initial}}</view>
+          <view class="apply-info">
+            <view class="apply-name">{{apply.contactName || apply.applicantName || '申请人'}} · <text class="tag tag-{{apply.statusClass}}">{{apply.statusText}}</text></view>
+            <view class="apply-phone">手机号 {{apply.contactPhone || '—'}}</view>
+            <view class="apply-note" wx:if="{{apply.applyNote}}">{{apply.applyNote}}</view>
+          </view>
+          <view class="apply-actions">
+            <view class="mini-btn ghost" wx:if="{{apply.status === 0}}" data-id="{{apply.id}}" data-post="{{item.id}}" data-status="1" bindtap="onApplyStatus">已联系</view>
+            <view class="mini-btn line" wx:if="{{apply.status === 0 || apply.status === 1}}" data-id="{{apply.id}}" data-post="{{item.id}}" data-status="2" bindtap="onApplyStatus">不合适</view>
+            <view class="mini-btn line" wx:if="{{apply.status === 2}}" data-id="{{apply.id}}" data-post="{{item.id}}" data-status="0" bindtap="onApplyStatus">重新处理</view>
+          </view>
+        </view>
+
+        <view class="divider-gold"></view>
+        <view class="post-actions">
+          <view class="mini-btn line" wx:if="{{item.status === 1}}" data-id="{{item.id}}" bindtap="onOffline">下架</view>
+          <view class="mini-btn primary" wx:if="{{item.status === 1}}" data-id="{{item.id}}" bindtap="onComplete">标记已转让</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="empty" wx:if="{{filtered.length === 0}}">
+      <text class="empty-icon">⌂</text>
+      <text>这里还没有相关转让信息</text>
+      <view class="empty-link" bindtap="goPublish">去发布一只 ›</view>
+    </view>
+  </block>
+</view>

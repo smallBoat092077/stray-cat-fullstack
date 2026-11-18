@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "图片压缩",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

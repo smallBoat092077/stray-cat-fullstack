@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "我想接猫",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

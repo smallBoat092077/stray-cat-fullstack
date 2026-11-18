@@ -1,0 +1,33 @@
+<brand-nav back="{{true}}" />
+<view class="container health-page">
+
+  <view class="filter-bar">
+    <view wx:for="{{ranges}}" wx:key="days"
+          class="filter-item {{days === item.days ? 'active' : ''}}"
+          data-days="{{item.days}}" bindtap="onRange">{{item.label}}</view>
+  </view>
+
+  <view class="score-ring" style="{{ringStyle}}">
+    <view class="score-inner">
+      <view class="score-num">{{score}}</view>
+      <view class="score-label">记录规律度</view>
+    </view>
+  </view>
+  <view class="ring-caption" wx:if="{{cat}}">{{cat.name}}的记录规律度 · {{recordCount}} 条记录</view>
+
+  <view class="card bars-card">
+    <view wx:for="{{bars}}" wx:key="key" class="bar">
+      <text class="bar-name">{{item.label}}</text>
+      <view class="bar-track"><view class="bar-fill" style="{{item.barStyle}}"></view></view>
+      <text class="bar-val">{{item.value}}/{{item.max}}</text>
+    </view>
+  </view>
+
+  <view class="card tip-card">
+    <view class="tip-title">这周小提示</view>
+    <view class="tip-text">{{tip}}</view>
+    <view class="tip-link" bindtap="goRecords">去补记一笔 ›</view>
+  </view>
+
+  <view class="danger-line">本指数仅反映「记录规律度」，不是健康诊断，也不提供用药建议。猫咪身体不适请咨询执业兽医。</view>
+</view>

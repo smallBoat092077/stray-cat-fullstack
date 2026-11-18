@@ -192,7 +192,10 @@ App({
             this.saveSession(token, user);
             resolve(user);
           } else {
-            reject(new Error(res.data.message || '登录失败'));
+            // 保留 Error 类型以兼容原有 catch，同时带上 code 供登录页区分 1008/1009/1003
+            const err = new Error(res.data.message || '登录失败');
+            err.code = res.data.code;
+            reject(err);
           }
         },
         fail: () => reject(new Error('网络错误'))
@@ -271,6 +274,9 @@ App({
             this.clearSession();
             wx.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
             this.goLogin();
+            reject(res.data);
+          } else if (res.data.code === 1008 || res.data.code === 1009) {
+            // 锁定类错误由登录页 / 改密页自行 showModal 展示完整文案，这里不再 toast，避免重复弹窗
             reject(res.data);
           } else {
             wx.showToast({ title: res.data.message || '请求失败', icon: 'none' });

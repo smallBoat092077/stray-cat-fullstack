@@ -1,0 +1,50 @@
+<brand-nav back="{{true}}" />
+<view class="detail-page">
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+
+  <block wx:if="{{!loading && !error && post}}">
+    <view class="closed-bar" wx:if="{{closed}}">这只猫已找到新家 / 已下架，资料仅作展示</view>
+
+    <view class="gallery" wx:if="{{post.images.length > 0}}">
+      <swiper class="gallery-swiper" indicator-dots="{{false}}" bindchange="onSwiperChange">
+        <swiper-item wx:for="{{post.images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="previewImage" />
+        </swiper-item>
+      </swiper>
+      <view class="gallery-count">{{post.current}} / {{post.images.length}}</view>
+    </view>
+    <view class="gallery gallery-empty" wx:else><text>⌂</text></view>
+
+    <view class="detail-head between">
+      <view>
+        <view class="detail-title">{{post.catName}} <text class="tag tag-success">{{post.breed || '中华田园猫'}}</text></view>
+        <view class="muted">{{post.regionText}} · {{post.ageText}} · {{post.genderText}}</view>
+      </view>
+      <text class="free-label">免费领养</text>
+    </view>
+
+    <view class="section-title">它的资料</view>
+    <view class="kv">
+      <view class="kv-item">绝育<text class="kv-val">{{post.neuteredText}}</text></view>
+      <view class="kv-item">疫苗<text class="kv-val">{{post.vaccinatedText}}</text></view>
+      <view class="kv-item">健康<text class="kv-val">{{post.healthNote || '健康良好'}}</text></view>
+      <view class="kv-item">性格<text class="kv-val">{{post.personality || '温顺亲人'}}</text></view>
+    </view>
+
+    <view class="section-title">转让原因</view>
+    <view class="card text-block">{{post.reason || '—'}}</view>
+
+    <view class="section-title">对新主人的期望</view>
+    <view class="card text-block">{{post.requirement || '—'}}</view>
+
+    <view class="danger-line">平台提醒：本功能不提供聊天窗口，也不涉及任何费用。提交申请后，联系方式会通过站内消息发送给猫主人，由双方自行线下联系。请勿提前付款。</view>
+    <view class="bottom-space"></view>
+  </block>
+</view>
+
+<view class="fixed-bar" wx:if="{{!loading && !error && post}}">
+  <button class="btn-outline report-btn" bindtap="onReport">举报</button>
+  <button class="btn-primary apply-btn" bindtap="onApply" disabled="{{closed}}">{{closed ? '已停止接猫' : '我想接猫'}}</button>
+</view>

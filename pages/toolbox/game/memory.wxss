@@ -1,0 +1,115 @@
+.game-page {
+  padding-bottom: 60rpx;
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.muted {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14rpx;
+}
+
+.level-bar {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.level-btn {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.level-btn.active {
+  color: var(--gold-mist);
+  background: linear-gradient(135deg, var(--brand), var(--brand-soft));
+  border-color: var(--brand-deep);
+  font-weight: 600;
+}
+
+.card-flip {
+  height: 165rpx;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 52rpx;
+  color: var(--gold-mist);
+  background: linear-gradient(135deg, var(--brand), var(--brand-soft));
+  border: 1rpx solid var(--brand-deep);
+  user-select: none;
+}
+
+.card-flip.open {
+  color: var(--brand);
+  background: var(--sand);
+  border: 1rpx solid var(--gold);
+}
+
+.card-flip.matched {
+  color: var(--brand);
+  background: var(--mist);
+  border: 1rpx solid var(--gold);
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 32rpx;
+  padding: 22rpx 24rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 14rpx;
+}
+
+.stats-val {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+  margin-left: 6rpx;
+}
+
+.restart-btn {
+  width: 100%;
+  margin-top: 24rpx;
+}
+
+.tip-box {
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.tip-box.subtle {
+  color: var(--ink-mute);
+  background: transparent;
+  border-style: solid;
+  border-color: var(--gold-mist);
+}

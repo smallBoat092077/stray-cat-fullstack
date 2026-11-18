@@ -49,7 +49,7 @@
       </view>
     </view>
     <view class="level-bar">
-      <view class="level-bar-fill" style="width: {{volunteerData.progressPercent}}%"></view>
+      <view class="level-bar-fill" style="width: {{volunteerData.progressPercent}}"></view>
     </view>
     <text class="level-foot">已审核投喂 {{volunteerData.completedCount}} 次 · 服务 {{volunteerData.serviceHours}} 小时</text>
   </view>
@@ -123,6 +123,17 @@
     </view>
     <view class="menu-item card" bindtap="goToPage" data-url="/pages/feedback/index">
       <text class="menu-text">意见反馈</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <!-- 账号安全入口始终显示，Q1（仅账号密码用户）由安全页内部判断 -->
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/account/security">
+      <text class="menu-text">账号安全</text>
+      <text class="menu-soft-tag">密码 / 邮箱</text>
+      <text class="menu-arrow">></text>
+    </view>
+    <view class="menu-item card" bindtap="goToPage" data-url="/pages/login/forgot-password">
+      <text class="menu-text">忘记密码</text>
+      <text class="menu-soft-tag">自助找回</text>
       <text class="menu-arrow">></text>
     </view>
     <view class="menu-item card" bindtap="onAbout">

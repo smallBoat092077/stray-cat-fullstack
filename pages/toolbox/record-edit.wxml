@@ -1,0 +1,56 @@
+<brand-nav back="{{true}}" />
+<view class="container edit-page">
+
+  <view class="form-item">
+    <label class="form-label">记录类型</label>
+    <view class="type-grid">
+      <view wx:for="{{types}}" wx:key="key"
+            class="type-item {{type === item.key ? 'active' : ''}}"
+            data-type="{{item.key}}" bindtap="onType">
+        <view class="type-short">{{item.short}}</view>
+        <view class="type-label">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-item">
+    <label class="form-label">日期</label>
+    <picker mode="date" value="{{date}}" bindchange="onDateChange">
+      <view class="form-value picker-value">{{date}}</view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <label class="form-label">时间</label>
+    <picker mode="time" value="{{time}}" bindchange="onTimeChange">
+      <view class="form-value picker-value">{{time}}</view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <label class="form-label">量（{{type === 'water' ? '毫升' : (type === 'feed' ? '克' : '次')}}）</label>
+    <input class="form-input" type="number" placeholder="选填，例如 40" data-field="amount" value="{{amount}}" bindinput="onInput" />
+  </view>
+
+  <view class="form-item" wx:if="{{type === 'medicine'}}">
+    <label class="form-label">用药名</label>
+    <input class="form-input" placeholder="例如：驱虫药" data-field="medName" value="{{medName}}" bindinput="onInput" />
+  </view>
+
+  <view class="form-item">
+    <label class="form-label">照片（选填）</label>
+    <view class="photo-box" wx:if="{{photo}}">
+      <image src="{{photo}}" mode="aspectFill" bindtap="previewPhoto" />
+      <view class="photo-del" catchtap="removePhoto">×</view>
+    </view>
+    <view class="photo-add" wx:else bindtap="choosePhoto">{{uploading ? '上传中…' : '＋ 上传照片'}}</view>
+  </view>
+
+  <view class="form-item">
+    <label class="form-label">备注（选填）</label>
+    <textarea class="form-textarea" placeholder="例如：精神好 / 按说明喂服" data-field="remark" value="{{remark}}" bindinput="onInput" />
+  </view>
+
+  <button class="btn-primary save-btn" loading="{{saving}}" disabled="{{saving}}" bindtap="onSave">保存记录</button>
+  <view class="tip-box">记录仅保存在你的手机本地；健康指数会随记录实时变化。</view>
+</view>

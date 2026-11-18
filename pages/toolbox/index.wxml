@@ -1,0 +1,49 @@
+<brand-nav back="{{true}}" />
+<view class="container toolbox-page">
+
+  <view class="between head">
+    <view>
+      <view class="page-title">小工具，照顾好日常</view>
+      <view class="muted" wx:if="{{cat}}">当前猫咪：{{cat.name}}{{cat.breed ? ' · ' + cat.breed : ''}}</view>
+    </view>
+    <view class="switch-cat" bindtap="onManageCats">我的猫咪</view>
+  </view>
+
+  <view class="tools">
+    <view class="tool" bindtap="goHealth">
+      <view class="tool-icon">健</view>
+      <view class="tool-title">健康指数</view>
+      <view class="tool-desc">近 7 天记录规律度评分</view>
+    </view>
+    <view class="tool" bindtap="goRecords">
+      <view class="tool-icon">记</view>
+      <view class="tool-title">日常记录</view>
+      <view class="tool-desc">进食 · 喝水 · 排泄 · 吃药</view>
+    </view>
+    <view class="tool" bindtap="goCompress">
+      <view class="tool-icon">缩</view>
+      <view class="tool-title">图片压缩</view>
+      <view class="tool-desc">本地压缩，不上传原图</view>
+    </view>
+    <view class="tool" bindtap="goGame">
+      <view class="tool-icon">玩</view>
+      <view class="tool-title">猫咪小游戏</view>
+      <view class="tool-desc">记忆翻牌 · 陪它解闷</view>
+    </view>
+  </view>
+
+  <view class="section-title">今日记录</view>
+  <view class="card today-card">
+    <block wx:if="{{todayRecords.length > 0}}">
+      <view class="today-row" wx:for="{{todayRecords}}" wx:key="id">
+        <view class="today-icon">{{item.short}}</view>
+        <view class="today-desc">{{item.desc}}</view>
+        <view class="today-time">{{item.timeText}}</view>
+      </view>
+    </block>
+    <view class="today-empty" wx:else>今天还没有任何记录，去记一笔吧</view>
+    <view class="missing-line" wx:if="{{missingTypes.length > 0}}">今天还没记录 {{missingTypes}} ›</view>
+  </view>
+
+  <view class="tip-box">所有记录仅保存在你的手机本地；如后续开通云同步，会在你明确同意后迁移。健康指数仅反映记录规律度，不构成健康诊断。</view>
+</view>

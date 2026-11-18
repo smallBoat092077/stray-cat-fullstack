@@ -1,0 +1,123 @@
+.score-ring {
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  margin: 10rpx auto 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 30rpx rgba(20, 73, 60, 0.12);
+}
+
+.score-inner {
+  width: 248rpx;
+  height: 248rpx;
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-num {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 92rpx;
+  font-weight: 700;
+  color: var(--brand);
+  line-height: 1;
+}
+
+.score-label {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.ring-caption {
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--ink-soft);
+  margin-bottom: 28rpx;
+}
+
+.bars-card {
+  padding: 28rpx;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 18rpx;
+}
+
+.bar:last-child {
+  margin-bottom: 0;
+}
+
+.bar-name {
+  width: 130rpx;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+}
+
+.bar-track {
+  flex: 1;
+  height: 14rpx;
+  background: #EFEBDD;
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 999rpx;
+}
+
+.bar-val {
+  width: 90rpx;
+  text-align: right;
+  flex-shrink: 0;
+  font-size: 23rpx;
+  color: var(--brand);
+}
+
+.tip-card {
+  margin-top: 8rpx;
+  border-color: var(--gold);
+}
+
+.tip-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--brand);
+  margin-bottom: 12rpx;
+}
+
+.tip-text {
+  font-size: 25rpx;
+  color: var(--ink-soft);
+  line-height: 1.8;
+}
+
+.tip-link {
+  margin-top: 16rpx;
+  text-align: right;
+  font-size: 23rpx;
+  color: var(--gold-deep);
+}
+
+.danger-line {
+  margin-top: 28rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #99543F;
+  background: #FCF2ED;
+  border: 1rpx solid #EED6C8;
+  border-radius: 12rpx;
+}

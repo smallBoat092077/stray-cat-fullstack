@@ -1,0 +1,43 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="brand">
+    <view class="paw-logo">🐾</view>
+    <view class="app-name">{{about.appName}}</view>
+    <view class="app-slogan">{{about.slogan}}</view>
+    <view class="ver-badge">当前版本 {{about.version}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">我们的理念</view>
+    <view class="motto-main">
+      <text class="motto-line" wx:for="{{mottoLines}}" wx:key="index">{{item}}</text>
+    </view>
+    <view class="divider-orn"></view>
+    <view class="motto-sub" wx:if="{{about.mottoSub}}">{{about.mottoSub}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">联系我们</view>
+    <view class="contact-row" bindtap="callAdmin" wx:if="{{about.phone}}">
+      <view class="c-icon">📞</view>
+      <view class="c-body">
+        <view class="c-label">管理员电话</view>
+        <view class="c-value">{{about.phone}}</view>
+      </view>
+      <view class="c-action">点击拨打</view>
+    </view>
+    <view class="contact-row" bindtap="copyEmail" wx:if="{{about.email}}">
+      <view class="c-icon">✉️</view>
+      <view class="c-body">
+        <view class="c-label">联系邮箱</view>
+        <view class="c-value">{{about.email}}</view>
+      </view>
+      <view class="c-action">点击复制</view>
+    </view>
+    <view class="contact-tip" wx:if="{{about.contactTip}}">{{about.contactTip}}</view>
+  </view>
+
+  <view class="copyright">
+    <text wx:for="{{copyrightLines}}" wx:key="index" class="cp-line">{{item}}</text>
+  </view>
+</view>

@@ -1,0 +1,54 @@
+<brand-nav back="{{true}}" />
+<view class="container result-page">
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+
+  <block wx:if="{{!loading && result}}">
+    <view class="score-ring" style="{{ringStyle}}">
+      <view class="score-inner">
+        <view class="score-num">{{score}}</view>
+        <view class="score-label">知识指数</view>
+      </view>
+    </view>
+    <view class="correct-line">答对 {{correctCount}} 题 · 共 100 分</view>
+
+    <view class="portrait">{{portrait}}</view>
+    <view class="tags">
+      <text class="tag tag-success">喂养达人</text>
+      <text class="tag tag-warning" wx:for="{{weakNames}}" wx:key="index">待补：{{item}}</text>
+    </view>
+
+    <view class="card bars-card">
+      <view class="bars-title">五个维度得分率</view>
+      <view class="bar {{item.isWeak ? 'weak' : ''}}" wx:for="{{bars}}" wx:key="category">
+        <text class="bar-name">{{item.name}}</text>
+        <view class="bar-track"><view class="bar-fill" style="{{item.barStyle}}"></view></view>
+        <text class="bar-val">{{item.value}}%</text>
+      </view>
+    </view>
+
+    <view class="section-title">为你推荐 · 从最薄弱的开始</view>
+    <view class="art-card" wx:for="{{recommended}}" wx:key="id" data-id="{{item.id}}" bindtap="goArticle">
+      <image class="art-img" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+      <view class="art-img art-img-empty" wx:else>卷</view>
+      <view class="art-body">
+        <view class="art-title">{{item.title}}</view>
+        <view class="art-meta">{{item.categoryName || '百科'}} · {{item.readText}} · {{item.viewsText}} 阅读</view>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{recommended.length === 0}}">
+      <text class="muted">暂无推荐文章</text>
+    </view>
+
+    <button class="btn-primary share-btn" open-type="share">分享我的知识画像</button>
+    <button class="btn-outline again-btn" bindtap="goQuiz">再测一次</button>
+
+    <view class="tip-box">测评结果仅供了解知识盲区，不构成医疗建议。猫咪生病请咨询执业兽医。</view>
+  </block>
+
+  <view class="empty" wx:if="{{!loading && !result}}">
+    <text class="empty-icon">卷</text>
+    <text>还没有测评结果</text>
+    <button class="btn-primary again-btn" bindtap="goQuiz">开始测评</button>
+  </view>
+</view>

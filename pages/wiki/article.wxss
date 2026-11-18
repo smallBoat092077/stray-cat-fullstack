@@ -1,0 +1,137 @@
+.article-page {
+  padding-bottom: 60rpx;
+}
+
+.article-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--brand);
+  line-height: 1.5;
+  margin-bottom: 14rpx;
+}
+
+.article-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.head-meta {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.favorite {
+  flex-shrink: 0;
+  padding: 8rpx 20rpx;
+  font-size: 22rpx;
+  color: var(--gold-deep);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 999rpx;
+}
+
+.favorite.on {
+  color: #FFFDF7;
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
+}
+
+.article-cover {
+  width: 100%;
+  border-radius: 14rpx;
+  margin-bottom: 20rpx;
+  background: var(--sand);
+}
+
+.tags {
+  margin-bottom: 18rpx;
+}
+
+.summary {
+  padding: 20rpx 22rpx;
+  margin-bottom: 20rpx;
+  font-size: 25rpx;
+  line-height: 1.8;
+  color: var(--ink-soft);
+  background: rgba(244, 239, 227, 0.6);
+  border-left: 6rpx solid var(--gold);
+  border-radius: 0 10rpx 10rpx 0;
+}
+
+.article-body {
+  font-size: 27rpx;
+  line-height: 1.9;
+  color: #3B4C44;
+}
+
+.danger-line {
+  margin-top: 28rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #99543F;
+  background: #FCF2ED;
+  border: 1rpx solid #EED6C8;
+  border-radius: 12rpx;
+}
+
+.art-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 18rpx;
+  margin-bottom: 16rpx;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 14rpx;
+}
+
+.art-img {
+  width: 100rpx;
+  height: 100rpx;
+  flex-shrink: 0;
+  border-radius: 10rpx;
+  background: var(--sand);
+}
+
+.art-img-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 40rpx;
+  color: var(--gold-deep);
+}
+
+.art-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.art-title {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.art-meta {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: var(--ink-mute);
+}
+
+.share-btn {
+  width: 100%;
+  margin-top: 28rpx;
+}
+
+.error-tip {
+  text-align: center;
+  padding: 120rpx 0;
+  font-size: 26rpx;
+  color: var(--brick);
+}

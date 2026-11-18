@@ -1,0 +1,40 @@
+<brand-nav back="{{true}}" />
+<view class="container quiz-page">
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+
+  <block wx:if="{{!loading && questions.length > 0}}">
+    <view class="between">
+      <view class="quiz-label">{{currentCategory}} · 第 {{current + 1}} / {{questions.length}} 题</view>
+      <view class="tag tag-warning">约 1 分钟</view>
+    </view>
+    <view class="progress"><view class="progress-fill" style="width: {{progressWidth}}"></view></view>
+
+    <view class="question">{{questions[current].title}}</view>
+
+    <view class="options">
+      <view wx:for="{{questions[current].options}}" wx:key="index"
+            class="option {{answers[questions[current].id] === index ? 'active' : ''}}"
+            data-index="{{index}}" bindtap="onSelect">
+        <view class="option-letter">{{item.letter}}</view>
+        <text class="option-text">{{item.text}}</text>
+      </view>
+    </view>
+
+    <view class="nav-row">
+      <button class="btn-outline nav-btn" wx:if="{{current > 0}}" bindtap="onPrev">上一题</button>
+      <view class="nav-placeholder" wx:else></view>
+      <button class="btn-primary nav-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onNext">
+        {{current === questions.length - 1 ? '提交并查看结果' : '下一题'}}
+      </button>
+    </view>
+
+    <view class="tip-box">答完所有题目后提交，服务端判分并返回薄弱维度与推荐文章；答题中途退出可继续（答案已本地暂存）。未登录也可答题。</view>
+  </block>
+
+  <view class="empty" wx:if="{{!loading && !error && questions.length === 0}}">
+    <text class="empty-icon">卷</text>
+    <text>题库正在准备中，请稍后再来</text>
+  </view>
+</view>

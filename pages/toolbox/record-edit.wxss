@@ -1,0 +1,101 @@
+.edit-page {
+  padding-bottom: 60rpx;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12rpx;
+}
+
+.type-item {
+  padding: 18rpx 6rpx;
+  text-align: center;
+  background: var(--pill-mint);
+  border: 1rpx solid transparent;
+  border-radius: 12rpx;
+}
+
+.type-item.active {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.type-short {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  color: var(--brand);
+}
+
+.type-item.active .type-short {
+  color: #FFFDF7;
+}
+
+.type-label {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+}
+
+.type-item.active .type-label {
+  color: #E3EFDE;
+}
+
+.picker-value {
+  color: var(--ink);
+}
+
+.photo-box {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.photo-box image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--gold-mist);
+}
+
+.photo-del {
+  position: absolute;
+  top: -12rpx;
+  right: -12rpx;
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 40rpx;
+  text-align: center;
+  font-size: 32rpx;
+  color: #FFF;
+  background: var(--brick);
+  border-radius: 50%;
+}
+
+.photo-add {
+  width: 200rpx;
+  height: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: var(--gold-deep);
+  border: 2rpx dashed var(--gold);
+  border-radius: 12rpx;
+  background: rgba(255, 253, 247, 0.6);
+}
+
+.save-btn {
+  width: 100%;
+}
+
+.tip-box {
+  margin-top: 24rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}

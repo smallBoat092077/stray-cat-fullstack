@@ -73,6 +73,20 @@
   border-bottom: 4rpx solid var(--gold);
 }
 
+/* 忘记密码入口：低调右对齐、小字、细下划线，不喧宾夺主 */
+.forgot-row {
+  text-align: right;
+  margin-top: -4rpx;
+  font-size: 24rpx;
+  color: var(--gold-deep);
+  text-decoration: underline;
+}
+
+.forgot-sep {
+  margin: 0 10rpx;
+  text-decoration: none;
+}
+
 .submit-btn { margin-top: 48rpx; }
 
 .privacy-row {

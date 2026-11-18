@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "记忆翻牌",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

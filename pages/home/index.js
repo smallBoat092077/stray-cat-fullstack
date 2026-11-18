@@ -31,7 +31,10 @@ Page({
     navBarHeight: 44,
     unreadCount: 0,
     // 模块开关由 bootstrap 下发，失败时按默认全开渲染骨架，接口回来后再隐藏
-    modules: { hotspot: true, notice: true, leaderboard: true, lostCat: true, weather: true },
+    modules: {
+      hotspot: true, notice: true, leaderboard: true, lostCat: true, weather: true,
+      catTransfer: true, catWiki: true, catToolbox: true
+    },
     // ① 热点
     hotspots: [],
     currentSwiperIndex: 0,
@@ -108,7 +111,10 @@ Page({
       ]);
       const data = bs || {};
       const modules = Object.assign(
-        { hotspot: true, notice: true, leaderboard: true, lostCat: true, weather: true },
+        {
+          hotspot: true, notice: true, leaderboard: true, lostCat: true, weather: true,
+          catTransfer: true, catWiki: true, catToolbox: true
+        },
         data.modules || {}
       );
       const hotspots = (data.hotspots || []).slice(0, 3).map((h) => ({
@@ -216,6 +222,18 @@ Page({
 
   onFindCat() {
     wx.navigateTo({ url: '/pages/lost-cat/list' });
+  },
+
+  onCatTransfer() {
+    wx.navigateTo({ url: '/pages/transfer/list' });
+  },
+
+  onCatWiki() {
+    wx.navigateTo({ url: '/pages/wiki/index' });
+  },
+
+  onCatToolbox() {
+    wx.navigateTo({ url: '/pages/toolbox/index' });
   },
 
   // ---- 顶部消息铃铛 ----

@@ -1,0 +1,32 @@
+<brand-nav back="{{true}}" />
+<view class="container game-page">
+
+  <view class="between">
+    <view class="muted">翻开两张相同的图案即可配对</view>
+    <view class="tag tag-warning">猫咪小游戏</view>
+  </view>
+
+  <view class="level-bar">
+    <view wx:for="{{levels}}" wx:key="index"
+          class="level-btn {{levelIdx === index ? 'active' : ''}}"
+          data-level="{{index}}" bindtap="switchLevel">{{item}}</view>
+  </view>
+
+  <view class="game-grid"
+        style="grid-template-columns: repeat({{cols}}, 1fr); gap: {{gap}}rpx;">
+    <view wx:for="{{cards}}" wx:key="id"
+          class="card-flip {{item.faceUp ? 'open' : ''}} {{item.matched ? 'matched' : ''}}"
+          style="height: {{cardH}}rpx; font-size: {{cardFont}}rpx;"
+          data-index="{{index}}" bindtap="onFlip">{{item.faceUp ? item.value : '?'}}</view>
+  </view>
+
+  <view class="stats">
+    <view>用时 <text class="stats-val">{{timeText}}</text></view>
+    <view>步数 <text class="stats-val">{{steps}}</text></view>
+    <view>配对 <text class="stats-val">{{matched}}/{{totalPairs}}</text></view>
+  </view>
+
+  <button class="btn-outline restart-btn" bindtap="onRestart">重新开始本关</button>
+  <view class="tip-box">{{msg}}</view>
+  <view class="tip-box subtle">纯前端小游戏，无积分、无排行榜、无分享诱导。三关难度递进：热身 12 张、进阶 24 张、魔鬼 48 张。</view>
+</view>

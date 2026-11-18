@@ -35,7 +35,7 @@
   <!-- 定位失败横幅：人话标题 + 原始 errMsg（发布环境没有调试面板，靠它上报真实原因） -->
   <view class="loc-banner" wx:if="{{locationFailed && !privacyConsentNeeded}}">
     <text class="loc-banner-title">{{locateTitle || '定位失败'}}</text>
-    <text class="loc-banner-detail">{{locateError}}</text>
+    <!-- <text class="loc-banner-detail">{{locateError}}</text> -->
   </view>
 
   <!-- 首次使用同意卡片：隐私弹窗必须由用户点击触发，冷启动自动弹会被微信抑制，

@@ -1,0 +1,33 @@
+<brand-nav back="{{true}}" />
+<view class="container my-quiz-page">
+
+  <view class="need-login" wx:if="{{needLogin}}">
+    <view class="empty-icon">卷</view>
+    <view class="login-text">登录后查看你的测评历史</view>
+    <button class="btn-primary" bindtap="goLogin">去登录</button>
+    <button class="btn-outline quiz-btn" bindtap="goQuiz">先去测一测</button>
+  </view>
+
+  <block wx:else>
+    <view class="loading" wx:if="{{loading}}">加载中...</view>
+    <view class="error-tip" wx:if="{{error}}" bindtap="onRetry">加载失败，点击重试</view>
+
+    <view class="quiz-card card" wx:for="{{list}}" wx:key="id" data-index="{{index}}" bindtap="onItemTap">
+      <view class="quiz-score">
+        <view class="score-num">{{item.score}}</view>
+        <view class="score-unit">知识指数</view>
+      </view>
+      <view class="quiz-info">
+        <view class="quiz-portrait">{{item.portrait || '稳扎稳打型铲屎官'}}</view>
+        <view class="quiz-time">{{item.createdText}}</view>
+        <view class="quiz-hint">查看测评报告 ›</view>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{!loading && !error && list.length === 0}}">
+      <text class="empty-icon">卷</text>
+      <text>你还没有测评记录</text>
+      <button class="btn-primary quiz-btn" bindtap="goQuiz">开始测评</button>
+    </view>
+  </block>
+</view>

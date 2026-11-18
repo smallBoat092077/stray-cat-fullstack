@@ -1,0 +1,42 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="section-title">邮箱验证码重置密码</view>
+
+  <view class="notice">
+    需先联系管理员为账号发起「邮件重置」，管理员发送重置验证码到您的已验证邮箱后，在此页面设置新密码。验证码 30 分钟内有效，错 5 次将作废。
+  </view>
+
+  <view class="card form-card">
+    <view class="form-item">
+      <text class="form-label">账号</text>
+      <input class="row-input" placeholder="请输入账号" value="{{username}}" data-field="username" bindinput="onInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">重置验证码</text>
+      <input class="row-input" placeholder="邮件中的 6 位验证码" value="{{code}}" data-field="code" bindinput="onInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">新密码</text>
+      <view class="input-row">
+        <input class="row-input" password="{{!showNew}}" placeholder="6–20 位"
+               value="{{newPassword}}" data-field="newPassword" bindinput="onInput" />
+        <text class="toggle" data-field="showNew" bindtap="toggleShow">{{showNew ? '隐藏' : '显示'}}</text>
+      </view>
+    </view>
+    <view class="form-item last">
+      <text class="form-label">确认新密码</text>
+      <view class="input-row">
+        <input class="row-input" password="{{!showConfirm}}" placeholder="请再次输入新密码"
+               value="{{confirmPassword}}" data-field="confirmPassword" bindinput="onInput" />
+        <text class="toggle" data-field="showConfirm" bindtap="toggleShow">{{showConfirm ? '隐藏' : '显示'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <button class="btn-primary submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit" disabled="{{submitting}}">
+    {{submitting ? '提交中...' : '设置新密码'}}
+  </button>
+
+  <view class="foot-link" bindtap="goForgot">没有收到验证码？提交忘记密码申请</view>
+  <view class="foot-note">设置成功后，所有已登录设备都会退出，需要用新密码重新登录。</view>
+</view>

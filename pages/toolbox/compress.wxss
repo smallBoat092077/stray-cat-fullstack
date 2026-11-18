@@ -1,0 +1,130 @@
+.compress-page {
+  padding-bottom: 60rpx;
+}
+
+.preview {
+  height: 420rpx;
+  border-radius: 16rpx;
+  background: #EEEDE6;
+  border: 1rpx solid var(--gold-mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+}
+
+.preview image {
+  width: 100%;
+  height: 100%;
+}
+
+.preview-tip {
+  position: absolute;
+  right: 20rpx;
+  bottom: 20rpx;
+  padding: 4rpx 16rpx;
+  font-size: 20rpx;
+  color: #FFF;
+  background: rgba(20, 73, 60, 0.7);
+  border-radius: 999rpx;
+}
+
+.preview-empty {
+  flex-direction: column;
+}
+
+.empty-icon {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 90rpx;
+  color: var(--brand-soft);
+}
+
+.empty-text {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+}
+
+.quality-bar {
+  display: flex;
+  gap: 14rpx;
+  margin-bottom: 28rpx;
+}
+
+.pill {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  background: var(--pill-mint);
+  border-radius: 999rpx;
+}
+
+.pill.on {
+  color: #FFFDF7;
+  background: var(--brand);
+}
+
+.sizes {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 24rpx 0;
+  border-top: 1rpx solid var(--gold-mist);
+  border-bottom: 1rpx solid var(--gold-mist);
+}
+
+.size-item {
+  text-align: center;
+}
+
+.size-label {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.size-value {
+  margin-top: 8rpx;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.size-value.highlight {
+  color: var(--brand);
+}
+
+.size-arrow {
+  font-size: 40rpx;
+  color: var(--gold);
+}
+
+.ratio {
+  text-align: center;
+  margin: 24rpx 0;
+  font-size: 23rpx;
+  color: var(--ink-soft);
+}
+
+.save-btn {
+  margin-top: 16rpx;
+}
+
+.use-btn {
+  margin-top: 16rpx;
+}
+
+.tip-box {
+  margin-top: 28rpx;
+  padding: 20rpx 22rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: #7B6637;
+  background: #FBF4E4;
+  border: 1rpx dashed var(--gold-mist);
+  border-radius: 12rpx;
+}

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "安全邮箱",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  }
+}

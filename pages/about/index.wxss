@@ -1,0 +1,185 @@
+.container {
+  padding: 24rpx 32rpx 64rpx;
+  box-sizing: border-box;
+}
+
+.brand {
+  text-align: center;
+  padding: 52rpx 0 44rpx;
+}
+
+.paw-logo {
+  width: 128rpx;
+  height: 128rpx;
+  margin: 0 auto 28rpx;
+  border-radius: 40rpx;
+  background: linear-gradient(150deg, var(--pine) 0%, var(--pine-deep) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 68rpx;
+  box-shadow: 0 16rpx 36rpx rgba(58, 90, 71, 0.25);
+}
+
+.app-name {
+  font-size: 42rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  color: var(--ink);
+}
+
+.app-slogan {
+  font-size: 26rpx;
+  color: var(--ink-mute);
+  margin-top: 12rpx;
+  letter-spacing: 6rpx;
+}
+
+.ver-badge {
+  display: inline-block;
+  margin-top: 20rpx;
+  padding: 6rpx 28rpx;
+  background: var(--sand);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--gold-deep);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.card {
+  background: #fff;
+  border: 1rpx solid var(--line, #EAE3D2);
+  border-radius: 28rpx;
+  padding: 36rpx 40rpx;
+  margin-top: 32rpx;
+}
+
+.card-title {
+  font-size: 24rpx;
+  color: var(--gold-deep);
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.card-title::before {
+  content: "";
+  width: 6rpx;
+  height: 24rpx;
+  background: var(--gold-deep);
+  border-radius: 4rpx;
+}
+
+.motto-main {
+  text-align: center;
+  padding: 8rpx 0;
+}
+
+.motto-line {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--pine-deep);
+  line-height: 1.9;
+  letter-spacing: 2rpx;
+}
+
+.divider-orn {
+  width: 240rpx;
+  height: 2rpx;
+  margin: 28rpx auto 0;
+  background: linear-gradient(90deg, transparent, var(--gold-mist), transparent);
+  position: relative;
+}
+
+.divider-orn::after {
+  content: "❋";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  font-size: 20rpx;
+  color: var(--gold-deep);
+  background: #fff;
+  padding: 0 12rpx;
+}
+
+.motto-sub {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+  letter-spacing: 4rpx;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx 0;
+}
+
+.contact-row + .contact-row {
+  border-top: 2rpx dashed var(--line, #EAE3D2);
+}
+
+.c-icon {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 20rpx;
+  background: var(--sand);
+  border: 1rpx solid var(--gold-mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  flex-shrink: 0;
+}
+
+.c-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.c-label {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.c-value {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-top: 4rpx;
+  color: var(--ink);
+}
+
+.c-action {
+  font-size: 22rpx;
+  color: var(--gold-deep);
+  flex-shrink: 0;
+}
+
+.contact-tip {
+  font-size: 20rpx;
+  color: var(--ink-mute);
+  margin-top: 16rpx;
+  line-height: 1.7;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 40rpx;
+}
+
+.cp-line {
+  display: block;
+  font-size: 20rpx;
+  color: var(--ink-mute);
+  line-height: 1.9;
+  letter-spacing: 2rpx;
+}
