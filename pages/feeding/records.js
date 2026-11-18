@@ -19,6 +19,10 @@ Page({
     this.loadRecords();
   },
 
+  goLeaderboard() {
+    wx.navigateTo({ url: '/pages/volunteer/leaderboard' });
+  },
+
   onPullDownRefresh() {
     this.setData({ pageNum: 1, hasMore: true });
     this.loadRecords().then(() => wx.stopPullDownRefresh());

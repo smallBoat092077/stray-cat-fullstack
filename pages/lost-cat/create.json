@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "发布寻猫启事",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

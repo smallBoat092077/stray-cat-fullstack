@@ -1,0 +1,86 @@
+.plaza-actions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.plaza-btn {
+  flex: 1;
+  margin: 0;
+  padding: 18rpx 0;
+  font-size: 28rpx;
+  line-height: 1.4;
+}
+
+.plaza-mine {
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--gold-deep);
+  letter-spacing: 1rpx;
+}
+
+.post-card {
+  display: flex;
+  align-items: stretch;
+  padding: 20rpx;
+}
+
+.post-cover {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background: var(--cream);
+}
+
+.post-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  border: 1rpx solid var(--gold-mist);
+}
+
+.post-body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-name {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--brand);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-coat {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-meta {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

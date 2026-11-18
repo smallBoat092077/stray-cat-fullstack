@@ -5,6 +5,8 @@
     <text class="summary-label">次投喂打卡</text>
   </view>
 
+  <view class="board-link" bindtap="goLeaderboard">城市喂猫人荣誉榜 ›</view>
+
   <view class="record-item card" wx:for="{{records}}" wx:key="id" bindtap="goToTask" data-id="{{item.taskId}}">
     <view class="item-head">
       <text class="cat-name">🐱 {{item.catName || '猫咪已下架'}}</text>

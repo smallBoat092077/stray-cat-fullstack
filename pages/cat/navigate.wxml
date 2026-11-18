@@ -23,7 +23,9 @@
         <text class="head-name">{{cat.name}}</text>
         <text class="tag tag-{{cat.lifeStatusClass}}">{{cat.lifeStatusText}}</text>
       </view>
-      <view class="head-loc">📍 {{cat.locationDesc}}</view>
+      <view class="head-loc" wx:if="{{cat.locationName && cat.locationDesc}}">📍 {{cat.locationName}} · {{cat.locationDesc}}</view>
+      <view class="head-loc" wx:elif="{{cat.locationName}}">📍 {{cat.locationName}}</view>
+      <view class="head-loc" wx:else>📍 {{cat.locationDesc}}</view>
 
       <view class="metric" wx:if="{{distanceText}}">
         <view class="metric-main">

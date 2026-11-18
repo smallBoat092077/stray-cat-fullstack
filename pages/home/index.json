@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "首页",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index",
+    "weather-card": "/components/weather-card/index"
+  },
+  "navigationStyle": "custom"
+}

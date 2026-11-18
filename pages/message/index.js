@@ -1,9 +1,7 @@
 const { messageApi } = require('../../utils/api');
 const { prettyTime } = require('../../utils/format');
 const { prefetchTemplates, setTemplateMap, requestNextGroup, resetGroupCursor } = require('../../utils/subscribe');
-
-// tabBar 里的页面只能用 switchTab 打开，用 navigateTo 会静默失败
-const TAB_PAGES = ['pages/index/index', 'pages/cat/list', 'pages/feeding/list', 'pages/profile/index'];
+const { TAB_PAGES } = require('../../utils/constants.js');
 
 // pushStatus 与后端口径一致：0 仅站内 / 1 已推送 / 2 无订阅额度 / 3 推送失败 / 4 未绑定微信
 function pushHintOf(item) {
@@ -82,11 +80,14 @@ Page({
     const r = await requestNextGroup();
     let title;
     if (r.done && r.accept > 0) {
-      title = `三批全部完成，本批订阅 ${r.accept} 项`;
+      title = `全部 ${r.total} 批完成，本批订阅 ${r.accept} 项`;
       resetGroupCursor();
     } else if (r.done) {
-      title = '三批已走完，如需重试再点一次';
+      title = `${r.total} 批已走完，如需重试再点一次`;
       resetGroupCursor();
+    } else if (r.skipped) {
+      // 该批模板后台未配置（如活动提醒还在申请），跳过它继续下一批
+      title = `第 ${r.batch}/${r.total} 批暂无可用模板，请再点一次`;
     } else if (r.accept > 0) {
       title = `第 ${r.batch}/${r.total} 批订阅 ${r.accept} 项，请再点一次`;
     } else if (r.ban > 0) {
@@ -114,11 +115,16 @@ Page({
     if (!page) {
       return;
     }
-    const path = page.replace(/^\//, '');
-    if (TAB_PAGES.indexOf(path.split('?')[0]) >= 0) {
-      wx.switchTab({ url: `/${path}` });
+    // 统一成带前导斜杠，兼容后台下发的「pages/...」与「/pages/...」两种口径
+    const full = '/' + String(page).trim().replace(/^\/+/, '');
+    const path = full.split('?')[0];
+    if (TAB_PAGES.indexOf(path) >= 0) {
+      wx.switchTab({ url: path });
       return;
     }
-    wx.navigateTo({ url: `/${path}` });
+    wx.navigateTo({
+      url: full,
+      fail: () => wx.showToast({ title: '页面不存在', icon: 'none' })
+    });
   }
 });

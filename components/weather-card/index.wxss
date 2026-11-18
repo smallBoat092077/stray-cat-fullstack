@@ -1,0 +1,86 @@
+/* 首页天气卡片：浅色纸感 + 品牌色点缀，承接「自然平和」基调 */
+.weather-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 26rpx 28rpx;
+  margin: 20rpx 0;
+}
+
+.wc-main {
+  flex: 0 0 auto;
+}
+
+.wc-city {
+  font-size: 24rpx;
+  color: var(--ink-mute, #9a8f7f);
+  margin-bottom: 8rpx;
+}
+
+.wc-now {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+}
+
+.wc-icon {
+  font-size: 44rpx;
+  line-height: 1;
+}
+
+.wc-temp {
+  font-size: 52rpx;
+  font-weight: 600;
+  color: var(--ink, #2f3b35);
+  line-height: 1;
+}
+
+.wc-desc {
+  font-size: 26rpx;
+  color: var(--ink, #2f3b35);
+}
+
+.wc-extra {
+  margin-top: 8rpx;
+  display: flex;
+  gap: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute, #9a8f7f);
+}
+
+.wc-future {
+  display: flex;
+  gap: 18rpx;
+  flex: 0 0 auto;
+  padding-left: 20rpx;
+  border-left: 1rpx solid rgba(195, 161, 95, 0.28);
+}
+
+.wc-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  min-width: 84rpx;
+}
+
+.wc-day-date {
+  font-size: 22rpx;
+  color: var(--ink-mute, #9a8f7f);
+}
+
+.wc-day-icon {
+  font-size: 34rpx;
+  line-height: 1;
+}
+
+.wc-day-temp {
+  font-size: 24rpx;
+  color: var(--ink, #2f3b35);
+}
+
+.wc-day-weather {
+  font-size: 20rpx;
+  color: var(--ink-mute, #9a8f7f);
+}

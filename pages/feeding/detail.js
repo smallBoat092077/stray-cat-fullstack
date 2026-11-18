@@ -1,4 +1,4 @@
-const { feedingApi, uploadFile } = require('../../utils/api');
+const { feedingApi, uploadFile, resolveImageUrl } = require('../../utils/api');
 const { TASK_TYPE_MAP, TASK_STATUS_MAP } = require('../../utils/constants');
 const { prettyTime, volunteerLine } = require('../../utils/format');
 const { prefetchTemplates, requestSubscribe, SUBSCRIBE_KEYS } = require('../../utils/subscribe');
@@ -14,7 +14,13 @@ Page({
     recognizing: false,    // 识别中
     recognizeResult: null, // 识别结果
     selectedCatId: null,   // 用户选择的猫咪 ID
-    showCatSelector: false // 显示猫咪选择器
+    showCatSelector: false,// 显示猫咪选择器
+    recognizePhoto: '',    // 本次用于识别（并作为留证）的照片
+    confidence: null,      // 后端置信度分级 high/medium/low
+    degraded: false,       // 识别服务是否降级
+    rejected: false,       // 二期：拒识闸门命中（照片里没有可识别的猫）
+    rejectMessage: '',     // 二期：拒识提示文案
+    lowConfidence: false   // 低置信但仍有候选：展示候选供人工核对，绝不自动预选
   },
 
   onLoad(options) {
@@ -22,8 +28,14 @@ Page({
     if (options.id) {
       this.loadTask(options.id);
     }
-    // 检查是否启用识别模式（可从后端配置获取）
-    this.setData({ recognizeMode: true });
+    // 灰度开关由独立 config 接口下发；失败或异常一律降级为普通打卡，且不与 loadTask 互相阻塞
+    feedingApi.recognizeConfig()
+      .then((config) => {
+        this.setData({ recognizeMode: !!(config && config.enabled) });
+      })
+      .catch(() => {
+        this.setData({ recognizeMode: false });
+      });
   },
 
   async loadTask(id) {
@@ -37,7 +49,9 @@ Page({
           statusText: TASK_STATUS_MAP[task.status]?.text || '未知',
           statusClass: TASK_STATUS_MAP[task.status]?.class || 'info',
           completedText: prettyTime(task.completedAt),
-          volunteerText: volunteerLine(task)
+          volunteerText: volunteerLine(task),
+          // 猫咪头像（/uploads 相对路径），无值时 WXML 走 default-cat.png 兜底
+          catCoverImage: resolveImageUrl(task.catCoverImage)
         },
         canCheckIn: !!userInfo.id && userInfo.id === task.volunteerId
       });
@@ -56,7 +70,7 @@ Page({
       latitude: Number(task.latitude),
       longitude: Number(task.longitude),
       name: `${task.catName || '投喂点'}`,
-      address: task.locationDesc || '',
+      address: task.locationName || task.locationDesc || '',
       scale: 18,
       fail: () => wx.showToast({ title: '打开地图失败', icon: 'none' })
     });
@@ -92,6 +106,12 @@ Page({
       sourceType: ['camera'],
       success: (res) => {
         const photoPath = res.tempFiles[0].tempFilePath;
+        // 把识别用照片一并作为留证图加入 images：去重、最多 3 张
+        const images = this.data.images.slice();
+        if (images.indexOf(photoPath) === -1 && images.length < 3) {
+          images.push(photoPath);
+        }
+        this.setData({ recognizePhoto: photoPath, images });
         this.doRecognize(photoPath);
       }
     });
@@ -101,20 +121,89 @@ Page({
    * 执行识别
    */
   async doRecognize(photoPath) {
-    this.setData({ recognizing: true, recognizeResult: null });
+    this.setData({
+      recognizing: true,
+      recognizeResult: null,
+      confidence: null,
+      degraded: false,
+      rejected: false,
+      rejectMessage: '',
+      lowConfidence: false,
+      selectedCatId: null,
+      showCatSelector: false
+    });
     wx.showLoading({ title: '识别中...' });
 
     try {
       const result = await feedingApi.recognizeCat(photoPath);
       wx.hideLoading();
+
+      // 二期：拒识闸门命中（服务健康，但照片里没有可识别的猫咪）
+      if (result && result.rejected === true) {
+        this.setData({
+          recognizing: false,
+          rejected: true,
+          rejectMessage: result.message || '照片中未检测到猫咪，请重新拍摄或手动选择猫咪',
+          recognizeResult: { ...result, matches: [] },
+          confidence: null,
+          degraded: false,
+          selectedCatId: null,
+          showCatSelector: true
+        });
+        wx.showToast({ title: '照片中未检测到猫咪', icon: 'none' });
+        return;
+      }
+
+      const degraded = !!(result && result.degraded === true);
+      const confidence = degraded ? null : ((result && result.confidence) || null);
+      const rawMatches = result && Array.isArray(result.matches) ? result.matches : [];
+      // 二期：不再计算 / 展示相似度百分比，避免「99%」对用户造成误导
+      // 头像补全：coverImage 是 /uploads 相对路径，必须 resolve 成完整 URL 才能在 <image> 显示
+      const matches = rawMatches.map((m) => ({ ...m, coverImage: resolveImageUrl(m.coverImage) }));
+
+      let visibleMatches = [];
+      let selectedCatId = null;
+      let showCatSelector = false;
+      let lowConfidence = false;
+      let tip = '';
+
+      if (degraded) {
+        // 服务不可用：不展示候选，走人工兜底，且不阻断打卡
+        tip = '识别服务暂不可用，请手动选择猫咪';
+        showCatSelector = true;
+      } else if (matches.length > 0 && (confidence === 'high' || confidence === 'medium')) {
+        // 二期：所有置信度都只展示候选，绝不自动预选，必须用户点选确认
+        visibleMatches = matches;
+        showCatSelector = true;
+        tip = 'AI 识别仅供参考，请核对后点选';
+      } else if (matches.length > 0) {
+        // 低置信：后端仍返回候选，只是分数低。此前整段丢弃导致「未识别到匹配猫咪」，
+        // 用户误以为基准图登记没生效。这里只把候选显示出来供人工核对：
+        // 不自动预选、不展示相似度、不改变打卡归属（cat_id 仍由任务决定）。
+        visibleMatches = matches;
+        lowConfidence = true;
+        showCatSelector = true;
+        tip = '匹配度较低，仅供参考，请人工核对后点选';
+      } else {
+        showCatSelector = true;
+        tip = '未识别到匹配猫咪，请手动选择';
+      }
+
       this.setData({
         recognizing: false,
-        recognizeResult: result,
-        showCatSelector: !result.success // 未识别成功时显示选择器
+        recognizeResult: { ...result, matches: visibleMatches },
+        confidence,
+        lowConfidence,
+        degraded,
+        rejected: false,
+        rejectMessage: '',
+        selectedCatId,
+        showCatSelector
       });
+      wx.showToast({ title: tip, icon: 'none' });
     } catch (err) {
       wx.hideLoading();
-      this.setData({ recognizing: false });
+      this.setData({ recognizing: false, lowConfidence: false });
       wx.showToast({ title: err.message || '识别失败', icon: 'none' });
     }
   },
@@ -148,6 +237,7 @@ Page({
       content: '这只猫不在数据库中，是否先上报猫咪信息？',
       success: (res) => {
         if (res.confirm) {
+          // 上报页已降级为普通页面，不再是 tabBar 页
           wx.navigateTo({ url: '/pages/cat/report' });
         }
       }
@@ -222,7 +312,7 @@ Page({
   async doCheckInWithRecognize(latitude, longitude) {
     wx.showLoading({ title: '打卡中...' });
     try {
-      const photoPath = this.data.images[0]; // 第一张作为识别照片
+      const photoPath = this.data.recognizePhoto || this.data.images[0]; // 识别与留证必须是同一张
       await feedingApi.checkinWithRecognize(
         this.data.task.id,
         photoPath,
@@ -235,7 +325,10 @@ Page({
       );
       wx.hideLoading();
       wx.showToast({ title: '打卡成功', icon: 'success' });
-      this.setData({ images: [], recognizeResult: null, selectedCatId: null });
+      this.setData({
+        images: [], recognizeResult: null, selectedCatId: null, recognizePhoto: '',
+        confidence: null, lowConfidence: false, degraded: false, rejected: false, rejectMessage: ''
+      });
       this.loadTask(this.data.task.id);
     } catch (err) {
       wx.hideLoading();

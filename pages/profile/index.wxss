@@ -105,6 +105,12 @@
   flex: 1;
 }
 
+.level-rank-link {
+  font-size: 22rpx;
+  color: var(--gold);
+  letter-spacing: 1rpx;
+}
+
 .level-name {
   font-family: 'Songti SC', 'STSong', 'SimSun', serif;
   font-size: 32rpx;
@@ -208,6 +214,17 @@
   margin-top: 8rpx;
   font-size: 24rpx;
   color: var(--ink-mute);
+}
+
+/* 连续签到：荣誉展示；≥7 天转金色，不发额外猫粮（避免诱导性审核风险） */
+.coin-streak {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.coin-streak.hot {
+  color: var(--gold);
 }
 
 .coin-actions {

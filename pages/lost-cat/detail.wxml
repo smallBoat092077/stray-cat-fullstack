@@ -1,0 +1,47 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{notFound}}">
+    <text class="empty-icon">🐾</text>
+    <text>启事不存在或已下线</text>
+  </view>
+
+  <view wx:else class="detail-wrap">
+    <view class="card">
+      <view class="detail-head">
+        <text class="section-title">{{post.catName}}</text>
+        <text class="tag tag-{{post.statusClass}}">{{post.statusText}}</text>
+      </view>
+
+      <scroll-view scroll-x class="detail-images" wx:if="{{post.imagesList.length > 0}}">
+        <image wx:for="{{post.imagesList}}" wx:key="index" src="{{item}}" mode="aspectFill"
+               data-src="{{item}}" bindtap="previewImage" />
+      </scroll-view>
+
+      <view class="detail-row">
+        <text class="detail-label">毛色花纹</text>
+        <text class="detail-value">{{post.coatDesc}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">丢失时间</text>
+        <text class="detail-value">{{post.lostAtText}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">丢失地点</text>
+        <text class="detail-value">{{post.addressDesc || '未填写'}}</text>
+      </view>
+      <view class="detail-row" wx:if="{{post.description}}">
+        <text class="detail-label">补充说明</text>
+        <text class="detail-value">{{post.description}}</text>
+      </view>
+    </view>
+
+    <view class="card clue-card">
+      <text class="section-title">提供线索</text>
+      <text class="form-hint">为保护双方隐私，请通过线索与系统通知沟通。</text>
+      <button class="btn-primary clue-btn" bindtap="onProvideClue">我见过这只猫</button>
+    </view>
+
+    <button class="btn-outline plaza-back" bindtap="goPlaza">返回寻猫广场</button>
+  </view>
+</view>

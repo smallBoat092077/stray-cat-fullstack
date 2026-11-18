@@ -1,0 +1,61 @@
+.detail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.detail-head .section-title { margin-bottom: 16rpx; }
+
+.detail-images {
+  white-space: nowrap;
+  width: 100%;
+  margin-bottom: 20rpx;
+}
+
+.detail-images image {
+  display: inline-block;
+  width: 260rpx;
+  height: 260rpx;
+  border-radius: 12rpx;
+  margin-right: 14rpx;
+  background: var(--cream);
+}
+
+.detail-row {
+  display: flex;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid var(--gold-mist);
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.detail-label {
+  width: 160rpx;
+  flex-shrink: 0;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+}
+
+.detail-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.clue-btn {
+  width: 100%;
+  margin-top: 24rpx;
+}
+
+.form-hint {
+  display: block;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  line-height: 1.6;
+}
+
+.plaza-back {
+  width: 100%;
+  margin-top: 8rpx;
+}

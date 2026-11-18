@@ -25,7 +25,9 @@
       <text>品种: {{cat.breed}}</text>
     </view>
     <view class="info-row location-row" bindtap="onLocate">
-      <text>📍 {{cat.locationDesc}}</text>
+      <text wx:if="{{cat.locationName && cat.locationDesc}}">📍 {{cat.locationName}} · {{cat.locationDesc}}</text>
+      <text wx:elif="{{cat.locationName}}">📍 {{cat.locationName}}</text>
+      <text wx:else>📍 {{cat.locationDesc}}</text>
       <text class="locate-link" wx:if="{{cat.latitude && cat.longitude}}">导航 ›</text>
     </view>
     <view class="health-tags" wx:if="{{cat.healthTags.length > 0}}">

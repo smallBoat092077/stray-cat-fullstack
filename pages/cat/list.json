@@ -1,7 +1,8 @@
 {
   "navigationBarTitleText": "流浪猫",
   "usingComponents": {
-    "brand-nav": "/components/brand-nav/index"
+    "brand-nav": "/components/brand-nav/index",
+    "region-picker": "/components/region-picker/index"
   },
   "navigationStyle": "custom"
 }

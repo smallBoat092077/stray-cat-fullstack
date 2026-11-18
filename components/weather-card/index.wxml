@@ -1,0 +1,23 @@
+<!-- 首页天气卡片：无实况数据时整卡不渲染，不抢首屏、不影响其他模块 -->
+<view class="weather-card card" wx:if="{{visible}}">
+  <view class="wc-main">
+    <view class="wc-city">{{cityName || '当前位置'}}</view>
+    <view class="wc-now">
+      <text class="wc-icon">{{icon}}</text>
+      <text class="wc-temp" wx:if="{{temperature !== null}}">{{temperature}}°</text>
+      <text class="wc-desc">{{weather}}</text>
+    </view>
+    <view class="wc-extra" wx:if="{{windText || humidity !== null}}">
+      <text wx:if="{{windText}}">{{windText}}</text>
+      <text wx:if="{{humidity !== null}}">湿度 {{humidity}}%</text>
+    </view>
+  </view>
+  <view class="wc-future" wx:if="{{future.length > 0}}">
+    <view class="wc-day" wx:for="{{future}}" wx:key="date">
+      <text class="wc-day-date">{{item.dateText}}</text>
+      <text class="wc-day-icon">{{item.icon}}</text>
+      <text class="wc-day-temp" wx:if="{{item.high !== null && item.low !== null}}">{{item.high}}°/{{item.low}}°</text>
+      <text class="wc-day-weather">{{item.weather}}</text>
+    </view>
+  </view>
+</view>

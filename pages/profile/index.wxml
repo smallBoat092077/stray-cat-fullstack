@@ -44,6 +44,9 @@
         </text>
         <text class="level-desc" wx:else>已是最高等级，谢谢你的守护</text>
       </view>
+      <view class="level-rank-link" bindtap="goToPage" data-url="/pages/volunteer/leaderboard">
+        查看榜单 ›
+      </view>
     </view>
     <view class="level-bar">
       <view class="level-bar-fill" style="width: {{volunteerData.progressPercent}}%"></view>
@@ -56,6 +59,9 @@
     <view class="coin-left">
       <text class="coin-num">{{coinBalance}}</text>
       <text class="coin-label">我的猫粮 · 累计送出 {{coinTipped}}</text>
+      <text class="coin-streak {{signInStreak.current >= 7 ? 'hot' : ''}}" wx:if="{{signInStreak.current > 0}}">
+        已连续签到 {{signInStreak.current}} 天 · 最长 {{signInStreak.max}} 天{{signInStreak.current >= 7 ? ' 🔥' : ''}}
+      </text>
     </view>
     <view class="coin-actions">
       <view class="coin-signin {{signedToday ? 'done' : ''}}" bindtap="onSignIn">

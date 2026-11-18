@@ -4,7 +4,7 @@
   <view class="notify-banner card" wx:if="{{canNotify}}" bindtap="onEnableNotify">
     <view class="notify-main">
       <text class="notify-title">开启微信通知</text>
-      <text class="notify-desc">重要消息直接推送到微信；微信一次只弹一批，共需点 3 次</text>
+      <text class="notify-desc">重要消息直接推送到微信；微信一次只弹一批，按提示逐批点完</text>
     </view>
     <text class="notify-action">{{notifyTip ? '已开启' : '去开启'}}</text>
   </view>

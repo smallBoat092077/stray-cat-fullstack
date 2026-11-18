@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "提供线索",
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

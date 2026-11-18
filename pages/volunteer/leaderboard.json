@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationBarTitleText": "城市喂猫人 · 荣誉榜",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "navigationStyle": "custom"
+}

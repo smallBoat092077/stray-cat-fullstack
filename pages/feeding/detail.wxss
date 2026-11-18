@@ -27,6 +27,21 @@
 
 .task-info-row:last-child { border-bottom: none; }
 
+/* 关联猫咪头像行：头像 + 名字横排（猫咪头像功能设计方案 §3.2） */
+.cat-avatar-line {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.cat-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(195, 161, 95, 0.12);
+}
+
 .label {
   font-size: 26rpx;
   color: var(--ink-mute);

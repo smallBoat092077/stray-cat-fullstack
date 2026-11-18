@@ -11,7 +11,11 @@ Page({
     pageNum: 1,
     pageSize: 10,
     hasMore: true,
-    loading: false
+    loading: false,
+    // 区域过滤（区域划分需求 R4/D7：按猫的归属区域），空对象 = 全部口径
+    regionFilter: {},
+    regionHasFilter: false,
+    regionLabel: ''
   },
 
   onLoad() {
@@ -42,6 +46,11 @@ Page({
       if (this.data.searchKeyword) {
         params.keyword = this.data.searchKeyword;
       }
+      // 区域过滤（区域划分需求 R4/D7）：后端口径为区 > 市 > 省，不带 = 全部
+      const rf = this.data.regionFilter || {};
+      if (rf.districtCode) params.districtCode = rf.districtCode;
+      else if (rf.cityCode) params.cityCode = rf.cityCode;
+      else if (rf.provinceCode) params.provinceCode = rf.provinceCode;
       const result = await feedingApi.getTaskList(params);
       const tasks = (result.records || []).map(task => ({
         ...task,
@@ -67,6 +76,29 @@ Page({
     const status = e.currentTarget.dataset.status;
     this.setData({ currentStatus: status, pageNum: 1, hasMore: true, taskList: [] });
     this.loadTasks();
+  },
+
+  // 区域筛选变化（区域划分需求 R4）：重置分页重查
+  onRegionChange(e) {
+    const d = e.detail || {};
+    const hasFilter = !!(d.provinceCode || d.cityCode || d.districtCode);
+    this.setData({
+      regionFilter: d,
+      regionHasFilter: hasFilter,
+      regionLabel: hasFilter ? (d.label || '') : '',
+      pageNum: 1,
+      hasMore: true,
+      taskList: []
+    });
+    this.loadTasks();
+  },
+
+  // 空态「看看全市的猫」：调用组件提升到市级重查（不覆盖手选记忆）
+  onViewCity() {
+    const picker = this.selectComponent('#regionPicker');
+    if (picker) {
+      picker.switchToCity();
+    }
   },
 
   onToggleMine() {

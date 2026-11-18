@@ -7,6 +7,14 @@
   margin-bottom: 24rpx;
 }
 
+.board-link {
+  text-align: right;
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: var(--gold);
+  letter-spacing: 1rpx;
+}
+
 .summary-num {
   font-family: 'Songti SC', 'STSong', 'SimSun', serif;
   font-size: 52rpx;

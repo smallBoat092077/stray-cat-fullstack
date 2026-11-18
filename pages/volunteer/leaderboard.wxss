@@ -1,0 +1,223 @@
+.container {
+  padding: 24rpx;
+}
+
+/* 前三名领奖台：中高两低，1 号居中 */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20rpx;
+  margin-top: 8rpx;
+}
+
+.podium-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx 12rpx 20rpx;
+  border-radius: 20rpx 20rpx 0 0;
+  background: linear-gradient(178deg, var(--gold-mist), #F0EFE3);
+  border: 1rpx solid var(--gold-mist);
+  border-bottom: none;
+}
+
+.podium-item.first {
+  padding-top: 44rpx;
+  background: linear-gradient(178deg, rgba(195, 161, 95, 0.35), var(--cream));
+  border: 1rpx solid var(--gold);
+  border-bottom: none;
+}
+
+.medal {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--paper);
+  margin-bottom: 14rpx;
+}
+
+.medal-gold {
+  background: linear-gradient(135deg, #D9B36C, #C3A15F);
+  box-shadow: 0 4rpx 14rpx rgba(195, 161, 95, 0.5);
+}
+
+.medal-silver {
+  background: linear-gradient(135deg, #B9BDB8, #9EA39D);
+}
+
+.medal-bronze {
+  background: linear-gradient(135deg, #C08B5E, #A8724B);
+}
+
+.p-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--ink);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.p-level {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--gold);
+}
+
+.p-count {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+}
+
+/* 列表项 */
+.rank-item,
+.mine {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+  padding: 24rpx;
+}
+
+.rank-no {
+  min-width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 1rpx solid var(--gold-mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.rank-main {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rank-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.rank-level {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.rank-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rank-count-num {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.rank-count-label {
+  font-size: 20rpx;
+  color: var(--ink-mute);
+}
+
+.mine {
+  border: 1rpx solid var(--gold);
+  background: linear-gradient(178deg, rgba(195, 161, 95, 0.12), var(--paper));
+}
+
+.login-hint {
+  margin-top: 20rpx;
+  padding: 26rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--brand);
+  letter-spacing: 1rpx;
+}
+
+.empty {
+  margin-top: 30rpx;
+  padding: 60rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--brand-deep);
+}
+
+.empty-desc {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+.empty-btn {
+  margin-top: 30rpx;
+}
+
+.loadmore {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-mute);
+}
+
+/* 榜单类型分段 / 榜期切换 */
+.board-types {
+  padding-top: 0;
+  margin-bottom: 4rpx;
+}
+
+.period-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.period-item {
+  padding: 6rpx 22rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+  background: var(--cream);
+  border: 1rpx solid var(--gold-mist);
+}
+
+.period-item.active {
+  color: var(--paper);
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.legacy-tip {
+  margin-bottom: 12rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--gold-deep);
+}

@@ -8,11 +8,16 @@
     </view>
     <view class="task-info-row">
       <text class="label">关联猫咪</text>
-      <text class="value">{{task.catName}}</text>
+      <view class="cat-avatar-line">
+        <image class="cat-avatar" src="{{task.catCoverImage || '/images/default-cat.png'}}" mode="aspectFill" />
+        <text class="value">{{task.catName}}</text>
+      </view>
     </view>
     <view class="task-info-row">
       <text class="label">投喂地点</text>
-      <text class="value">{{task.locationDesc}}</text>
+      <text class="value" wx:if="{{task.locationName && task.locationDesc}}">{{task.locationName}} · {{task.locationDesc}}</text>
+      <text class="value" wx:elif="{{task.locationName}}">{{task.locationName}}</text>
+      <text class="value" wx:else>{{task.locationDesc}}</text>
     </view>
     <view class="task-info-row" wx:if="{{task.amount}}">
       <text class="label">投喂猫粮</text>
@@ -38,16 +43,35 @@
         <text class="banner-text">拍照识别猫咪身份，确保打卡准确</text>
       </view>
 
-      <!-- 识别结果展示 -->
+      <!-- 识别结果展示（二期：不展示相似度百分比、不自动预选、必须人工确认） -->
       <view class="recognize-result" wx:if="{{recognizeResult}}">
         <view class="result-header">
-          <text class="result-title">{{recognizeResult.success ? '识别成功' : '未识别到猫咪'}}</text>
-          <text class="result-similarity" wx:if="{{recognizeResult.matches && recognizeResult.matches.length > 0}}">
-            相似度 {{recognizeResult.matches[0].similarity * 100}}%
-          </text>
+          <text class="result-title">{{recognizeResult.matches && recognizeResult.matches.length > 0 ? '识别到候选猫咪' : '未识别到猫咪'}}</text>
         </view>
 
-        <!-- 匹配列表 -->
+        <!-- 分级提示：拒识 / 降级 / 候选 / 低置信有候选 / 无候选 -->
+        <view class="recognize-banner" wx:if="{{rejected}}">
+          <text class="banner-icon">!</text>
+          <text class="banner-text">{{rejectMessage || '照片中未检测到猫咪，请重新拍摄或手动选择猫咪'}}</text>
+        </view>
+        <view class="recognize-banner" wx:elif="{{degraded}}">
+          <text class="banner-icon">!</text>
+          <text class="banner-text">识别服务暂不可用，请手动选择猫咪</text>
+        </view>
+        <view class="recognize-banner" wx:elif="{{confidence === 'high' || confidence === 'medium'}}">
+          <text class="banner-icon">i</text>
+          <text class="banner-text">AI 识别仅供参考，请对照猫咪照片人工核对后再确认</text>
+        </view>
+        <view class="recognize-banner" wx:elif="{{lowConfidence}}">
+          <text class="banner-icon">i</text>
+          <text class="banner-text">匹配度较低，仅供参考，请对照猫咪照片人工核对后再点选</text>
+        </view>
+        <view class="recognize-banner" wx:elif="{{confidence === 'low'}}">
+          <text class="banner-icon">i</text>
+          <text class="banner-text">未识别到匹配猫咪，可重新拍照或选择任务猫咪</text>
+        </view>
+
+        <!-- 候选列表：只展示猫名 / 毛色 / 封面，不再显示相似度 -->
         <view class="match-list" wx:if="{{recognizeResult.matches && recognizeResult.matches.length > 0}}">
           <view
             class="match-item {{selectedCatId === item.catId ? 'selected' : ''}}"
@@ -56,13 +80,10 @@
             data-cat-id="{{item.catId}}"
             bindtap="onSelectMatch"
           >
-            <image class="match-avatar" src="{{item.avatar || '/images/default-cat.png'}}" mode="aspectFill" />
+            <image class="match-avatar" src="{{item.coverImage || '/images/default-cat.png'}}" mode="aspectFill" />
             <view class="match-info">
               <text class="match-name">{{item.catName || '未知猫咪'}}</text>
-              <text class="match-similarity">相似度 {{item.similarity * 100}}%</text>
-              <text class="match-location" wx:if="{{item.originalLng && item.originalLat}}">
-                原位置：{{item.originalLng}}, {{item.originalLat}}
-              </text>
+              <text class="match-location" wx:if="{{item.color}}">毛色：{{item.color}}</text>
             </view>
             <view class="match-check" wx:if="{{selectedCatId === item.catId}}">✓</view>
           </view>

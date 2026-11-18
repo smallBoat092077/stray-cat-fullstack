@@ -1,0 +1,25 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <text class="section-title">系统通告</text>
+
+  <view class="notice-item card" wx:for="{{list}}" wx:key="id"
+        data-id="{{item.id}}" bindtap="onToggle">
+    <view class="notice-item-head">
+      <text class="tag tag-success">{{item.tag || '公告'}}</text>
+      <text class="notice-time">{{item.timeText}}</text>
+    </view>
+    <text class="notice-item-title">{{item.title}}</text>
+    <text class="notice-item-summary" wx:if="{{!item.expanded}}">{{item.summary}}</text>
+    <view class="notice-full" wx:if="{{item.expanded}}">
+      <text class="notice-full-text">{{item.content}}</text>
+    </view>
+    <view class="notice-toggle">{{item.expanded ? '收起 ∧' : '展开全文 ∨'}}</view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:if="{{!loading && list.length === 0}}">
+    <text class="empty-icon">📜</text>
+    <text>暂无系统通告</text>
+  </view>
+  <view class="loading" wx:if="{{!loading && !hasMore && list.length > 0}}">没有更多了</view>
+</view>

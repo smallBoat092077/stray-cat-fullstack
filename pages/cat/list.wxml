@@ -1,5 +1,11 @@
 <brand-nav />
 <view class="container">
+  <!-- 区域筛选（区域划分需求 R3/R4：定位默认区级，可切省市区，与状态筛选叠加） -->
+  <region-picker
+    id="regionPicker"
+    bind:change="onRegionChange"
+  />
+
   <!-- 搜索框 -->
   <view class="search-bar">
     <view class="search-input-wrap">
@@ -17,23 +23,11 @@
     </view>
   </view>
 
-  <!-- 海报轮播 -->
-  <swiper
-    class="poster-swiper"
-    style="{{posters.length > 0 ? 'height:' + swiperHeight + 'rpx' : ''}}"
-    indicator-dots
-    autoplay
-    circular
-    interval="4000"
-    indicator-active-color="#C3A15F"
-    indicator-color="rgba(255,253,247,0.5)"
-    bindchange="onSwiperChange"
-    wx:if="{{posters.length > 0}}"
-  >
-    <swiper-item wx:for="{{posters}}" wx:key="id">
-      <image class="poster-img" src="{{item.imageUrl}}" mode="widthFix" />
-    </swiper-item>
-  </swiper>
+  <!-- 猫咪统计信息条（去轮播改造）：接口失败时隐藏，不暴露 0/undefined -->
+  <view class="cat-stats" wx:if="{{catStatsReady}}">
+    <text class="cat-stats-text">已收录 {{catTotal}} 只猫咪 · {{catAdoptable}} 只正在等待领养</text>
+    <text class="cat-stats-link" bindtap="onGoAdopt">去领养 ›</text>
+  </view>
 
   <!-- 筛选栏 -->
   <view class="filter-bar">
@@ -64,7 +58,9 @@
           <text>{{item.genderText}} · {{item.ageEstimate}} · {{item.color}}<text wx:if="{{item.breed}}"> · {{item.breed}}</text></text>
         </view>
         <view class="cat-detail">
-          <text>📍 {{item.locationDesc}}</text>
+          <text wx:if="{{item.locationName && item.locationDesc}}">📍 {{item.locationName}} · {{item.locationDesc}}</text>
+          <text wx:elif="{{item.locationName}}">📍 {{item.locationName}}</text>
+          <text wx:else>📍 {{item.locationDesc}}</text>
         </view>
         <view class="cat-desc">{{item.description}}</view>
         <view class="cat-footer">
@@ -75,10 +71,21 @@
     </view>
   </view>
 
-  <!-- 空状态 -->
+  <!-- 空状态（区域划分需求 D6：空态提示下沉到这里，与筛选栏解耦） -->
   <view class="empty" wx:if="{{!loading && displayList.length === 0}}">
-    <text class="empty-icon">🐱</text>
-    <text>{{searchKeyword ? '没有匹配的猫咪' : '暂无猫咪数据'}}</text>
+    <block wx:if="{{searchKeyword}}">
+      <text class="empty-icon">🐱</text>
+      <text>没有匹配的猫咪</text>
+    </block>
+    <block wx:elif="{{regionHasFilter}}">
+      <text class="empty-icon">🐱</text>
+      <text class="empty-region-line">{{regionLabel}}还没有猫咪</text>
+      <view class="empty-region-link" bindtap="onViewCity">看看全市的猫 ›</view>
+    </block>
+    <block wx:else>
+      <text class="empty-icon">🐱</text>
+      <text>暂无猫咪数据</text>
+    </block>
   </view>
 
   <!-- 加载中 -->

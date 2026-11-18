@@ -1,5 +1,11 @@
 <brand-nav />
 <view class="container">
+  <!-- 区域筛选（区域划分需求 R3/R4/D7：按猫归属区域过滤） -->
+  <region-picker
+    id="regionPicker"
+    bind:change="onRegionChange"
+  />
+
   <!-- 搜索框 -->
   <view class="search-bar">
     <view class="search-input-wrap">
@@ -39,7 +45,9 @@
         <text>🐱 {{item.catName}}</text>
       </view>
       <view class="task-info">
-        <text>📍 {{item.locationDesc}}</text>
+        <text wx:if="{{item.locationName && item.locationDesc}}">📍 {{item.locationName}} · {{item.locationDesc}}</text>
+        <text wx:elif="{{item.locationName}}">📍 {{item.locationName}}</text>
+        <text wx:else>📍 {{item.locationDesc}}</text>
       </view>
       <view class="task-info" wx:if="{{item.amount}}">
         <text>投喂猫粮: {{item.amount}} 份</text>
@@ -54,7 +62,18 @@
   </view>
 
   <view class="empty" wx:if="{{!loading && taskList.length === 0}}">
-    <text class="empty-icon"></text>
-    <text>暂无投喂任务</text>
+    <block wx:if="{{searchKeyword}}">
+      <text class="empty-icon"></text>
+      <text>没有匹配的猫咪</text>
+    </block>
+    <block wx:elif="{{regionHasFilter}}">
+      <text class="empty-icon"></text>
+      <text class="empty-region-line">{{regionLabel}}还没有投喂任务</text>
+      <view class="empty-region-link" bindtap="onViewCity">看看全市的猫 ›</view>
+    </block>
+    <block wx:else>
+      <text class="empty-icon"></text>
+      <text>暂无投喂任务</text>
+    </block>
   </view>
 </view>

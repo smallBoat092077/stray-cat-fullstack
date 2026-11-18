@@ -1,0 +1,42 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:elif="{{notFound}}">
+    <text class="empty-icon">🐾</text>
+    <text>线索不存在或暂不可见</text>
+  </view>
+
+  <view wx:else class="detail-wrap">
+    <view class="card">
+      <view class="detail-head">
+        <text class="section-title">线索详情</text>
+        <text class="tag tag-{{clue.auditClass}}">{{clue.auditText}}</text>
+      </view>
+
+      <view class="detail-row">
+        <text class="detail-label">发现时间</text>
+        <text class="detail-value">{{clue.foundAtText || '未填写'}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">发现地点</text>
+        <text class="detail-value">{{clue.addressDesc || '未填写'}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">线索描述</text>
+        <text class="detail-value">{{clue.description || '未填写'}}</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{clue.imagesList.length > 0}}">
+      <text class="section-title">现场照片</text>
+      <scroll-view scroll-x class="detail-images">
+        <image wx:for="{{clue.imagesList}}" wx:key="index" src="{{item}}" mode="aspectFill"
+               data-src="{{item}}" bindtap="previewImage" />
+      </scroll-view>
+    </view>
+
+    <view class="card privacy-card">
+      <text class="form-hint">为保护双方隐私，请通过线索与系统通知沟通。</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "寻猫启事详情",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationStyle": "custom"
+}

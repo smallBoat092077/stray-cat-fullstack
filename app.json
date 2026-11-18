@@ -1,5 +1,13 @@
 {
   "pages": [
+    "pages/home/index",
+    "pages/home/notice-list",
+    "pages/lost-cat/list",
+    "pages/lost-cat/create",
+    "pages/lost-cat/detail",
+    "pages/lost-cat/mine",
+    "pages/lost-cat/clue-create",
+    "pages/lost-cat/clue-detail",
     "pages/index/index",
     "pages/cat/list",
     "pages/cat/detail",
@@ -20,7 +28,9 @@
     "pages/message/index",
     "pages/feedback/index",
     "pages/privacy/index",
-    "pages/profile/index"
+    "pages/profile/index",
+    "pages/volunteer/leaderboard",
+    "pages/campaign/index"
   ],
   "window": {
     "backgroundTextStyle": "dark",
@@ -35,6 +45,12 @@
     "backgroundColor": "#FFFDF7",
     "borderStyle": "white",
     "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
+      },
       {
         "pagePath": "pages/index/index",
         "text": "地图",
@@ -69,7 +85,10 @@
   "permission": {
     "scope.userLocation": {
       "desc": "位置信息用于查找附近流浪猫、投喂打卡与上报"
+    },
+    "scope.camera": {
+      "desc": "拍照用于投喂打卡留证与流浪猫花纹识别比对"
     }
   },
-  "lazyCodeLoading": "requiredComponents" 
+  "lazyCodeLoading": "requiredComponents"
 }

@@ -1,18 +1,54 @@
+// 登录/注册时把暂存的归因上下文一起交给后端；没有上下文就是空串，接口行为不变
+function attributionQuery(prefix) {
+  try {
+    const qs = require('./utils/attribution').queryString();
+    return qs ? `${prefix}${qs}` : '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function clearAttribution() {
+  try {
+    require('./utils/attribution').clear();
+  } catch (e) {
+    // ignore
+  }
+}
+
 App({
   globalData: {
     userInfo: null,
     token: null,
     focusCatId: null,
-    // 域名侧 nginx 443 + Let's Encrypt 已就绪，备案已通过，启用 HTTPS 域名
-    baseUrl: 'https://straycat.fun/api'
-    //baseUrl: 'http://47.95.149.170/api'
-    //baseUrl: 'http://47.97.253.32:8082/api'
+    // 默认生产。UAT 联调时先用 wx.setStorageSync('apiBaseOverride', 'http://47.97.253.32:8082/api') 写入覆盖值
+    baseUrl: wx.getStorageSync('apiBaseOverride') || 'https://straycat.fun/api'
   },
 
   onLaunch() {
     this.initPrivacy();
+    // 冷启动兜底：小程序码 / 图文卡片的首帧参数先存下来，页面 onLoad 会再归一一次
+    try {
+      const opts = wx.getLaunchOptionsSync ? wx.getLaunchOptionsSync() : {};
+      require('./utils/attribution').capture(Object.assign({}, opts, opts.query || {}));
+    } catch (e) {
+      // 归因失败不影响启动
+    }
     // 检查登录状态
     this.checkLogin();
+  },
+
+  // 暖启动（公众号卡片再次唤起 / 从后台切回）不触发 onLaunch，
+  // 用本次进入参数再兜一次，就不必给每个落地页都挂归因代码
+  onShow() {
+    try {
+      const opts = wx.getEnterOptionsSync
+        ? wx.getEnterOptionsSync()
+        : (wx.getLaunchOptionsSync ? wx.getLaunchOptionsSync() : {});
+      require('./utils/attribution').capture(Object.assign({}, opts, opts.query || {}));
+    } catch (e) {
+      // 归因失败不影响页面
+    }
   },
 
   // 微信要求隐私接口调用前取得用户授权；未注册该监听时 getLocation/chooseLocation 在正式版会直接失败
@@ -47,14 +83,14 @@ App({
     }
   },
 
-  // 微信登录
+  // 微信登录（首触来源随这一次请求写入，之后不再归因）
   login() {
     return new Promise((resolve, reject) => {
       wx.login({
         success: (res) => {
           if (res.code) {
             wx.request({
-              url: `${this.globalData.baseUrl}/user/login?code=${res.code}`,
+              url: `${this.globalData.baseUrl}/user/login?code=${res.code}${attributionQuery('&')}`,
               method: 'POST',
               header: {
                 'ngrok-skip-browser-warning': 'true'
@@ -66,6 +102,7 @@ App({
                   this.globalData.userInfo = user;
                   wx.setStorageSync('token', token);
                   wx.setStorageSync('userInfo', user);
+                  clearAttribution();
                   resolve(user);
                 } else {
                   reject(new Error(loginRes.data.message));
@@ -163,11 +200,11 @@ App({
     });
   },
 
-  // 账号密码注册（成功即登录）
+  // 账号密码注册（成功即登录；同样是新建用户，必须带首触来源）
   register(username, password) {
     return new Promise((resolve, reject) => {
       wx.request({
-        url: `${this.globalData.baseUrl}/user/register`,
+        url: `${this.globalData.baseUrl}/user/register${attributionQuery('?')}`,
         method: 'POST',
         header: {
           'Content-Type': 'application/json',
@@ -178,6 +215,7 @@ App({
           if (res.data.code === 200) {
             const { token, user } = res.data.data;
             this.saveSession(token, user);
+            clearAttribution();
             resolve(user);
           } else {
             reject(new Error(res.data.message || '注册失败'));
@@ -199,10 +237,12 @@ App({
           }
           // code 走查询串，后端是 @RequestParam，发 JSON body 会绑不上
           this.request({
-            url: `/user/bindWechat?code=${res.code}`,
+            url: `/user/bindWechat?code=${res.code}${attributionQuery('&')}`,
             method: 'POST'
           }).then((user) => {
             this.saveSession(this.globalData.token, user);
+            // 老账号绑定微信不覆盖首触来源，服务端只补一条访问记录
+            clearAttribution();
             resolve(user);
           }).catch(reject);
         },

@@ -94,19 +94,25 @@ const SUBSCRIBE_KEYS = {
   coAdoptionInvite: ['coAdoptionInvite'],
   coAdoptionResult: ['coAdoptionResult'],
   // 管理员待办：这两个模板后台留空时不生效，退化成站内消息
-  admin: ['adoptionNew', 'recordPending']
+  admin: ['adoptionNew', 'recordPending'],
+  // 活动页 CTA：模板 ID 后台没配时 /message/templates 不下发，按钮自动隐藏
+  campaign: ['campaignReminder'],
+  // 寻猫启事发布者是「有人见过你的猫」线索通知的收件人，发布时攒额度
+  lostCatClue: ['lostCatClueNew']
 };
 
-// 「开启微信通知」的授权分组，每组 ≤3 个模板 ID
+// 「开启微信通知」的授权分组，每组 ≤3 个模板 ID。
+// 第 4 批含活动提醒与线索通知（模板申请中时该 key 不下发，该批自动跳过，不影响前 3 批）。
 const ALL_GROUPS = [
   ['taskAccepted', 'recordSubmitted', 'recordApproved'],
   ['adoptionApproved', 'adoptionRejected', 'followUpDue'],
-  ['coAdoptionInvite', 'coAdoptionResult', 'recordPending']
+  ['coAdoptionInvite', 'coAdoptionResult', 'recordPending'],
+  ['campaignReminder', 'lostCatClueNew']
 ];
 
 // 微信限制：一次手势只允许发起一个授权弹窗——同步连发第二组报
 // "last call has not ended"，await 上一组关闭后再弹又脱离手势上下文。
-// 所以「开启微信通知」改成每次点击弹一批，点完 3 批才算全部授权。
+// 所以「开启微信通知」改成每次点击弹一批，点完全部批次才算完成授权。
 let groupCursor = 0;
 
 /**

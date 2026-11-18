@@ -1,0 +1,51 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <text class="section-title">寻猫广场</text>
+
+  <!-- 区域筛选（区域划分需求 R3/R4） -->
+  <region-picker
+    id="regionPicker"
+    bind:change="onRegionChange"
+  />
+
+  <!-- status 筛选 -->
+  <view class="filter-bar">
+    <view wx:for="{{filters}}" wx:key="key"
+          class="filter-item {{status === item.key ? 'active' : ''}}"
+          data-index="{{index}}" bindtap="onStatusFilter">{{item.label}}</view>
+  </view>
+
+  <view class="plaza-actions">
+    <button class="btn-primary plaza-btn" bindtap="goCreate">发布寻猫信息</button>
+    <view class="plaza-mine" bindtap="goMine">我的发布 ›</view>
+  </view>
+
+  <view class="post-card card" wx:for="{{list}}" wx:key="id"
+        data-id="{{item.id}}" bindtap="goDetail">
+    <image class="post-cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+    <view class="post-cover post-cover-empty" wx:else><text>🐈</text></view>
+    <view class="post-body">
+      <view class="post-head">
+        <text class="post-name">{{item.catName}}</text>
+        <text class="tag tag-{{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+      <text class="post-coat">{{item.coatDesc}}</text>
+      <text class="post-meta">📍 {{item.addressDesc || '未填写地点'}}</text>
+      <text class="post-meta">🕒 {{item.lostAtText}}</text>
+    </view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:if="{{!loading && list.length === 0}}">
+    <block wx:if="{{regionHasFilter}}">
+      <text class="empty-icon">🐾</text>
+      <text class="empty-region-line">{{regionLabel}}还没有寻猫启事</text>
+      <view class="empty-region-link" bindtap="onViewCity">看看全市的猫 ›</view>
+    </block>
+    <block wx:else>
+      <text class="empty-icon">🐾</text>
+      <text>这里还没有寻猫启事</text>
+    </block>
+  </view>
+  <view class="loading" wx:if="{{!loading && !hasMore && list.length > 0}}">没有更多了</view>
+</view>

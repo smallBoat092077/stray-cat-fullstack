@@ -1,0 +1,54 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="card">
+    <text class="section-title">提供线索</text>
+    <text class="form-hint">请尽量写清发现经过；线索先审后发，审核通过后由系统通知启事发布者。为保护双方隐私，请通过线索与系统通知沟通。</text>
+
+    <view class="form-item">
+      <text class="form-label">发现时间</text>
+      <view class="datetime-row">
+        <picker mode="date" value="{{foundDate}}" bindchange="onDateChange">
+          <view class="form-value">{{foundDate}}</view>
+        </picker>
+        <picker mode="time" value="{{foundTime}}" bindchange="onTimeChange">
+          <view class="form-value">{{foundTime}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">发现地点</text>
+      <view class="location-picker" bindtap="chooseLocation">
+        <text class="location-icon">📍</text>
+        <text class="location-text">{{addressDesc || '点击在地图上选择发现地点'}}</text>
+        <text class="location-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">现场照片（最多 6 张）</text>
+      <view class="image-list">
+        <view class="image-item" wx:for="{{images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" data-src="{{item}}" bindtap="previewImage" />
+          <view class="image-remove" data-index="{{index}}" bindtap="removeImage">×</view>
+        </view>
+        <view class="image-add" wx:if="{{images.length < 6}}" bindtap="chooseImage">
+          <text class="add-icon">+</text>
+          <text class="add-text">添加照片</text>
+        </view>
+      </view>
+      <text class="form-hint">已选 {{images.length}}/6 张，请至少上传 1 张</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">线索描述</text>
+      <textarea class="form-textarea" placeholder="如：在小区东门花坛看到一只橘白相间、额头有 M 形花纹的猫，状态看起来还好"
+                maxlength="500" value="{{description}}" bindinput="onDescInput" />
+      <text class="form-hint">最多 500 字，请勿填写任何个人联系方式</text>
+    </view>
+
+    <button class="btn-primary" style="margin-top: 40rpx;" bindtap="onSubmit" disabled="{{uploading}}">
+      {{uploading ? '提交中...' : '提交线索'}}
+    </button>
+  </view>
+</view>

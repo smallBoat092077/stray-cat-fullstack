@@ -60,6 +60,16 @@ const CO_ADOPTION_STATUS_MAP = {
   2: { text: '已拒绝', class: 'danger' }
 };
 
+// tabBar 页白名单：唯一口径，统一带前导斜杠。
+// tab 页只能用 switchTab 打开，且不接受 query；改动 tabBar 时只需改这里。
+const TAB_PAGES = [
+  '/pages/home/index',
+  '/pages/index/index',
+  '/pages/cat/list',
+  '/pages/feeding/list',
+  '/pages/profile/index'
+];
+
 module.exports = {
   LIFE_STATUS_MAP,
   GENDER_MAP,
@@ -70,5 +80,6 @@ module.exports = {
   ADOPTION_STATUS_MAP,
   RECORD_STATUS_MAP,
   COIN_BIZ_MAP,
-  CO_ADOPTION_STATUS_MAP
+  CO_ADOPTION_STATUS_MAP,
+  TAB_PAGES
 };

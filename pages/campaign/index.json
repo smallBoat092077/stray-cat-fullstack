@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index"
+  },
+  "navigationBarTitleText": "活动",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "navigationStyle": "custom"
+}

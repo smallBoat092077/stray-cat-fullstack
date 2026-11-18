@@ -1,0 +1,143 @@
+<brand-nav />
+<!-- 顶部消息铃铛：叠在自定义导航条右侧，避开右上角系统胶囊 -->
+<view class="home-bell" style="top: {{statusBarHeight}}px; height: {{navBarHeight}}px;" bindtap="goMessage">
+  <text class="home-bell-icon">🔔</text>
+  <view class="home-bell-dot" wx:if="{{unreadCount > 0}}"></view>
+</view>
+
+<view class="container home-container">
+
+  <!-- ① 热点轮播主卡 + 系统通告条 -->
+  <block wx:if="{{modules.hotspot}}">
+    <view wx:if="{{loading}}" class="card hotspot-skeleton skeleton-block"></view>
+    <view wx:elif="{{hotspots.length > 0}}" class="hotspot-wrap">
+      <swiper class="hotspot-swiper" indicator-dots autoplay circular interval="4000"
+              indicator-active-color="#C3A15F" indicator-color="rgba(255,253,247,0.5)"
+              bindchange="onSwiperChange">
+        <swiper-item wx:for="{{hotspots}}" wx:key="id" data-index="{{index}}" bindtap="onHotspotTap">
+          <view class="hotspot-card card">
+            <image class="hotspot-cover" src="{{item.coverUrl}}" mode="aspectFill" />
+            <view class="hotspot-mask"></view>
+            <view class="hotspot-body">
+              <text class="tag tag-warning hotspot-tag">{{item.tag || '热点'}}</text>
+              <text class="hotspot-title">{{item.title}}</text>
+              <text class="hotspot-summary">{{item.summary}}</text>
+              <text class="hotspot-detail">查看详情 ›</text>
+            </view>
+            <view class="hotspot-page">{{currentSwiperIndex + 1}}/{{hotspots.length}}</view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </view>
+  </block>
+
+  <block wx:if="{{modules.notice}}">
+    <view wx:if="{{loading}}" class="notice-skeleton skeleton-block"></view>
+    <view wx:elif="{{notice}}" class="notice-bar" bindtap="goNoticeList">
+      <text class="tag tag-success notice-tag">{{notice.tag || '公告'}}</text>
+      <text class="notice-text">{{notice.title}}</text>
+      <text class="notice-arrow">›</text>
+    </view>
+  </block>
+
+  <!-- ①' 天气卡片（通告条与三宫格之间，首屏内；无数据自动隐藏） -->
+  <block wx:if="{{modules.weather}}">
+    <weather-card />
+  </block>
+
+  <!-- ② 三宫格功能区（等宽） -->
+  <view class="func-grid">
+    <view class="func-card" bindtap="onPublishCat">
+      <view class="func-icon func-icon-primary">✚</view>
+      <text class="func-title">发布流浪猫</text>
+      <text class="func-desc">上报身边的它</text>
+    </view>
+    <view class="func-card" bindtap="onRecognize">
+      <view class="func-icon func-icon-gold">◈</view>
+      <text class="func-title">识别流浪猫</text>
+      <text class="func-desc">花纹对比 · 内测中</text>
+    </view>
+    <view wx:if="{{modules.lostCat}}" class="func-card" bindtap="onFindCat">
+      <view class="func-icon func-icon-mint">⌕</view>
+      <text class="func-title">寻找爱猫</text>
+      <text class="func-desc">发布寻猫启事</text>
+    </view>
+  </view>
+
+  <!-- ③ 志愿者三榜 -->
+  <view wx:if="{{modules.leaderboard}}" class="card board-section">
+    <view class="board-head">
+      <text class="section-title">志愿者荣誉榜</text>
+      <text class="board-more" bindtap="goFullBoard">完整榜单 ›</text>
+    </view>
+
+    <!-- 三段切换：喂养次数 / 猫粮份数 / 用户活跃 -->
+    <view class="filter-bar board-types">
+      <view wx:for="{{boardTypes}}" wx:key="key"
+            class="filter-item {{boardType === item.key ? 'active' : ''}}"
+            data-type="{{item.key}}" bindtap="onBoardTypeChange">{{item.label}}</view>
+    </view>
+    <!-- 榜期切换：周 / 月 / 总 -->
+    <view class="period-bar">
+      <view wx:for="{{periods}}" wx:key="key"
+            class="period-item {{boardPeriod === item.key ? 'active' : ''}}"
+            data-period="{{item.key}}" bindtap="onPeriodChange">{{item.label}}</view>
+    </view>
+
+    <view wx:if="{{loading}}" class="board-skeleton skeleton-block"></view>
+    <view wx:elif="{{boardError}}" class="board-error" bindtap="onBoardRetry">暂无法加载，点击重试</view>
+    <view wx:elif="{{boardLoading}}" class="loading">加载中...</view>
+
+    <block wx:elif="{{ranks.length > 0}}">
+      <!-- TOP3 领奖台：中高两低，1 号居中 -->
+      <view class="podium">
+        <view class="podium-item second" wx:if="{{ranks[1]}}">
+          <view class="medal medal-silver">{{ranks[1].rank}}</view>
+          <text class="p-name">{{ranks[1].nickname}}</text>
+          <text class="p-level">{{ranks[1].levelName}}</text>
+          <text class="p-count">{{ranks[1].value}} {{ranks[1].unit}}</text>
+        </view>
+        <view class="podium-item first" wx:if="{{ranks[0]}}">
+          <view class="medal medal-gold">{{ranks[0].rank}}</view>
+          <text class="p-name">{{ranks[0].nickname}}</text>
+          <text class="p-level">{{ranks[0].levelName}}</text>
+          <text class="p-count">{{ranks[0].value}} {{ranks[0].unit}}</text>
+        </view>
+        <view class="podium-item third" wx:if="{{ranks[2]}}">
+          <view class="medal medal-bronze">{{ranks[2].rank}}</view>
+          <text class="p-name">{{ranks[2].nickname}}</text>
+          <text class="p-level">{{ranks[2].levelName}}</text>
+          <text class="p-count">{{ranks[2].value}} {{ranks[2].unit}}</text>
+        </view>
+      </view>
+
+      <!-- 第 4 / 5 名列表 -->
+      <view class="board-rank" wx:for="{{ranks}}" wx:key="rank" wx:if="{{index > 2}}">
+        <text class="rank-no">{{item.rank}}</text>
+        <view class="rank-main">
+          <text class="rank-name">{{item.nickname}}</text>
+          <text class="rank-level">{{item.levelName}}</text>
+        </view>
+        <view class="rank-count">
+          <text class="rank-count-num">{{item.value}}</text>
+          <text class="rank-count-label">{{item.unit}}</text>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="board-empty">暂无上榜数据，快来成为第一位</view>
+
+    <!-- 我的排名条 -->
+    <view class="my-rank" bindtap="onMyRankTap">
+      <block wx:if="{{myRank && myRank.rank}}">
+        <text class="my-rank-text">我的名次 · 第 {{myRank.rank}} 名（{{myRank.value}} {{myRank.unit}}）</text>
+        <text class="my-rank-arrow">›</text>
+      </block>
+      <block wx:else>
+        <text class="my-rank-text">登录后查看你的名次</text>
+        <text class="my-rank-arrow">›</text>
+      </block>
+    </view>
+  </view>
+
+</view>

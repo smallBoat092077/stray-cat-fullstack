@@ -38,27 +38,56 @@
   line-height: 1;
 }
 
-/* 海报轮播 */
-.poster-swiper {
-  width: 100%;
-  border-radius: 20rpx;
-  overflow: hidden;
-  margin-bottom: 16rpx;
-  box-shadow: 0 6rpx 24rpx rgba(20, 73, 60, 0.10);
-}
-
-/* 海报宽高比不一时容器取最大高度，矮的在容器内垂直居中，避免头部对齐留白一边倒 */
-.poster-swiper swiper-item {
+/* 猫咪统计信息条（去轮播改造）：浅底细边圆角条，文案左、去领养链接右 */
+.cat-stats {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  padding: 18rpx 24rpx;
+  margin: 4rpx 0 12rpx;
+  background: rgba(195, 161, 95, 0.08);
+  border: 1rpx solid rgba(195, 161, 95, 0.25);
+  border-radius: 16rpx;
 }
 
-.poster-img {
-  width: 100%;
-  display: block;
+.cat-stats-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  line-height: 1.5;
 }
 
-/* 筛选栏 */
+.cat-stats-link {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--brand);
+  font-weight: 600;
+  padding: 6rpx 4rpx 6rpx 12rpx;
+}
+
+/* 筛选栏：紧凑一行，5 项同屏放下，消除「已领养」截断 */
+.filter-bar {
+  overflow-x: visible;
+  padding: 4rpx 0 16rpx;
+}
+
+.filter-bar .filter-item {
+  flex: 1;
+  padding: 12rpx 0;
+  margin-right: 10rpx;
+  font-size: 24rpx;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.filter-bar .filter-item:last-child {
+  margin-right: 0;
+}
+
+.filter-bar .filter-item.active {
+  transform: none;
+}
 .filter-bar {
   padding: 14rpx 0;
 }

@@ -1,0 +1,77 @@
+<brand-nav back="{{true}}" />
+<view class="container">
+
+  <!-- 榜单类型分段切换 -->
+  <view class="filter-bar board-types">
+    <view wx:for="{{boardTypes}}" wx:key="key"
+          class="filter-item {{type === item.key ? 'active' : ''}}"
+          data-type="{{item.key}}" bindtap="onTypeChange">{{item.label}}</view>
+  </view>
+  <!-- 榜期切换：周 / 月 / 总 -->
+  <view class="period-bar">
+    <view wx:for="{{periods}}" wx:key="key"
+          class="period-item {{period === item.key ? 'active' : ''}}"
+          data-period="{{item.key}}" bindtap="onPeriodChange">{{item.label}}</view>
+  </view>
+  <view class="legacy-tip" wx:if="{{legacyTip}}">{{legacyTip}}</view>
+
+  <!-- 前三名领奖台 -->
+  <view class="podium" wx:if="{{ranks.length > 0}}">
+    <view class="podium-item second" wx:if="{{ranks[1]}}">
+      <view class="medal medal-silver">{{ranks[1].rank}}</view>
+      <text class="p-name">{{ranks[1].nickname}}</text>
+      <text class="p-level">{{ranks[1].levelName}}</text>
+      <text class="p-count">{{ranks[1].value}} {{ranks[1].unit}}</text>
+    </view>
+    <view class="podium-item first" wx:if="{{ranks[0]}}">
+      <view class="medal medal-gold">{{ranks[0].rank}}</view>
+      <text class="p-name">{{ranks[0].nickname}}</text>
+      <text class="p-level">{{ranks[0].levelName}}</text>
+      <text class="p-count">{{ranks[0].value}} {{ranks[0].unit}}</text>
+    </view>
+    <view class="podium-item third" wx:if="{{ranks[2]}}">
+      <view class="medal medal-bronze">{{ranks[2].rank}}</view>
+      <text class="p-name">{{ranks[2].nickname}}</text>
+      <text class="p-level">{{ranks[2].levelName}}</text>
+      <text class="p-count">{{ranks[2].value}} {{ranks[2].unit}}</text>
+    </view>
+  </view>
+
+  <!-- 4 名以后列表 -->
+  <view class="rank-item card" wx:for="{{ranks}}" wx:key="rank" wx:if="{{index > 2}}">
+    <view class="rank-no">{{item.rank}}</view>
+    <view class="rank-main">
+      <text class="rank-name">{{item.nickname}}</text>
+      <text class="rank-level">{{item.levelName}}</text>
+    </view>
+    <view class="rank-count">
+      <text class="rank-count-num">{{item.value}}</text>
+      <text class="rank-count-label">{{item.unit}}</text>
+    </view>
+  </view>
+
+  <!-- 我的名次 -->
+  <view class="mine card" wx:if="{{mine}}">
+    <view class="rank-no">我</view>
+    <view class="rank-main">
+      <text class="rank-name">我的名次 · 第 {{mine.rank}} 名</text>
+      <text class="rank-level">{{mine.value}} {{mine.unit}}</text>
+    </view>
+    <view class="rank-count">
+      <text class="rank-count-num">{{mine.rank}}</text>
+      <text class="rank-count-label">名</text>
+    </view>
+  </view>
+  <view class="login-hint card" wx:if="{{!mine && !loading}}" bindtap="goLogin">
+    登录后查看你的名次 ›
+  </view>
+
+  <!-- 空态 -->
+  <view class="empty card" wx:if="{{!loading && ranks.length === 0}}">
+    <text class="empty-title">还没有喂猫人上榜</text>
+    <text class="empty-desc">完成一次投喂打卡，就是这份榜单的第一位</text>
+    <button class="btn-primary empty-btn" bindtap="goFeeding">去投喂</button>
+  </view>
+
+  <view class="loadmore" wx:if="{{loading}}">加载中...</view>
+</view>

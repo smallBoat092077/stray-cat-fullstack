@@ -1,0 +1,388 @@
+.home-container {
+  padding: 24rpx;
+}
+
+/* 顶部消息铃铛：fixed 落在自定义导航条内，右侧留出系统胶囊的位置 */
+.home-bell {
+  position: fixed;
+  right: 210rpx;
+  z-index: 950;
+  width: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-bell-icon {
+  font-size: 36rpx;
+  line-height: 1;
+}
+
+.home-bell-dot {
+  position: absolute;
+  top: 50%;
+  right: 6rpx;
+  margin-top: -20rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: #A8453B;
+  border: 2rpx solid #FFFDF7;
+}
+
+/* 骨架占位：首屏不白屏 */
+.skeleton-block {
+  background: linear-gradient(100deg, #ECE7D8 30%, #F7F2E6 50%, #ECE7D8 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 20rpx;
+  border: 1rpx solid var(--gold-mist);
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.hotspot-skeleton { height: 320rpx; margin-bottom: 20rpx; }
+.notice-skeleton { height: 76rpx; margin-bottom: 24rpx; }
+.board-skeleton { height: 360rpx; margin-top: 8rpx; }
+
+/* ① 热点轮播 */
+.hotspot-wrap { margin-bottom: 20rpx; }
+
+.hotspot-swiper { height: 320rpx; }
+
+.hotspot-card {
+  position: relative;
+  height: 320rpx;
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.hotspot-cover {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+}
+
+.hotspot-mask {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 70%;
+  background: linear-gradient(180deg, rgba(12, 51, 41, 0) 0%, rgba(12, 51, 41, 0.82) 100%);
+}
+
+.hotspot-body {
+  position: absolute;
+  left: 28rpx; right: 28rpx; bottom: 28rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.hotspot-tag { align-self: flex-start; margin-bottom: 12rpx; }
+
+.hotspot-title {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 38rpx;
+  font-weight: 600;
+  color: #FFFDF7;
+  letter-spacing: 2rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hotspot-summary {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #E3EFDE;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hotspot-detail {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #C3A15F;
+  letter-spacing: 2rpx;
+}
+
+.hotspot-page {
+  position: absolute;
+  right: 24rpx;
+  top: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(12, 51, 41, 0.55);
+  color: #FFFDF7;
+  font-size: 22rpx;
+}
+
+/* ① 系统通告条 */
+.notice-bar {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(160deg, var(--paper) 0%, #FBF6E9 100%);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 14rpx;
+  padding: 18rpx 22rpx;
+  margin-bottom: 24rpx;
+}
+
+.notice-tag { flex-shrink: 0; }
+
+.notice-text {
+  flex: 1;
+  margin: 0 12rpx;
+  font-size: 26rpx;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notice-arrow {
+  flex-shrink: 0;
+  font-size: 32rpx;
+  color: var(--gold-deep);
+}
+
+/* ② 三宫格功能区 */
+.func-grid {
+  display: flex;
+  align-items: stretch;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.func-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx 12rpx;
+  background: linear-gradient(160deg, var(--paper) 0%, #FBF6E9 100%);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 20rpx;
+  box-shadow: 0 6rpx 24rpx rgba(20, 73, 60, 0.08);
+  box-sizing: border-box;
+}
+
+.func-icon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  margin-bottom: 16rpx;
+}
+
+/* 发布流浪猫：墨绿实心主操作 */
+.func-icon-primary {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+  color: #F7F2E6;
+  box-shadow: 0 6rpx 18rpx rgba(20, 73, 60, 0.28);
+}
+
+.func-icon-gold {
+  background: rgba(195, 161, 95, 0.18);
+  color: var(--gold-deep);
+  border: 1rpx solid var(--gold-mist);
+}
+
+.func-icon-mint {
+  background: var(--mist);
+  color: var(--brand-soft);
+  border: 1rpx solid rgba(46, 111, 94, 0.24);
+}
+
+.func-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 1rpx;
+}
+
+.func-desc {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+/* ③ 志愿者三榜 */
+.board-section { padding-bottom: 20rpx; }
+
+.board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.board-head .section-title { margin-bottom: 16rpx; }
+
+.board-more {
+  font-size: 24rpx;
+  color: var(--gold-deep);
+  letter-spacing: 1rpx;
+  flex-shrink: 0;
+}
+
+.board-types { padding-top: 0; margin-bottom: 4rpx; }
+
+.period-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.period-item {
+  padding: 6rpx 22rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--ink-soft);
+  background: var(--cream);
+  border: 1rpx solid var(--gold-mist);
+}
+
+.period-item.active {
+  color: var(--paper);
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+/* TOP3 领奖台 */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.podium-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 8rpx 18rpx;
+  border-radius: 16rpx 16rpx 0 0;
+  background: linear-gradient(178deg, var(--gold-mist), #F0EFE3);
+  border: 1rpx solid var(--gold-mist);
+  border-bottom: none;
+}
+
+.podium-item.first {
+  padding-top: 40rpx;
+  background: linear-gradient(178deg, rgba(195, 161, 95, 0.35), var(--cream));
+  border-color: var(--gold);
+}
+
+.medal {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--paper);
+  margin-bottom: 12rpx;
+}
+
+.medal-gold { background: linear-gradient(135deg, #D9B36C, #C3A15F); }
+.medal-silver { background: linear-gradient(135deg, #B9BDB8, #9EA39D); }
+.medal-bronze { background: linear-gradient(135deg, #C08B5E, #A8724B); }
+
+.p-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--ink);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.p-level { margin-top: 4rpx; font-size: 20rpx; color: var(--gold-deep); }
+.p-count { margin-top: 4rpx; font-size: 20rpx; color: var(--ink-soft); }
+
+/* 第 4 / 5 名列表 */
+.board-rank {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+  padding: 18rpx 20rpx;
+  background: rgba(244, 239, 227, 0.6);
+  border: 1rpx solid var(--gold-mist);
+  border-radius: 12rpx;
+}
+
+.rank-no {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1rpx solid var(--gold-mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  color: var(--brand);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.rank-main {
+  flex: 1;
+  margin-left: 18rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rank-name { font-size: 26rpx; font-weight: 600; color: var(--ink); }
+.rank-level { margin-top: 4rpx; font-size: 20rpx; color: var(--ink-mute); }
+
+.rank-count { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.rank-count-num {
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--brand);
+}
+.rank-count-label { font-size: 20rpx; color: var(--ink-mute); }
+
+.board-error, .board-empty {
+  text-align: center;
+  padding: 60rpx 0;
+  font-size: 26rpx;
+  color: var(--ink-mute);
+  letter-spacing: 1rpx;
+}
+
+.board-error { color: var(--gold-deep); }
+
+/* 我的排名条 */
+.my-rank {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%);
+}
+
+.my-rank-text { font-size: 26rpx; color: #F7F2E6; letter-spacing: 1rpx; }
+.my-rank-arrow { font-size: 32rpx; color: #C3A15F; }

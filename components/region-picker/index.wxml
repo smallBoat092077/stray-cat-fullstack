@@ -1,0 +1,65 @@
+<!-- 区域筛选栏（区域划分需求 R3/R4，三页复用） -->
+<view class="rp-bar">
+  <view class="rp-locate {{locating ? 'rp-locating' : ''}}" bindtap="onLocate">📍</view>
+  <view class="rp-current {{hasFilter ? 'rp-active' : ''}}" bindtap="openPanel">
+    <text class="rp-label">{{label}}</text>
+    <text class="rp-caret">▾</text>
+  </view>
+  <view class="rp-all" bindtap="clearFilter" wx:if="{{hasFilter}}">全部</view>
+</view>
+
+<!-- 级联选择面板 -->
+<view class="rp-mask" wx:if="{{panelVisible}}" bindtap="closePanel">
+  <view class="rp-panel" catchtap="noop">
+    <view class="rp-panel-head">
+      <text class="rp-panel-title">选择区域</text>
+      <text class="rp-panel-close" bindtap="closePanel">✕</text>
+    </view>
+
+    <view class="rp-group-title">省份 / 直辖市</view>
+    <view class="rp-grid">
+      <view
+        wx:for="{{provinces}}"
+        wx:key="code"
+        class="rp-chip {{selProvince.code === item.code ? 'rp-chip-active' : ''}}"
+        data-item="{{item}}"
+        bindtap="tapProvince"
+      >{{item.name}}</view>
+    </view>
+
+    <block wx:if="{{cities.length}}">
+      <view class="rp-group-title">城市</view>
+      <view class="rp-grid">
+        <view
+          wx:for="{{cities}}"
+          wx:key="code"
+          class="rp-chip {{selCity.code === item.code ? 'rp-chip-active' : ''}}"
+          data-item="{{item}}"
+          bindtap="tapCity"
+        >{{item.name}}</view>
+      </view>
+    </block>
+
+    <block wx:if="{{districts.length}}">
+      <view class="rp-group-head">
+        <text class="rp-group-title">区 / 县</text>
+        <text class="rp-whole-link" bindtap="tapWholeCity">不限区（全市）</text>
+      </view>
+      <view class="rp-grid">
+        <view
+          wx:for="{{districts}}"
+          wx:key="code"
+          class="rp-chip"
+          data-item="{{item}}"
+          bindtap="tapDistrict"
+        >{{item.name}}</view>
+      </view>
+    </block>
+
+    <view
+      class="rp-province-link"
+      wx:if="{{selProvince && !cities.length && !districts.length}}"
+      bindtap="tapWholeProvince"
+    >按「{{selProvince.name}}」全省查看</view>
+  </view>
+</view>

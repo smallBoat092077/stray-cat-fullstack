@@ -141,7 +141,7 @@ Page({
       latitude: cat.latitude,
       longitude: cat.longitude,
       name: `${cat.name} · 流浪猫位置`,
-      address: cat.locationDesc || '',
+      address: cat.locationName || cat.locationDesc || '',
       scale: 18,
       fail: () => wx.showToast({ title: '打开地图失败', icon: 'none' })
     });

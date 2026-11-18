@@ -1,0 +1,69 @@
+<template name="empty-paw">
+  <view class="empty-art">
+    <view class="paw">
+      <view class="paw-toe toe-1"></view>
+      <view class="paw-toe toe-2"></view>
+      <view class="paw-toe toe-3"></view>
+      <view class="paw-toe toe-4"></view>
+      <view class="paw-pad"></view>
+    </view>
+  </view>
+</template>
+
+<brand-nav back="{{true}}" />
+<view class="container">
+  <view class="filter-bar">
+    <view class="filter-item {{activeTab === 'post' ? 'active' : ''}}" data-tab="post" bindtap="onSwitchTab">我的发布</view>
+    <view class="filter-item {{activeTab === 'clue' ? 'active' : ''}}" data-tab="clue" bindtap="onSwitchTab">我的线索</view>
+  </view>
+
+  <block wx:if="{{activeTab === 'post'}}">
+    <view class="mine-card card" wx:for="{{list}}" wx:key="id"
+          data-id="{{item.id}}" bindtap="goDetail">
+      <image class="mine-cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+      <view class="mine-cover mine-cover-empty" wx:else><text>🐈</text></view>
+      <view class="mine-body">
+        <view class="mine-head">
+          <text class="mine-name">{{item.catName}}</text>
+          <text class="tag tag-{{item.auditClass}}">{{item.auditText}}</text>
+        </view>
+        <text class="mine-meta">{{item.statusText}} · {{item.lostAtText}}</text>
+        <text class="mine-remark" wx:if="{{item.auditStatus === 0}}">审核通过后才会展示在寻猫广场</text>
+        <text class="mine-remark mine-remark-danger" wx:if="{{item.auditStatus === 2 && item.auditRemark}}">驳回原因：{{item.auditRemark}}</text>
+        <button wx:if="{{item.canFound}}" class="found-btn" catchtap="onFound" data-id="{{item.id}}">标记已找到</button>
+      </view>
+    </view>
+
+    <view class="loading" wx:if="{{loading}}">加载中...</view>
+    <view class="empty empty-quiet" wx:if="{{!loading && list.length === 0}}">
+      <template is="empty-paw"></template>
+      <text class="empty-title">还没有发布寻猫启事</text>
+      <text class="empty-desc">发布后经审核，会展示在寻猫广场</text>
+      <button class="empty-btn" bindtap="goCreate">发布寻猫信息</button>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeTab === 'clue'}}">
+    <view class="mine-card card" wx:for="{{clueList}}" wx:key="id"
+          data-id="{{item.id}}" bindtap="goClueDetail">
+      <image class="mine-cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" />
+      <view class="mine-cover mine-cover-empty" wx:else><text>🐈</text></view>
+      <view class="mine-body">
+        <view class="mine-head">
+          <text class="mine-name">{{item.addressDesc || '发现地点未填写'}}</text>
+          <text class="tag tag-{{item.auditClass}}">{{item.auditText}}</text>
+        </view>
+        <text class="mine-meta">{{item.foundAtText}} · 我上报的线索</text>
+        <text class="mine-remark" wx:if="{{item.auditStatus === 0}}">审核通过后，系统会通知启事发布者</text>
+        <text class="mine-remark mine-remark-danger" wx:if="{{item.auditStatus === 2 && item.auditRemark}}">驳回原因：{{item.auditRemark}}</text>
+      </view>
+    </view>
+
+    <view class="loading" wx:if="{{clueLoading}}">加载中...</view>
+    <view class="empty empty-quiet" wx:if="{{!clueLoading && clueList.length === 0}}">
+      <template is="empty-paw"></template>
+      <text class="empty-title">还没有提交线索</text>
+      <text class="empty-desc">在寻猫启事里上报线索，审核通过后会通知发布者</text>
+    </view>
+  </block>
+</view>

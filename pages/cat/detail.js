@@ -1,5 +1,6 @@
 const { catApi, tipApi, feedingApi, resolveImageUrl } = require('../../utils/api');
 const { LIFE_STATUS_MAP, GENDER_MAP } = require('../../utils/constants');
+const attribution = require('../../utils/attribution');
 
 const HEALTH_TAGS_MAP = {
   0: [],
@@ -44,20 +45,62 @@ Page({
     replyTarget: null,
     keyboardHeight: 0,
     commentFocus: false,
-    submitting: false
+    submitting: false,
+    // onShareAppMessage 必须同步返回，短码在 onLoad 预生成好放这里
+    shareSid: ''
   },
 
-  onLoad(options) {
+  async onLoad(options) {
     console.log('[detail] onLoad, options=', options);
-    if (options.id) {
-      this.catId = Number(options.id);
-      this.loadCatDetail(this.catId);
+    // 分享卡片带 ?id=，小程序码只带 scene=s=<sid>（page 不能带 query），
+    // 后者靠 resolve 返回的 bizId 补齐猫咪 id
+    let ctx = null;
+    try {
+      ctx = await attribution.capture(options || {});
+    } catch (e) {
+      ctx = null;
     }
+    const rawId = (options && options.id) || (ctx && ctx.bizId);
+    if (rawId) {
+      this.catId = Number(rawId);
+      this.loadCatDetail(this.catId);
+    } else {
+      // 短码无效/过期/网络失败：不无限转圈，提示后回首页
+      wx.showToast({ title: '链接无效或已过期', icon: 'none' });
+      setTimeout(() => {
+        wx.switchTab({ url: '/pages/index/index' });
+      }, 1200);
+    }
+    this.prepareShareSid(this.catId, ctx);
   },
 
   onShow() {
     if (this.catId) {
       this.loadCatDetail(this.catId);
+    } else {
+      // 从后台切回且首帧没拿到参数时再兜一次，不阻断渲染
+      attribution.capture({});
+    }
+  },
+
+  // 预生成分享短码：二次分享继承同一活动代号，服务端可按 campaign 串起整条传播链
+  async prepareShareSid(catId, ctx) {
+    if (!catId) {
+      return;
+    }
+    try {
+      const link = await attribution.createLink({
+        channel: 'share_card',
+        campaign: (ctx && ctx.campaign) || '',
+        bizType: 'cat',
+        bizId: catId,
+        landingPage: 'pages/cat/detail'
+      });
+      if (link && link.sid) {
+        this.setData({ shareSid: link.sid });
+      }
+    } catch (e) {
+      // 生成失败就退回不带 sid 的旧分享 path，不影响分享功能
     }
   },
 
@@ -365,9 +408,13 @@ Page({
   },
 
   onShareAppMessage() {
+    const cat = this.data.cat || {};
+    const title = `来看看${cat.name || '这只猫'}${cat.description ? '，' + cat.description : ''}`.slice(0, 30);
+    const id = this.catId || cat.id || '';
+    const sid = this.data.shareSid;
     return {
-      title: `来看看${this.data.cat.name}，${this.data.cat.description}`,
-      path: `/pages/cat/detail?id=${this.data.cat.id}`,
+      title,
+      path: `/pages/cat/detail?id=${id}${sid ? `&sid=${sid}` : ''}`,
       imageUrl: '/images/share-cover.png'
     };
   }

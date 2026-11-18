@@ -1,0 +1,52 @@
+.notice-item { padding: 26rpx; }
+
+.notice-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notice-time {
+  font-size: 22rpx;
+  color: var(--ink-mute);
+}
+
+.notice-item-title {
+  display: block;
+  margin-top: 16rpx;
+  font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 1rpx;
+}
+
+.notice-item-summary {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notice-full {
+  margin-top: 14rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid var(--gold-mist);
+}
+
+.notice-full-text {
+  font-size: 26rpx;
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+.notice-toggle {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--gold-deep);
+  letter-spacing: 1rpx;
+}

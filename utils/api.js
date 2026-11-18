@@ -19,9 +19,8 @@ function resolveImageUrl(path) {
   return `${app.globalData.baseUrl}${path}`;
 }
 
-// 用户相关
+// 用户相关（微信登录统一走 app.login()，这里删掉把 code 塞 JSON body 的失效封装）
 const userApi = {
-  login: (code) => request({ url: '/user/login', method: 'POST', data: { code } }),
   getCurrent: () => request({ url: '/user/current' }),
   getInfo: (userId) => request({ url: '/user/info', data: { userId } }),
   updateInfo: (data) => request({ url: '/user/info', method: 'PUT', data }),
@@ -31,6 +30,7 @@ const userApi = {
 // 猫咪相关
 const catApi = {
   getList: (params) => request({ url: '/cat/list', data: params }),
+  getStats: () => request({ url: '/cat/stats' }),
   getDetail: (id) => request({ url: `/cat/${id}` }),
   report: (data) => request({ url: '/cat/report', method: 'POST', data }),
   getNearby: (latitude, longitude, radius = 5) =>
@@ -53,7 +53,21 @@ const posterApi = {
 // 路线规划（服务端代理腾讯位置服务，key 不落在小程序包里）
 const geoApi = {
   getRoute: (catId, fromLatitude, fromLongitude) =>
-    request({ url: '/geo/route', data: { catId, fromLatitude, fromLongitude } })
+    request({ url: '/geo/route', data: { catId, fromLatitude, fromLongitude } }),
+  // 坐标 -> 行政区（区域划分需求 R3/D2/D5）；未登录或后端未配 key 时返回降级结构
+  reverse: (latitude, longitude) =>
+    request({ url: '/geo/reverse', data: { latitude, longitude } })
+};
+
+// 行政区域字典（区域划分需求 R1，region 为只读字典，免登 GET）
+const regionApi = {
+  children: (parentCode) =>
+    request({ url: '/region/children', data: parentCode ? { parentCode } : {} })
+};
+
+// 首页天气卡片（天气功能，免登 GET；后端按 adcode 缓存 30min）
+const weatherApi = {
+  get: (adcode) => request({ url: '/weather', data: adcode ? { adcode } : {} })
 };
 
 // 投喂相关
@@ -68,11 +82,14 @@ const feedingApi = {
         + `&images=${encodeURIComponent(images || '')}`,
       method: 'POST'
     }),
+  // 识别灰度配置（匿名 GET）：打卡页据 enabled 决定是否进入识别模式
+  recognizeConfig: () => request({ url: '/feeding/recognize/config' }),
   // 拍照识别猫咪
-  recognizeCat: (photoPath, catId) => {
+  recognizeCat: (photoPath, catId, topK) => {
     return new Promise((resolve, reject) => {
       const url = `${app.globalData.baseUrl}/feeding/recognize`
-        + (catId ? `?catId=${catId}` : '');
+        + (catId ? `?catId=${catId}` : '')
+        + (topK ? `${catId ? '&' : '?'}topK=${topK}` : '');
       wx.uploadFile({
         url,
         filePath: photoPath,
@@ -205,11 +222,52 @@ const feedbackAdminApi = {
     request({ url: '/admin/feedback/handle', method: 'POST', data: { id, status, reply } })
 };
 
+// 渠道短码。页面预生成分享码请用 attribution.createLink（失败静默、不弹 toast）
+const shareApi = {
+  link: (data) => request({ url: '/share/link', method: 'POST', data }),
+  resolve: (sid) => request({ url: '/share/resolve', data: { sid } })
+};
+
+// 营销活动（免登），活动页落地用
+const campaignApi = {
+  detail: (params) => request({ url: '/campaign/detail', data: params })
+};
+
+// 首页聚合（GET 免登）：首屏一次拿热点 / 通告 / 三榜 / 模块开关。
+// 路径严格对齐方案 5.1，写操作（点击记数）的 token 由 app.request 统一注入。
+const homeApi = {
+  bootstrap: () => request({ url: '/home/bootstrap' }),
+  leaderboard: (params) => request({ url: '/home/leaderboard', data: params }),
+  myRank: (params) => request({ url: '/home/leaderboard/mine', data: params }),
+  noticeList: (params) => request({ url: '/home/notice/list', data: params }),
+  noticeDetail: (id) => request({ url: `/home/notice/${id}` }),
+  contentClick: (id) => request({ url: `/home/content/${id}/click`, method: 'POST' })
+};
+
+// 寻猫启事：列表 / 详情免登，发布 / 我的 / 标记已找到需登录。
+const lostCatApi = {
+  list: (params) => request({ url: '/lost-cat/list', data: params }),
+  detail: (id) => request({ url: `/lost-cat/detail/${id}` }),
+  create: (data) => request({ url: '/lost-cat/create', method: 'POST', data }),
+  mine: () => request({ url: '/lost-cat/mine' }),
+  found: (id) => request({ url: `/lost-cat/${id}/found`, method: 'POST' }),
+  // 线索上报：提交需登录；详情 / 我的可见性由服务端校验
+  createClue: (data) => request({ url: '/lost-cat/clue/create', method: 'POST', data }),
+  clueDetail: (id) => request({ url: `/lost-cat/clue/detail/${id}` }),
+  clueMine: () => request({ url: '/lost-cat/clue/mine' })
+};
+
 module.exports = {
   resolveImageUrl,
   userApi,
+  shareApi,
+  campaignApi,
+  homeApi,
+  lostCatApi,
   catApi,
   geoApi,
+  regionApi,
+  weatherApi,
   feedingApi,
   adoptionApi,
   coinApi,

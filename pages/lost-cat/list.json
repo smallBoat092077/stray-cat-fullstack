@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "寻猫广场",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "brand-nav": "/components/brand-nav/index",
+    "region-picker": "/components/region-picker/index"
+  },
+  "navigationStyle": "custom"
+}

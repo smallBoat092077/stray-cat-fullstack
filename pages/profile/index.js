@@ -1,7 +1,7 @@
 const { userApi, coinApi, feedingApi, messageApi, uploadFile, resolveImageUrl } = require('../../utils/api');
+const { TAB_PAGES } = require('../../utils/constants.js');
 
 const ROLE_MAP = { 0: '普通用户', 1: '志愿者', 2: '领养人', 3: '管理员' };
-const TAB_PAGES = ['/pages/index/index', '/pages/cat/list', '/pages/feeding/list', '/pages/profile/index'];
 
 const EMPTY_VOLUNTEER = {
   feedingCount: 0,
@@ -22,6 +22,7 @@ Page({
     coinBalance: 0,
     coinTipped: 0,
     signedToday: false,
+    signInStreak: { current: 0, max: 0 },
     unreadCount: 0,
     editing: false,
     editAvatar: '',
@@ -51,6 +52,7 @@ Page({
         coinBalance: 0,
         coinTipped: 0,
         signedToday: false,
+        signInStreak: { current: 0, max: 0 },
         unreadCount: 0,
         volunteerData: { ...EMPTY_VOLUNTEER }
       });
@@ -176,7 +178,8 @@ Page({
       this.setData({
         coinBalance: summary.balance,
         coinTipped: summary.tipped,
-        signedToday: summary.signedToday
+        signedToday: summary.signedToday,
+        signInStreak: summary.signInStreak || { current: 0, max: 0 }
       });
     } catch (err) {
       // 未登录或网络异常时保持原值
@@ -209,18 +212,33 @@ Page({
     }
     try {
       const res = await coinApi.signIn();
-      this.setData({ coinBalance: res.balance, signedToday: true });
-      wx.showToast({ title: res.granted ? `签到成功 +${res.reward}` : '今日已签到', icon: 'none' });
+      const streak = res.signInStreak || this.data.signInStreak;
+      this.setData({
+        coinBalance: res.balance,
+        signedToday: true,
+        signInStreak: streak
+      });
+      // 连续 7 天起给一点荣誉感（只改样式，不额外发猫粮，避免诱导性质被审）
+      const tip = res.granted
+        ? `签到成功，已连续 ${streak.current} 天`
+        : '今日已签到';
+      wx.showToast({ title: tip, icon: 'none' });
     } catch (err) {
       // 错误提示由 request 统一处理
     }
   },
 
   goToPage(e) {
-    const url = e.currentTarget.dataset.url;
+    const raw = e.currentTarget.dataset.url;
+    if (!raw) {
+      return;
+    }
+    // 统一成带前导斜杠，兼容带 / 与不带 / 两种口径
+    const url = '/' + String(raw).trim().replace(/^\/+/, '');
+    const path = url.split('?')[0];
     // tabBar 页只能用 switchTab 打开，navigateTo 会直接报错
-    if (TAB_PAGES.indexOf(url) >= 0) {
-      wx.switchTab({ url });
+    if (TAB_PAGES.indexOf(path) >= 0) {
+      wx.switchTab({ url: path });
       return;
     }
     wx.navigateTo({ url });

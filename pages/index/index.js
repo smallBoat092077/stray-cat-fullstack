@@ -461,7 +461,7 @@ Page({
     wx.navigateTo({ url: `/pages/tip/create?catId=${this.data.selectedCat.id}` });
   },
 
-  // 上报流浪猫
+  // 上报流浪猫（已降级为普通页面，用 navigateTo）
   onReportTap() {
     wx.navigateTo({ url: '/pages/cat/report' });
   }

@@ -1,4 +1,4 @@
-const { catApi, uploadFile } = require('../../utils/api');
+const { catApi, geoApi, uploadFile } = require('../../utils/api');
 const { getCurrentLocation, notifyError } = require('../../utils/location');
 
 Page({
@@ -10,6 +10,8 @@ Page({
     name: '', ageEstimate: '', color: '',
     locationDesc: '', personality: '', description: '',
     latitude: null, longitude: null, locationName: '',
+    // 区域归属（区域划分需求 R2）：选点/定位成功后解析，随表单提交；解析失败留空由后端兜底
+    provinceCode: '', cityCode: '', districtCode: '',
     images: [],
     envImages: [], envDesc: '',
     uploading: false
@@ -35,8 +37,10 @@ Page({
         this.setData({
           latitude: res.latitude,
           longitude: res.longitude,
-          locationName: res.name || res.address || '已选择位置'
+          locationName: res.name || res.address || '已选择位置',
+          provinceCode: '', cityCode: '', districtCode: ''
         });
+        this.resolveRegion(res.latitude, res.longitude);
       },
       fail: (err) => {
         const errMsg = (err && err.errMsg) || '';
@@ -64,8 +68,10 @@ Page({
         this.setData({
           latitude: loc.latitude,
           longitude: loc.longitude,
-          locationName: '已标记当前位置'
+          locationName: '已标记当前位置',
+          provinceCode: '', cityCode: '', districtCode: ''
         });
+        this.resolveRegion(loc.latitude, loc.longitude);
         wx.showToast({
           title: '已用当前位置标记，请补全地点描述',
           icon: 'none',
@@ -76,6 +82,25 @@ Page({
         wx.hideLoading();
         notifyError(err);
       });
+  },
+
+  /**
+   * 解析坐标归属省市区（区域划分需求 R2）：静默进行，失败不提示、不阻断上报，
+   * 区域码留空时后端会用坐标兜底补码（CatController.report → fillRegionIfMissing）。
+   */
+  async resolveRegion(latitude, longitude) {
+    try {
+      const geo = await geoApi.reverse(latitude, longitude);
+      if (geo && geo.success) {
+        this.setData({
+          provinceCode: geo.provinceCode || '',
+          cityCode: geo.cityCode || '',
+          districtCode: geo.districtCode || ''
+        });
+      }
+    } catch (err) {
+      // 静默：未登录/网络异常都不影响上报
+    }
   },
 
   chooseImage() {
@@ -185,10 +210,18 @@ Page({
     try {
       const { catUrls, envUrls } = await this.uploadAll(this.data.images, this.data.envImages);
 
+      // 真实地点名：只有地图选点拿到的 POI 名称/地址才入库；占位文案不当真实地址
+      const rawName = (this.data.locationName || '').trim();
+      const placeholder = ['已标记当前位置', '已选择位置'];
+      const locationName = rawName && placeholder.indexOf(rawName) < 0 ? rawName : null;
+
       await catApi.report({
         name, gender: genderIndex, ageEstimate, breed: this.data.breedOptions[this.data.breedIndex], color,
-        lifeStatus: 0, locationDesc, personality, description,
+        lifeStatus: 0, locationDesc, locationName, personality, description,
         latitude, longitude,
+        provinceCode: this.data.provinceCode || null,
+        cityCode: this.data.cityCode || null,
+        districtCode: this.data.districtCode || null,
         coverImage: catUrls.length > 0 ? catUrls[0] : null,
         images: catUrls.join(','),
         environmentImages: envUrls.join(','),
@@ -197,6 +230,7 @@ Page({
 
       wx.hideLoading();
       wx.showToast({ title: '上报成功', icon: 'success' });
+      // 上报页已降级为普通页面：从首页或「我的」navigateTo 进来，成功后自然回来源页
       setTimeout(() => wx.navigateBack(), 1500);
     } catch (err) {
       wx.hideLoading();
