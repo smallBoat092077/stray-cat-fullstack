@@ -45,13 +45,48 @@
     <div class="glass-card section-gap" style="padding:18px">
       <div class="group-label">小程序码物料生成</div>
       <div class="code-row">
-        <el-input v-model="codeSid" size="small" class="code-input" placeholder="输入短码 sid" />
+        <el-select
+          v-model="recentSid"
+          size="small"
+          class="recent-select"
+          placeholder="从最近短码中选择（可选）"
+          clearable
+          filterable
+          :loading="linksLoading"
+          @change="onPickRecent"
+        >
+          <el-option
+            v-for="link in recentLinks"
+            :key="link.sid"
+            :value="link.sid"
+            :label="link.sid"
+          >
+            <div class="sid-option">
+              <span class="sid-code">{{ link.sid }}</span>
+              <span class="sid-meta">
+                {{ link.channel }}{{ link.campaign ? ' · ' + link.campaign : '' }}
+                {{ link.landingPage ? ' · ' + link.landingPage : '' }}
+                <span class="muted-num">PV {{ link.pv || 0 }}</span>
+              </span>
+            </div>
+          </el-option>
+        </el-select>
+        <el-input v-model="codeSid" size="small" class="code-input" placeholder="或手动输入短码 sid" />
         <el-select v-model="envVersion" size="small" class="env-select">
           <el-option value="release" label="正式版" />
           <el-option value="trial" label="体验版" />
         </el-select>
         <el-button size="small" type="primary" :loading="codeLoading" @click="genCode">生成小程序码</el-button>
         <span v-if="codeScene" class="code-scene">scene={{ codeScene }}</span>
+      </div>
+      <div v-if="pickedLink" class="picked-meta">
+        已选短码 <b>{{ pickedLink.sid }}</b>
+        <span class="muted">
+          · 渠道 {{ pickedLink.channel }}
+          {{ pickedLink.campaign ? ' · 活动 ' + pickedLink.campaign : '' }}
+          {{ pickedLink.landingPage ? ' · 落地页 ' + pickedLink.landingPage : '' }}
+          · PV {{ pickedLink.pv || 0 }} · 新用户 {{ pickedLink.newUsers || 0 }}
+        </span>
       </div>
       <div v-if="codeUrl" class="code-preview">
         <img :src="`/api${codeUrl}`" alt="小程序码" />
@@ -74,6 +109,33 @@ const codeScene = ref('');
 const codeUrl = ref('');
 const codeLoading = ref(false);
 const envVersion = ref('release');
+
+// 最近短码：从 /admin/share/links 取最近签发的短码，选中即填入生成
+const recentLinks = ref([]);
+const recentSid = ref('');
+const linksLoading = ref(false);
+const pickedLink = computed(
+  () => recentLinks.value.find((l) => l.sid === recentSid.value) || null
+);
+
+function onPickRecent(sid) {
+  // 清空选择时同步清掉手动输入，避免残留旧 sid 造成误出码
+  codeSid.value = sid || '';
+  codeUrl.value = '';
+  codeScene.value = '';
+}
+
+async function loadLinks() {
+  linksLoading.value = true;
+  try {
+    const rows = await channelApi.links(days.value);
+    recentLinks.value = Array.isArray(rows) ? rows : [];
+  } catch (err) {
+    // 提示由 http 拦截器统一给；保留已有列表
+  } finally {
+    linksLoading.value = false;
+  }
+}
 
 const allStats = [
   { key: 'catTotal',        label: '猫咪总数' },
@@ -155,6 +217,7 @@ async function genCode() {
 function loadAll() {
   load();
   loadChannel();
+  loadLinks();
 }
 
 onMounted(loadAll);
@@ -194,4 +257,13 @@ onMounted(loadAll);
 .code-scene { font-size: 12px; color: var(--fg-muted); }
 .code-preview { margin-top: 12px; display: flex; align-items: flex-end; gap: 16px; }
 .code-preview img { width: 180px; height: 180px; border: 0.5px solid var(--border); border-radius: 8px; }
+
+/* 最近短码下拉 */
+.recent-select { width: 260px; }
+.sid-option { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.sid-code { font-weight: 600; flex-shrink: 0; }
+.sid-meta { font-size: 12px; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.muted-num { margin-left: 6px; opacity: 0.8; }
+.picked-meta { margin-top: 10px; font-size: 13px; }
+.picked-meta .muted { color: var(--fg-muted); font-size: 12px; }
 </style>
