@@ -28,5 +28,5 @@
 
   <button class="btn-outline restart-btn" bindtap="onRestart">重新开始本关</button>
   <view class="tip-box">{{msg}}</view>
-  <view class="tip-box subtle">纯前端小游戏，无积分、无排行榜、无分享诱导。三关难度递进：热身 12 张、进阶 24 张、魔鬼 48 张。</view>
+  <view class="tip-box subtle">纯前端小游戏，无积分、无排行榜、无分享诱导。三关难度递进：热身 12 张、进阶 24 张、魔鬼 48 张；通关后可自愿看广告解锁隐藏大师关或获得记忆加成，不看广告完全不影响游戏。</view>
 </view>
