@@ -135,13 +135,24 @@ public class RecognizerClient {
             log.warn("读取登记照片失败: {}", e.getMessage());
             return null;
         }
+        return register(bytes, file.getOriginalFilename(), catId, imageUrl);
+    }
+
+    /**
+     * 四期：从猫咪档案已有图片登记样本（无需重新上传，后端直接读盘转发）。
+     * 与 MultipartFile 版语义完全一致：写操作用长超时，image_url 透传落 cat_feature。
+     */
+    public JsonNode register(byte[] bytes, String filename, Long catId, String imageUrl) {
+        if (bytes == null || bytes.length == 0 || catId == null) {
+            return null;
+        }
         Map<String, String> fields = new LinkedHashMap<>();
         fields.put("cat_id", String.valueOf(catId));
         if (imageUrl != null && !imageUrl.isBlank()) {
             fields.put("image_url", imageUrl);
         }
         // 写操作用更长超时：超时后 Python 仍可能完成写库，短超时会造成「报失败但已入库」的不一致
-        return postMultipart(REGISTER_PATH, bytes, file.getOriginalFilename(), fields,
+        return postMultipart(REGISTER_PATH, bytes, filename, fields,
                 props.getRegisterTimeoutMs());
     }
 

@@ -3,9 +3,13 @@ package com.straycat.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.straycat.annotation.RequireRole;
 import com.straycat.client.RecognizerClient;
+import com.straycat.common.CatAvatarUtil;
 import com.straycat.common.PhotoValidator;
 import com.straycat.common.Result;
+import com.straycat.common.ResultCode;
+import com.straycat.entity.CatProfile;
 import com.straycat.mapper.CatFeatureMapper;
+import com.straycat.mapper.CatProfileMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,7 @@ public class RecognizerAdminController {
 
     private final RecognizerClient recognizerClient;
     private final CatFeatureMapper catFeatureMapper;
+    private final CatProfileMapper catProfileMapper;
 
     @Value("${file.upload-path:./uploads}")
     private String uploadPath;
@@ -130,6 +135,62 @@ public class RecognizerAdminController {
         }
         data.put("featureId", featureId);
         data.put("message", response.path("message").asText("删除成功"));
+        return Result.success(data);
+    }
+
+    /**
+     * 四期：从猫咪档案已有图片（cover_image / images）直接登记样本，无需重新上传。
+     * 校验链：路径合法性 → 猫咪存在 → 图片归属该猫 → 磁盘文件存在 → 转发 Python /register。
+     * image_url 直接透传档案相对路径（图已在盘上，不再二次落盘）。
+     */
+    @Operation(summary = "从猫咪档案图片登记基准样本（catId + imageUrl 相对路径）")
+    @PostMapping("/register-from-archive")
+    @RequireRole(3)
+    public Result<Map<String, Object>> registerFromArchive(@RequestParam Long catId,
+                                                            @RequestParam String imageUrl) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        // 1) 路径合法性：只允许 /uploads/ 下相对路径，禁止穿越与反斜杠
+        String rel = imageUrl == null ? "" : imageUrl.trim();
+        if (!rel.startsWith("/uploads/") || rel.length() <= "/uploads/".length()
+                || rel.contains("..") || rel.contains("\\") || rel.contains("\r") || rel.contains("\n")) {
+            return Result.error("非法的图片路径");
+        }
+        // 2) 猫咪存在
+        CatProfile cat = catProfileMapper.selectById(catId);
+        if (cat == null) {
+            return Result.error(ResultCode.CAT_NOT_FOUND);
+        }
+        // 3) 归属校验：与猫咪头像挑选同一套口径，只能登记该猫自己的档案图
+        if (!CatAvatarUtil.isOwnedCatImage(cat, rel)) {
+            return Result.error("只能从该猫咪的档案图片中挑选");
+        }
+        // 4) 磁盘文件存在
+        File file = new File(new File(uploadPath).getAbsoluteFile(),
+                rel.substring("/uploads/".length()));
+        if (!file.exists() || !file.isFile()) {
+            return Result.error("图片文件在服务器上已不存在，请改用手动上传登记");
+        }
+        byte[] bytes;
+        try {
+            bytes = java.nio.file.Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            log.warn("读取档案图片失败: {}", e.getMessage());
+            return Result.error("读取图片失败，请稍后再试");
+        }
+        // 5) 转发 Python（与手动上传同一套响应口径）
+        JsonNode response = recognizerClient.register(bytes, file.getName(), catId, rel);
+        if (response == null) {
+            data.put("featureId", null);
+            data.put("message", "识别服务暂不可用，请稍后再试");
+            return Result.success(data);
+        }
+        if (response.path("no_cat").asBoolean(false) || !response.path("success").asBoolean(false)) {
+            return Result.error(response.path("message").asText("照片不符合基准图要求，请换一张猫咪照片"));
+        }
+        JsonNode featureId = response.path("feature_id");
+        data.put("featureId", featureId.isNumber() ? featureId.asLong() : null);
+        data.put("imageUrl", rel);
+        data.put("message", response.path("message").asText("登记完成"));
         return Result.success(data);
     }
 

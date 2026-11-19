@@ -67,7 +67,49 @@
       <el-button size="small" @click="$refs.photoInput.click()">选择基准图</el-button>
       <span class="muted photo-name">{{ photoName || '未选择图片' }}</span>
       <el-button size="small" type="primary" :loading="registering" @click="doRegister">登记样本</el-button>
+      <el-divider direction="vertical" />
+      <el-button size="small" type="success" plain @click="openArchiveDialog">从档案选图登记</el-button>
     </div>
+
+    <!-- 四期：从猫咪档案已有图片登记 -->
+    <el-dialog v-model="archiveDialogVisible" title="从猫咪档案选图登记样本" width="720px" top="6vh">
+      <div class="archive-picker">
+        <el-select
+          v-model="archiveCatId"
+          placeholder="选择猫咪（候选图来自其档案：头像 + 上报图）"
+          filterable
+          style="width: 100%"
+          @change="onArchiveCatChange"
+        >
+          <el-option v-for="cat in cats" :key="cat.id" :label="`${cat.name}（ID:${cat.id}）`" :value="cat.id" />
+        </el-select>
+        <div v-if="!archiveCatId" class="muted archive-empty">请先选择猫咪</div>
+        <div v-else-if="!archivePhotos.length" class="muted archive-empty">
+          该猫咪档案暂无照片，可先用「选择基准图」手动上传
+        </div>
+        <div v-else class="archive-grid">
+          <div v-for="photo in archivePhotos" :key="photo.url" class="archive-card">
+            <el-image
+              :src="resolveImage(photo.url)"
+              :preview-src-list="archivePhotos.map(p => resolveImage(p.url))"
+              :initial-index="archivePhotos.indexOf(photo)"
+              :preview-teleported="true"
+              fit="cover"
+              class="archive-thumb"
+            />
+            <div class="archive-meta">
+              <span class="muted archive-tag">{{ photo.tag }}</span>
+              <el-button
+                size="small"
+                type="primary"
+                :loading="registeringArchiveUrl === photo.url"
+                @click="doRegisterFromArchive(photo)"
+              >登记</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
 
     <!-- 样本列表 -->
     <h4 class="section-title">已登记样本</h4>
@@ -113,7 +155,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import http from '../api/http';
 import { catApi, recognizerApi } from '../api';
@@ -131,6 +173,52 @@ const photoFile = ref(null);
 const photoName = ref('');
 const photoInput = ref(null);
 const filterCatId = ref('');
+
+// 四期：从档案选图登记
+const archiveDialogVisible = ref(false);
+const archiveCatId = ref(null);
+const archivePhotos = ref([]);
+const registeringArchiveUrl = ref('');
+const selectedCat = computed(() => cats.value.find(c => c.id === archiveCatId.value) || null);
+
+// 档案候选图 = 头像(coverImage) + 上报图(images 逗号分隔)，顺序去重
+function photosOfCat(cat) {
+  if (!cat) return [];
+  const urls = [];
+  const push = (p, tag) => {
+    const u = (p || '').trim();
+    if (u && !urls.some(x => x.url === u)) urls.push({ url: u, tag });
+  };
+  push(cat.coverImage, '头像');
+  String(cat.images || '').split(',').forEach(u => push(u, '上报图'));
+  return urls;
+}
+
+function onArchiveCatChange() {
+  archivePhotos.value = photosOfCat(selectedCat.value);
+}
+
+function openArchiveDialog() {
+  archiveCatId.value = null;
+  archivePhotos.value = [];
+  archiveDialogVisible.value = true;
+}
+
+async function doRegisterFromArchive(photo) {
+  const cat = selectedCat.value;
+  if (!cat || !photo?.url) return;
+  registeringArchiveUrl.value = photo.url;
+  try {
+    const result = await recognizerApi.registerFromArchive(cat.id, photo.url);
+    ElMessage.success(result?.message || '登记成功');
+    loadStats();
+    loadSamples();
+  } catch (err) {
+    // 提示由 http 拦截器统一给
+  } finally {
+    registeringArchiveUrl.value = '';
+  }
+}
 
 // 与 LostCatReview.vue 的 resolveImage 一致：后端存 /uploads/... 相对路径，用 baseURL 拼完整地址
 function resolveImage(path) {
@@ -166,7 +254,7 @@ async function loadConfig() {
 
 async function loadCats() {
   try {
-    const page = await catApi.list({ pageNum: 1, pageSize: 100 });
+    const page = await catApi.list({ pageNum: 1, pageSize: 500 });
     cats.value = Array.isArray(page) ? page : (page?.records || []);
   } catch (err) {
     // 提示由 http 拦截器统一给；保留已有下拉数据
@@ -343,5 +431,50 @@ onMounted(() => {
   height: 56px;
   border-radius: 4px;
   display: block;
+}
+
+/* 四期：档案选图对话框 */
+.archive-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.archive-empty {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+
+.archive-card {
+  border: 1px solid #e6e3da;
+  border-radius: 6px;
+  padding: 8px;
+  background: #fff;
+}
+
+.archive-thumb {
+  width: 100%;
+  height: 120px;
+  border-radius: 4px;
+  display: block;
+}
+
+.archive-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.archive-tag {
+  font-size: 12px;
 }
 </style>

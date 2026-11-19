@@ -140,6 +140,10 @@ export const recognizerApi = {
     // 显式覆盖，避免被任何全局 JSON Content-Type 默认值影响（与 CampaignList.vue 上传写法一致）
     return http.post('/admin/recognize/register', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
+  // 四期：从猫咪档案已有图片登记样本（服务端读盘转发 Python，无需重新上传）
+  registerFromArchive: (catId, imageUrl) => http.post('/admin/recognize/register-from-archive', null, {
+    params: { catId, imageUrl }
+  }),
   // 三期：删除一条基准样本（后端转发 Python /delete 并重建索引）
   removeSample: (featureId) => http.post('/admin/recognize/samples/' + featureId + '/delete')
 };
