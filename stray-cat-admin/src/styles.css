@@ -203,6 +203,42 @@ html, body, #app {
   background: var(--accent);
 }
 
+/* ── 二级菜单分组标题 ──
+   与一级项同观感：淡字、圆角、hover 浮起；无圆点与指示条，右侧箭头随主题淡色 */
+.shell-aside .el-sub-menu__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-muted) !important;
+  border-radius: 8px;
+  margin: 2px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  transition: background .25s ease, color .25s ease;
+}
+
+.shell-aside .el-sub-menu__title:hover {
+  background: var(--glass-hi) !important;
+  color: var(--fg) !important;
+}
+
+/* 展开的分组标题提亮，便于识别当前所在模块 */
+.shell-aside .el-sub-menu.is-opened > .el-sub-menu__title {
+  color: var(--fg) !important;
+}
+
+.shell-aside .el-sub-menu__icon-arrow {
+  color: var(--fg-muted);
+}
+
+/* 二级项：缩进 + 字号略小，圆点/选中样式复用一级规则 */
+.shell-aside .el-sub-menu .el-menu-item {
+  padding-left: 34px !important;
+  font-size: 12.5px;
+  min-width: auto;
+}
+
 /* ── 数据表格：独立圆角玻璃卡片（对齐设计稿）──
    表格自身是一张带圆角/描边/阴影的卡片，与页面背景分离；去掉竖向分隔线，
    仅保留淡横向分隔线 + 斑马纹；整体字号/行高收紧，贴近原型。 */
@@ -418,40 +454,100 @@ html, body, #app {
   border-radius: 8px !important;
 }
 
-/* ── 弹窗全局：减少透明，提升可读性 ── */
+/* ── 弹窗全局：固定中性样式，不随主题变化 ──
+   之前的弹窗底色用 var(--glass-hi)，在 Aurora 等主题下是半透明亮色（品红 85%），
+   可读性差。这里在弹窗作用域内整体覆写 Element Plus 变量为固定中性值，
+   弹窗内的输入框/下拉/表格随之固定为白底深字，仅按钮主色保留主题。 */
+.el-dialog,
+.el-message-box {
+  --el-bg-color:               #ffffff;
+  --el-bg-color-overlay:       #ffffff;
+  --el-bg-color-page:          #f5f5f7;
+  --el-fill-color:             #f5f5f7;
+  --el-fill-color-light:       #f5f5f7;
+  --el-fill-color-lighter:     #fafafa;
+  --el-fill-color-extra-light: #fafafa;
+  --el-fill-color-blank:       #ffffff;
+  --el-text-color-primary:     #1d1d1f;
+  --el-text-color-regular:     #303133;
+  --el-text-color-secondary:   #909399;
+  --el-text-color-placeholder: #a8abb2;
+  --el-border-color:           #dcdfe6;
+  --el-border-color-light:     #e4e7ed;
+  --el-border-color-lighter:   #ebeef5;
+  --el-border-color-extra-light: #f2f6fc;
+  --el-input-bg-color:         #ffffff;
+  --el-input-border-color:     #dcdfe6;
+  --el-disabled-bg-color:      #f5f5f7;
+}
+
 .el-overlay {
   background: rgba(0, 0, 0, 0.45);
 }
 
 .el-dialog {
-  background: var(--glass-hi, rgba(255, 255, 255, 0.88));
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 0.5px solid var(--border, rgba(0, 0, 0, 0.12));
-  box-shadow: var(--shadow, 0 8px 32px rgba(0, 0, 0, 0.3));
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.22);
   border-radius: 16px;
-  color: var(--fg, #1d1d1f);
+  color: #1d1d1f;
+}
+
+.el-message-box {
+  background: #ffffff;
+  border: none;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.22);
+  border-radius: 14px;
 }
 
 .el-dialog__header {
   padding: 18px 20px 12px;
-  border-bottom: 0.5px solid var(--border, rgba(0, 0, 0, 0.07));
+  border-bottom: 0.5px solid #ebeef5;
   margin-right: 0;
 }
 
 .el-dialog__title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--fg);
+  color: #1d1d1f;
   letter-spacing: -0.01em;
 }
 
 .el-dialog__body {
   padding: 20px;
-  color: var(--fg);
+  color: #303133;
 }
 
 .el-dialog__footer {
   padding: 12px 20px 18px;
-  border-top: 0.5px solid var(--border, rgba(0, 0, 0, 0.07));
+  border-top: 0.5px solid #ebeef5;
+}
+
+/* 弹窗内表格：固定白底，不透出主题色 */
+.el-dialog .el-table,
+.el-message-box .el-table {
+  --el-table-bg-color:            #ffffff;
+  --el-table-tr-bg-color:         #ffffff;
+  --el-table-header-bg-color:     #f5f5f7;
+  --el-table-header-text-color:   #909399;
+  --el-table-text-color:          #303133;
+  --el-table-row-hover-bg-color:  #f5f7fa;
+  --el-table-border-color:        #ebeef5;
+  background: #ffffff;
+}
+
+/* 浮层（下拉/日期/级联等 light popper）：固定白底深字，不再透出主题亮色 */
+.el-popper.is-light {
+  --el-bg-color-overlay:       #ffffff;
+  --el-fill-color-light:       #f5f5f7;
+  --el-fill-color-lighter:     #fafafa;
+  --el-text-color-primary:     #1d1d1f;
+  --el-text-color-regular:     #303133;
+  --el-text-color-secondary:   #909399;
+  --el-border-color-light:     #e4e7ed;
+  --el-border-color-lighter:   #ebeef5;
+  background: #ffffff;
+  border: 1px solid #e4e7ed !important;
 }
