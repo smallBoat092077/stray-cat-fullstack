@@ -3,6 +3,7 @@ const { TASK_TYPE_MAP, TASK_STATUS_MAP } = require('../../utils/constants');
 const { prettyTime, volunteerLine } = require('../../utils/format');
 const { prefetchTemplates, requestSubscribe, SUBSCRIBE_KEYS } = require('../../utils/subscribe');
 const { getCurrentLocation, describeError } = require('../../utils/location');
+const photoTopic = require('../../utils/photoTopic');
 
 Page({
   data: {
@@ -330,6 +331,7 @@ Page({
         confidence: null, lowConfidence: false, degraded: false, rejected: false, rejectMessage: ''
       });
       this.loadTask(this.data.task.id);
+      this.offerPhotoTopic();
     } catch (err) {
       wx.hideLoading();
       wx.showToast({ title: err.message || '打卡失败', icon: 'none' });
@@ -348,9 +350,29 @@ Page({
       wx.showToast({ title: '打卡成功', icon: 'success' });
       this.setData({ images: [] });
       this.loadTask(this.data.task.id);
+      this.offerPhotoTopic();
     } catch (err) {
       wx.hideLoading();
       wx.showToast({ title: err.message || '打卡失败', icon: 'none' });
     }
+  },
+
+  /**
+   * 打卡成功后引导发布贴图话题（可选，不参与打卡主流程）。
+   * 话题未配置 / 基础库过低 / 用户点取消时静默跳过。
+   */
+  offerPhotoTopic() {
+    if (!photoTopic.topicAvailable()) return;
+    wx.showModal({
+      title: '为它们攒曝光',
+      content: `把刚拍的照片发布到 #${photoTopic.TOPIC_NAME}# 微信话题，让更多人看到这些小家伙吧？`,
+      confirmText: '去发布',
+      cancelText: '不了',
+      success: async (r) => {
+        if (!r.confirm) return;
+        const ok = await photoTopic.openPhotoTopic();
+        if (!ok) photoTopic.showTopicUnavailableToast();
+      }
+    });
   }
 });

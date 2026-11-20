@@ -1,6 +1,7 @@
 const { catApi, tipApi, feedingApi, resolveImageUrl } = require('../../utils/api');
 const { LIFE_STATUS_MAP, GENDER_MAP } = require('../../utils/constants');
 const attribution = require('../../utils/attribution');
+const photoTopic = require('../../utils/photoTopic');
 
 const HEALTH_TAGS_MAP = {
   0: [],
@@ -47,7 +48,9 @@ Page({
     commentFocus: false,
     submitting: false,
     // onShareAppMessage 必须同步返回，短码在 onLoad 预生成好放这里
-    shareSid: ''
+    shareSid: '',
+    // 贴图话题入口（话题未配置/基础库过低时自动隐藏）
+    topicEnabled: photoTopic.topicAvailable()
   },
 
   async onLoad(options) {
@@ -405,6 +408,12 @@ Page({
 
   onAdopt() {
     wx.navigateTo({ url: `/pages/adoption/apply?catId=${this.data.cat.id}` });
+  },
+
+  // 发布到微信官方贴图话题：借助平台推荐流量曝光，看贴图的人可点回小程序（场景值 1426）
+  async onPhotoTopic() {
+    const ok = await photoTopic.openPhotoTopic();
+    if (!ok) photoTopic.showTopicUnavailableToast();
   },
 
   onShareAppMessage() {

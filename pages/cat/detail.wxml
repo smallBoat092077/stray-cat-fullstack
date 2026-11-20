@@ -117,6 +117,9 @@
     <button class="btn-outline" bindtap="onLocate">
       导航去找它
     </button>
+    <button class="btn-outline" wx:if="{{topicEnabled}}" bindtap="onPhotoTopic">
+      发到 #晒晒流浪猫#
+    </button>
     <button class="btn-outline" open-type="share">
       分享给朋友
     </button>
