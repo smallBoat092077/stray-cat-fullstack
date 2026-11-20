@@ -12,7 +12,9 @@ import com.straycat.service.CatProfileService;
 import com.straycat.service.CoinService;
 import com.straycat.service.ContentSecurityService;
 import com.straycat.util.CatLifeStatus;
+import com.straycat.util.ImagePHashUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
@@ -22,6 +24,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +45,9 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
 
     @Resource
     private CatLikeMapper catLikeMapper;
+
+    @Value("${file.upload-path:./uploads}")
+    private String uploadPath;
 
     private static final String CAT_GEO_KEY = "cat:geo";
 
@@ -116,6 +122,14 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
             catProfile.setCoverImage(catProfile.getImages().split(",")[0]);
         }
 
+        // 封面感知哈希：同图不同文件名的重复上报主要靠它拦截；读盘失败降级为不比对哈希
+        Long phash = computeCoverPHash(catProfile.getCoverImage());
+        if (phash != null) {
+            catProfile.setCoverPhash(phash);
+        }
+
+        checkDuplicateReport(catProfile);
+
         contentSecurityService.check(catProfile.getDiscovererId(), ContentSecurityService.SCENE_PROFILE,
                 catProfile.getName(), catProfile.getAgeEstimate(), catProfile.getBreed(),
                 catProfile.getColor(), catProfile.getPersonality(),
@@ -133,6 +147,89 @@ public class CatProfileServiceImpl extends ServiceImpl<CatProfileMapper, CatProf
         coinService.grant(catProfile.getDiscovererId(), CoinService.REPORT_REWARD,
                 CoinService.BIZ_REPORT, catProfile.getId(), "上报流浪猫");
         return catProfile.getId();
+    }
+
+    /**
+     * 上报去重：与「流浪中/投喂中/待领养」的既有档案比较——
+     * ① 封面照片一致（感知哈希汉明距离 ≤8，同一张照片重新上传也能拦住）；
+     * ② 封面 URL 完全相同；
+     * ③ 同名且距离 ≤200m。
+     * 命中任一即拒绝重复上报。已领养/回访中的猫不参与比对（重新流浪属新上报场景）。
+     */
+    private void checkDuplicateReport(CatProfile catProfile) {
+        List<CatProfile> candidates = this.list(new LambdaQueryWrapper<CatProfile>()
+                .in(CatProfile::getLifeStatus, 0, 1, 2)
+                .isNotNull(CatProfile::getName)
+                .select(CatProfile::getId, CatProfile::getName, CatProfile::getCoverImage,
+                        CatProfile::getCoverPhash, CatProfile::getLatitude,
+                        CatProfile::getLongitude, CatProfile::getLocationDesc));
+        for (CatProfile existing : candidates) {
+            boolean samePhoto = phashEquals(catProfile.getCoverPhash(), existing.getCoverPhash())
+                    || (catProfile.getCoverImage() != null
+                        && catProfile.getCoverImage().equals(existing.getCoverImage()));
+            boolean sameNameNearby = nameNearby(catProfile, existing);
+            if (samePhoto) {
+                log.info("拦截重复上报(照片一致): existingId={}, name={}", existing.getId(), existing.getName());
+                throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),
+                        "这只猫咪（" + safeName(existing) + "）已经有人上报过了，请勿重复提交");
+            }
+            if (sameNameNearby) {
+                log.info("拦截重复上报(同名同址): existingId={}, name={}", existing.getId(), existing.getName());
+                throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),
+                        "附近已有同名猫咪（" + safeName(existing) + "）的档案，请勿重复提交");
+            }
+        }
+    }
+
+    private boolean phashEquals(Long newHash, Long existingHash) {
+        return newHash != null && existingHash != null
+                && ImagePHashUtil.hamming(newHash, existingHash) <= 8;
+    }
+
+    private boolean nameNearby(CatProfile incoming, CatProfile existing) {
+        String name = incoming.getName() == null ? null : incoming.getName().trim();
+        if (name == null || name.isEmpty() || !name.equals(existing.getName())) {
+            return false;
+        }
+        if (incoming.getLatitude() == null || incoming.getLongitude() == null
+                || existing.getLatitude() == null || existing.getLongitude() == null) {
+            return false;
+        }
+        return distanceMeters(incoming.getLatitude().doubleValue(), incoming.getLongitude().doubleValue(),
+                existing.getLatitude().doubleValue(), existing.getLongitude().doubleValue()) <= 200;
+    }
+
+    private String safeName(CatProfile cat) {
+        return cat.getName() == null || cat.getName().isBlank() ? "未命名" : cat.getName();
+    }
+
+    /** 读封面文件并计算 dhash；路径非法/文件缺失/解析失败一律返回 null，不阻断上报 */
+    private Long computeCoverPHash(String coverImage) {
+        if (coverImage == null || !coverImage.startsWith("/uploads/")
+                || coverImage.contains("..") || coverImage.contains("\\")) {
+            return null;
+        }
+        try {
+            File file = new File(new File(uploadPath).getAbsoluteFile(),
+                    coverImage.substring("/uploads/".length()));
+            if (!file.exists() || !file.isFile()) {
+                return null;
+            }
+            return ImagePHashUtil.dhash(java.nio.file.Files.readAllBytes(file.toPath()));
+        } catch (Exception e) {
+            log.warn("计算封面感知哈希失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private double distanceMeters(double lat1, double lon1, double lat2, double lon2) {
+        double radLat1 = Math.toRadians(lat1);
+        double radLat2 = Math.toRadians(lat2);
+        double dLat = radLat2 - radLat1;
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(radLat1) * Math.cos(radLat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return 2 * 6371000 * Math.asin(Math.sqrt(a));
     }
 
     /**

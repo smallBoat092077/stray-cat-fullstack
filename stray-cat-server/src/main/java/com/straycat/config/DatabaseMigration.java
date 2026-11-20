@@ -480,6 +480,11 @@ public class DatabaseMigration implements ApplicationRunner {
             execQuietly(stmt, "ALTER TABLE cat_profile ADD COLUMN location_name VARCHAR(255) COMMENT '上报选点的真实地址'");
             log.info("迁移: cat_profile.location_name 已就绪");
 
+            // 上报去重：封面感知哈希（dhash64）。同一张照片重新上传（文件名/压缩不同）哈希几乎不变，
+            // 与既有档案汉明距离 ≤8 判定为同一张图，拦截重复上报
+            execQuietly(stmt, "ALTER TABLE cat_profile ADD COLUMN cover_phash BIGINT DEFAULT NULL COMMENT '封面感知哈希(dhash64)'");
+            log.info("迁移: cat_profile.cover_phash 已就绪");
+
         } catch (Exception e) {
             log.warn("区域迁移异常: {}", e.getMessage());
         }

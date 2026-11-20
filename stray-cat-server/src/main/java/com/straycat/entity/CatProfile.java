@@ -74,6 +74,9 @@ public class CatProfile {
 
     private String coverImage;
 
+    /** 封面感知哈希（dhash64），用于上报去重；解析失败为 NULL */
+    private Long coverPhash;
+
     /**
      * 猫咪照片，逗号分隔的 /uploads/ 相对路径，最多 3 张（详情轮播按它渲染）
      */

@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS cat_profile (
     adopter_id BIGINT COMMENT '领养人ID',
     description TEXT COMMENT '详细描述',
     cover_image VARCHAR(255) COMMENT '封面图',
+    cover_phash BIGINT DEFAULT NULL COMMENT '封面感知哈希(dhash64)，上报去重用',
     view_count INT DEFAULT 0 COMMENT '浏览次数',
     like_count INT DEFAULT 0 COMMENT '点赞次数',
     comment_count INT NOT NULL DEFAULT 0 COMMENT '评论数（含回复，删除时同步 -1）',
