@@ -45,11 +45,14 @@ public class MessageController {
         return Result.success(notifyService.listMine(userId, pageNum, pageSize));
     }
 
-    @Operation(summary = "未读条数")
+    @Operation(summary = "未读条数（游客返回0，用于首页铃铛红点，不触发前端登录拦截）")
     @GetMapping("/unread-count")
     public Result<Map<String, Object>> unreadCount(HttpServletRequest request) {
-        Long userId = requireUserId(request);
-        return Result.success(Map.of("count", notifyService.unreadCount(userId)));
+        Long userId = (Long) request.getAttribute(AuthInterceptor.USER_ID_ATTR);
+        // 首页 onShow 每次都会拉红点；游客未登录时返回 0 而不是 1006，
+        // 否则前端统一拦截器会误判登录失效、反复弹登录页导致返回死循环。
+        long count = (userId == null) ? 0L : notifyService.unreadCount(userId);
+        return Result.success(Map.of("count", count));
     }
 
     @Operation(summary = "全部标记已读")
