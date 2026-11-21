@@ -29,6 +29,7 @@
             <el-menu-item index="/lost-cat-review">寻猫审核</el-menu-item>
             <el-menu-item index="/transfer-review">爱猫搬家审核</el-menu-item>
             <el-menu-item index="/lost-cat-clue-review">线索审核</el-menu-item>
+            <el-menu-item index="/volunteer-review">志愿者申请审核</el-menu-item>
             <el-menu-item index="/reset-requests">密码找回申请</el-menu-item>
           </el-sub-menu>
 
@@ -86,6 +87,7 @@ const GROUP_OF = {
   '/lost-cat-review': 'g-audit',
   '/transfer-review': 'g-audit',
   '/lost-cat-clue-review': 'g-audit',
+  '/volunteer-review': 'g-audit',
   '/reset-requests': 'g-audit',
   '/cats': 'g-cat',
   '/tasks': 'g-cat',

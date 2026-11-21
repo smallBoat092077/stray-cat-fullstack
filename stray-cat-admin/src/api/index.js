@@ -124,6 +124,13 @@ export const lostCatClueApi = {
   audit: (id, data) => http.post('/admin/lost-cat/clue/' + id + '/audit', null, { params: data })
 };
 
+// 志愿者申请审核（后端 @RequireRole(3)，review 走 JSON body）
+export const volunteerApi = {
+  list: (params) => http.get('/volunteer/admin/list', { params }),
+  counts: () => http.get('/volunteer/admin/counts'),
+  review: (id, status, comment) => http.post('/volunteer/admin/review', { id, status, comment })
+};
+
 // 花纹识别一期 · 管理侧（后端 @RequireRole(3)）
 // 字段名口径：/stats 与 /register 返回驼峰；/samples 返回 snake_case Map
 // （feature_id / cat_id / image_url / created_at）；register 的 multipart 字段是 photo(文件) + catId(普通字段)。

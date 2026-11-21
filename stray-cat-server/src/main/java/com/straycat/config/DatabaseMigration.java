@@ -706,6 +706,35 @@ public class DatabaseMigration implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("app_about 建表异常: {}", e.getMessage());
         }
+
+        // 志愿者申请表。与 sql/init.sql 双写，只做追加。
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute(
+                "CREATE TABLE IF NOT EXISTS volunteer_application (" +
+                "  id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID'," +
+                "  applicant_id BIGINT NOT NULL COMMENT '申请人ID'," +
+                "  real_name VARCHAR(50) NOT NULL COMMENT '真实姓名'," +
+                "  contact VARCHAR(100) NOT NULL COMMENT '联系方式（手机号或微信）'," +
+                "  region VARCHAR(150) COMMENT '所在区域（省市区）'," +
+                "  service_time VARCHAR(100) COMMENT '可服务时间'," +
+                "  reason TEXT COMMENT '申请理由'," +
+                "  status TINYINT DEFAULT 0 COMMENT '状态: 0待审核 1已通过 2已拒绝'," +
+                "  reviewer_id BIGINT COMMENT '审核人ID'," +
+                "  review_comment TEXT COMMENT '审核意见'," +
+                "  reviewed_at DATETIME COMMENT '审核时间'," +
+                "  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
+                "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'," +
+                "  INDEX idx_applicant (applicant_id)," +
+                "  INDEX idx_status (status)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='志愿者申请表'"
+            );
+            log.info("迁移: volunteer_application 表已就绪");
+
+        } catch (Exception e) {
+            log.warn("volunteer_application 建表异常: {}", e.getMessage());
+        }
     }
 
     private void execQuietly(Statement stmt, String sql) {

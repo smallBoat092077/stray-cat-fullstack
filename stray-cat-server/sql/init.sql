@@ -517,3 +517,22 @@ INSERT IGNORE INTO app_about (id, app_name, version, slogan, motto_main, motto_s
 VALUES (1, '猫遇猫舍', 'v1.1.0', '遇一只猫 · 安一个家', '让领养代替购买\n爱不流浪', '遇一只猫，安一个家',
         '17671710525', '1343076057@qq.com', '如有领养咨询、流浪猫求助或合作意向，欢迎在工作时间（9:00–21:00）与我们联系。',
         '猫遇猫舍 · 用心善待每一只小猫\n© 2026 CatMeet Cattery');
+
+-- 志愿者申请表
+CREATE TABLE IF NOT EXISTS volunteer_application (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+    applicant_id BIGINT NOT NULL COMMENT '申请人ID',
+    real_name VARCHAR(50) NOT NULL COMMENT '真实姓名',
+    contact VARCHAR(100) NOT NULL COMMENT '联系方式（手机号或微信）',
+    region VARCHAR(150) COMMENT '所在区域（省市区）',
+    service_time VARCHAR(100) COMMENT '可服务时间',
+    reason TEXT COMMENT '申请理由',
+    status TINYINT DEFAULT 0 COMMENT '状态: 0待审核 1已通过 2已拒绝',
+    reviewer_id BIGINT COMMENT '审核人ID',
+    review_comment TEXT COMMENT '审核意见',
+    reviewed_at DATETIME COMMENT '审核时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_applicant (applicant_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='志愿者申请表';

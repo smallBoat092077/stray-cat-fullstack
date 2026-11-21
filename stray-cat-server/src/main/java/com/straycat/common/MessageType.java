@@ -48,7 +48,16 @@ public enum MessageType {
     CAT_TRANSFER_APPLY("catTransferApply", "有人想接你的猫", "/pages/transfer/mine"),
 
     /** 我申请的猫已被转让（发给该信息的全部申请人），bizId 是转让信息 id */
-    CAT_TRANSFER_CLOSED("catTransferClosed", "你申请的猫已找到新家", "/pages/transfer/my-apply");
+    CAT_TRANSFER_CLOSED("catTransferClosed", "你申请的猫已找到新家", "/pages/transfer/my-apply"),
+
+    /** 志愿者申请已提交（发给申请人） */
+    VOLUNTEER_APPLIED("volunteerApplied", "志愿者申请已提交", "/pages/profile/index"),
+    /** 志愿者申请通过（发给申请人），bizId 是申请 id */
+    VOLUNTEER_APPROVED("volunteerApproved", "志愿者申请已通过", "/pages/profile/index"),
+    /** 志愿者申请被拒（发给申请人），bizId 是申请 id */
+    VOLUNTEER_REJECTED("volunteerRejected", "志愿者申请未通过", "/pages/profile/index"),
+    /** 新的志愿者申请待审核（发给管理员），bizId 是申请 id */
+    VOLUNTEER_NEW("volunteerNew", "有新的志愿者申请待审核", "/pages/admin/review");
 
     private final String templateKey;
     private final String title;

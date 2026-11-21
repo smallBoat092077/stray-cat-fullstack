@@ -24,6 +24,7 @@ const routes = [
       { path: 'lost-cat-review', name: 'lost-cat-review', component: () => import('../views/LostCatReview.vue'), meta: { title: '寻猫审核' } },
       { path: 'transfer-review', name: 'transfer-review', component: () => import('../views/TransferReview.vue'), meta: { title: '爱猫搬家审核' } },
       { path: 'lost-cat-clue-review', name: 'lost-cat-clue-review', component: () => import('../views/LostCatClueReview.vue'), meta: { title: '线索审核' } },
+      { path: 'volunteer-review', name: 'volunteer-review', component: () => import('../views/VolunteerReview.vue'), meta: { title: '志愿者申请审核' } },
       { path: 'recognizer-sample', name: 'recognizer-sample', component: () => import('../views/RecognizerSample.vue'), meta: { title: '花纹样本' } },
       { path: 'region-data', name: 'region-data', component: () => import('../views/RegionData.vue'), meta: { title: '区域数据' } },
       { path: 'about-config', name: 'about-config', component: () => import('../views/AboutConfig.vue'), meta: { title: '关于我们' } },
