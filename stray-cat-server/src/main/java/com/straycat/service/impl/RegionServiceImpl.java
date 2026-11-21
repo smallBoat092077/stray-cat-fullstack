@@ -53,6 +53,44 @@ public class RegionServiceImpl implements RegionService {
     private volatile List<Map<String, Object>> treeCache;
     private volatile long treeCacheAt = 0;
 
+    /** 码 -> 名称全量字典缓存（10 分钟），namesOf 批量翻译用 */
+    private volatile Map<String, String> nameCache;
+    private volatile long nameCacheAt = 0;
+
+    @Override
+    public Map<String, String> namesOf(java.util.Collection<String> codes) {
+        if (codes == null || codes.isEmpty()) {
+            return Map.of();
+        }
+        Map<String, String> dict = loadNameDict();
+        Map<String, String> out = new HashMap<>();
+        for (String code : codes) {
+            if (code == null || code.isBlank()) {
+                continue;
+            }
+            String name = dict.get(code.trim());
+            if (name != null) {
+                out.put(code.trim(), name);
+            }
+        }
+        return out;
+    }
+
+    private Map<String, String> loadNameDict() {
+        long now = System.currentTimeMillis();
+        Map<String, String> cached = nameCache;
+        if (cached != null && now - nameCacheAt < 10 * 60 * 1000L) {
+            return cached;
+        }
+        Map<String, String> dict = new HashMap<>();
+        for (Region r : regionMapper.selectList(null)) {
+            dict.put(r.getCode(), r.getName());
+        }
+        nameCache = dict;
+        nameCacheAt = now;
+        return dict;
+    }
+
     @Override
     public List<Map<String, Object>> tree() {
         long now = System.currentTimeMillis();
@@ -279,6 +317,7 @@ public class RegionServiceImpl implements RegionService {
             inserted += regionMapper.insertIgnoreBatch(batch);
         }
         treeCache = null; // 同步后失效树缓存
+        nameCache = null; // 同步后失效名称字典缓存
         log.info("区域同步完成: fetched={}, inserted={}", rows.size(), inserted);
         Map<String, Integer> out = new HashMap<>();
         out.put("fetched", rows.size());

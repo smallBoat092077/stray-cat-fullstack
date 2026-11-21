@@ -7,7 +7,10 @@ import com.straycat.exception.BusinessException;
 import com.straycat.mapper.LostCatPostMapper;
 import com.straycat.request.LostCatPostRequest;
 import com.straycat.service.ContentSecurityService;
+import com.straycat.service.GeoService;
 import com.straycat.service.LostCatPostService;
+import com.straycat.service.RegionService;
+import com.straycat.vo.GeoResultVO;
 import com.straycat.vo.LostCatPostVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +19,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +36,8 @@ public class LostCatPostServiceImpl implements LostCatPostService {
 
     private final LostCatPostMapper lostCatPostMapper;
     private final ContentSecurityService contentSecurityService;
+    private final RegionService regionService;
+    private final GeoService geoService;
 
     @Override
     public Page<LostCatPostVO> list(Integer status, Integer pageNum, Integer pageSize,
@@ -66,7 +74,24 @@ public class LostCatPostServiceImpl implements LostCatPostService {
         } catch (Exception e) {
             log.warn("寻猫详情浏览数自增失败: id={}, err={}", id, e.getMessage());
         }
-        return toVO(post);
+        LostCatPostVO vo = toVO(post);
+        // 老数据未归属（码为空）但有坐标：详情页要显示省市区，用逆地理编码兜底解析
+        //（结果在 GeoService 内缓存 7 天，不重复耗配额）；失败静默，详情照常下发
+        if (isBlank(post.getProvinceCode()) && isBlank(post.getCityCode()) && isBlank(post.getDistrictCode())
+                && post.getLatitude() != null && post.getLongitude() != null) {
+            try {
+                GeoResultVO geo = geoService.reverse(
+                        post.getLatitude().doubleValue(), post.getLongitude().doubleValue());
+                if (geo.isSuccess()) {
+                    vo.setProvinceName(geo.getProvinceName());
+                    vo.setCityName(geo.getCityName());
+                    vo.setDistrictName(geo.getDistrictName());
+                }
+            } catch (Exception e) {
+                log.warn("寻猫详情逆地理兜底失败: id={}, err={}", id, e.getMessage());
+            }
+        }
+        return vo;
     }
 
     @Override
@@ -153,6 +178,22 @@ public class LostCatPostServiceImpl implements LostCatPostService {
         vo.setProvinceCode(p.getProvinceCode());
         vo.setCityCode(p.getCityCode());
         vo.setDistrictCode(p.getDistrictCode());
+        // 码 -> 名称（region 字典内存翻译，列表/详情通用）
+        Set<String> codes = new HashSet<>();
+        if (p.getProvinceCode() != null && !p.getProvinceCode().isBlank()) {
+            codes.add(p.getProvinceCode());
+        }
+        if (p.getCityCode() != null && !p.getCityCode().isBlank()) {
+            codes.add(p.getCityCode());
+        }
+        if (p.getDistrictCode() != null && !p.getDistrictCode().isBlank()) {
+            codes.add(p.getDistrictCode());
+        }
+        Map<String, String> names = regionService.namesOf(codes);
+        // 老数据码可能为 null，不可变 Map 对 null key 直接抛 NPE，必须先判空
+        vo.setProvinceName(p.getProvinceCode() == null ? null : names.get(p.getProvinceCode()));
+        vo.setCityName(p.getCityCode() == null ? null : names.get(p.getCityCode()));
+        vo.setDistrictName(p.getDistrictCode() == null ? null : names.get(p.getDistrictCode()));
         vo.setContactWay(p.getContactWay());
         vo.setContactValue(maskContact(p));
         vo.setStatus(p.getStatus());
@@ -161,6 +202,10 @@ public class LostCatPostServiceImpl implements LostCatPostService {
         vo.setViewCount(p.getViewCount());
         vo.setCreatedAt(p.getCreatedAt());
         return vo;
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
 
     /**

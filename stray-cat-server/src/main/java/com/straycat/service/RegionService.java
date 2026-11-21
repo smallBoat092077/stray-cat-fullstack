@@ -29,6 +29,12 @@ public interface RegionService {
     String[] resolveCodes(String provinceName, String cityName, String districtName);
 
     /**
+     * 码 -> 名称批量翻译（全量字典内存缓存 10 分钟，syncFromTencent 后失效）。
+     * 未知码不在结果 Map 里。列表/详情下发省市区名称用，不做 DB 逐条查询。
+     */
+    java.util.Map<String, String> namesOf(java.util.Collection<String> codes);
+
+    /**
      * 管理端：从腾讯 district API 全量同步省市区到 region 表，幂等可重复执行。
      * 返回 {fetched, inserted}。
      */

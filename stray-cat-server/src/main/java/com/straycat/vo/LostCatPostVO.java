@@ -40,6 +40,13 @@ public class LostCatPostVO {
 
     private String districtCode;
 
+    /** 省/市/区名称（region 字典翻译；详情接口对未归属的老数据用逆地理编码兜底） */
+    private String provinceName;
+
+    private String cityName;
+
+    private String districtName;
+
     private String contactWay;
 
     /** 脱敏后的联系方式，可能为空 */
